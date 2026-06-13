@@ -1,0 +1,135 @@
+/* ============================================================
+   THEME SYSTEM — CSS Custom Properties only.
+   All component styles live in index.css.
+   ============================================================ */
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Matrix (default) ──────────────────────────────────────── */
+body, body.theme-matrix {
+  --bg-primary:    #030d03;
+  --bg-surface:    #071407;
+  --bg-card:       #0c1e0c;
+  --bg-elevated:   #112511;
+  --accent:        #00e676;
+  --accent-hover:  #33eb91;
+  --accent-dim:    rgba(0,230,118,0.12);
+  --accent-glow:   rgba(0,230,118,0.28);
+  --accent-rgb:    0,230,118;
+  --text-primary:  #c8f0ce;
+  --text-secondary:#6aaa72;
+  --text-muted:    #3f6644;
+  --border:        rgba(0,230,118,0.1);
+  --border-bright: rgba(0,230,118,0.32);
+  --shadow:        0 4px 24px rgba(0,0,0,0.65);
+  --scrollbar:     rgba(0,230,118,0.2);
+  /* Legacy aliases */
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
+
+/* ── Cyberpunk ─────────────────────────────────────────────── */
+body.theme-cyberpunk {
+  --bg-primary:    #05060f;
+  --bg-surface:    #0c0e1e;
+  --bg-card:       #13162a;
+  --bg-elevated:   #1a1d30;
+  --accent:        #00d4ff;
+  --accent-hover:  #33ddff;
+  --accent-dim:    rgba(0,212,255,0.11);
+  --accent-glow:   rgba(0,212,255,0.28);
+  --accent-rgb:    0,212,255;
+  --text-primary:  #cce8ff;
+  --text-secondary:#5f95ab;
+  --text-muted:    #3c5e6c;
+  --border:        rgba(0,212,255,0.1);
+  --border-bright: rgba(0,212,255,0.32);
+  --shadow:        0 4px 24px rgba(0,0,0,0.75);
+  --scrollbar:     rgba(0,212,255,0.2);
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
+
+/* ── Dracula ───────────────────────────────────────────────── */
+body.theme-dracula {
+  --bg-primary:    #0d0d14;
+  --bg-surface:    #13132a;
+  --bg-card:       #1a1a2e;
+  --bg-elevated:   #222240;
+  --accent:        #bd93f9;
+  --accent-hover:  #cba8fa;
+  --accent-dim:    rgba(189,147,249,0.12);
+  --accent-glow:   rgba(189,147,249,0.28);
+  --accent-rgb:    189,147,249;
+  --text-primary:  #e8e8f5;
+  --text-secondary:#9f90c8;
+  --text-muted:    #5e5585;
+  --border:        rgba(189,147,249,0.12);
+  --border-bright: rgba(189,147,249,0.38);
+  --shadow:        0 4px 24px rgba(0,0,0,0.72);
+  --scrollbar:     rgba(189,147,249,0.2);
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
+
+/* ── Nord ──────────────────────────────────────────────────── */
+body.theme-nord {
+  --bg-primary:    #0b0f18;
+  --bg-surface:    #101828;
+  --bg-card:       #162038;
+  --bg-elevated:   #1c2a40;
+  --accent:        #88c0d0;
+  --accent-hover:  #9ecfdf;
+  --accent-dim:    rgba(136,192,208,0.12);
+  --accent-glow:   rgba(136,192,208,0.25);
+  --accent-rgb:    136,192,208;
+  --text-primary:  #d8dfe8;
+  --text-secondary:#8699aa;
+  --text-muted:    #4a5e70;
+  --border:        rgba(136,192,208,0.1);
+  --border-bright: rgba(136,192,208,0.32);
+  --shadow:        0 4px 24px rgba(0,0,0,0.65);
+  --scrollbar:     rgba(136,192,208,0.2);
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
+
+/* ── Retro Light ───────────────────────────────────────────── */
+body.theme-retro-light {
+  --bg-primary:    #f2f0e8;
+  --bg-surface:    #fafaf5;
+  --bg-card:       #ecece4;
+  --bg-elevated:   #e2e2da;
+  --accent:        #2d6a4f;
+  --accent-hover:  #3a8762;
+  --accent-dim:    rgba(45,106,79,0.1);
+  --accent-glow:   rgba(45,106,79,0.2);
+  --accent-rgb:    45,106,79;
+  --text-primary:  #1a1a1a;
+  --text-secondary:#4a5568;
+  --text-muted:    #7c8490;
+  --border:        rgba(0,0,0,0.1);
+  --border-bright: rgba(45,106,79,0.38);
+  --shadow:        0 4px 24px rgba(0,0,0,0.1);
+  --scrollbar:     rgba(45,106,79,0.25);
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
