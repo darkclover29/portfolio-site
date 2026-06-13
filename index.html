@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsh Tiwari | Portfolio Terminal</title>
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Harsh Tiwari's Interactive Developer Portfolio. Experience Java, Python, Spring Boot, Android, and web engineering through a VFS terminal CLI, built-in editor, and modern HUD dashboard.">
+    <meta name="keywords" content="Harsh Tiwari, Software Engineer, Java Developer, Spring Boot, Android Kotlin, Jetpack Compose, Portfolio, Interactive Terminal, VFS, nano, Snake Game, Web Developer">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-matrix">
+    <!-- Matrix Rain Canvas for screensaver and matrix theme -->
+    <canvas id="matrix-canvas"></canvas>
+    
+    <!-- CRT Spotlight Mouse Glow Overlay -->
+    <div class="crt-spotlight" id="crt-spotlight"></div>
+    
+    <!-- Audio status toggle in top right -->
+    <div class="audio-controls">
+        <select id="bgm-select" title="Select Background Music">
+            <option value="classic">BGM: Classic 8-Bit</option>
+            <option value="synthwave">BGM: Synthwave</option>
+            <option value="ambient">BGM: Space Ambient</option>
+            <option value="off">BGM: Off</option>
+        </select>
+        <button id="mute-btn" title="Toggle Sound FX & BGM"><i class="fas fa-volume-mute"></i> Sound Off</button>
+    </div>
+
+    <!-- Main Container supporting 3D Perspective Flip -->
+    <div class="app-container">
+        <div class="card-flipper" id="flipper">
+            
+            <!-- FRONT: CLI TERMINAL VIEW -->
+            <div class="card-side front-side">
+                <div class="window terminal-window">
+                    <!-- Terminal Window Header -->
+                    <div class="window-header">
+                        <div class="header-buttons">
+                            <span class="dot close"></span>
+                            <span class="dot minimize"></span>
+                            <span class="dot maximize"></span>
+                        </div>
+                        <div class="window-title" id="terminal-window-title">
+                            <i class="fas fa-terminal"></i> harsh@tiwari-dev: ~/portfolio
+                        </div>
+                        <div class="header-actions">
+                            <select class="theme-select-dropdown" onchange="selectTheme(this.value)" title="Select Theme">
+                                <option value="matrix">Theme: Matrix</option>
+                                <option value="cyberpunk">Theme: Cyberpunk</option>
+                                <option value="dracula">Theme: Dracula</option>
+                                <option value="nord">Theme: Nord</option>
+                                <option value="retro-light">Theme: Retro Light</option>
+                            </select>
+                            <button class="view-toggle-btn" onclick="toggleView('gui')">
+                                <i class="fas fa-sliders-h"></i> Switch to GUI
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Terminal Body Content -->
+                    <div class="window-body" id="terminal-body">
+                        <!-- Welcome message / Boot sequence will be loaded here -->
+                        <div id="terminal-output-container">
+                            <div id="terminal-output"></div>
+                            
+                            <!-- Command Prompt Line -->
+                            <div class="input-line" id="prompt-line">
+                                <span class="prompt-symbol" id="prompt-dir-prefix">guest@harsh-dev:~$</span>
+                                <div class="input-container">
+                                    <span class="ghost-text" id="ghost-text"></span>
+                                    <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VIRTUAL NANO TEXT EDITOR -->
+                        <div id="nano-editor" class="nano-container" style="display: none;">
+                            <div class="nano-header">File: <span id="nano-filename">untitled.txt</span></div>
+                            <textarea id="nano-textarea" spellcheck="false"></textarea>
+                            <div class="nano-footer">
+                                <div class="nano-key-hint">^X Exit & Close</div>
+                                <div class="nano-key-hint">^S Save to memory</div>
+                                <div class="nano-key-status" id="nano-save-status">Modified</div>
+                            </div>
+                        </div>
+
+                        <!-- RETRO SNAKE GAME ARENA -->
+                        <div id="snake-container" class="snake-game-arena" style="display: none;">
+                            <div class="snake-hud">
+                                <span>Score: <strong id="snake-score">0</strong></span>
+                                <span>High Score: <strong id="snake-highscore">0</strong></span>
+                                <span>Press 'Q' to quit</span>
+                            </div>
+                            <div class="snake-canvas-wrapper">
+                                <canvas id="snake-canvas"></canvas>
+                            </div>
+                            <div class="snake-dpad">
+                                <button class="dpad-btn up" id="dpad-up" title="Move Up"><i class="fas fa-chevron-up"></i></button>
+                                <div class="dpad-middle">
+                                    <button class="dpad-btn left" id="dpad-left" title="Move Left"><i class="fas fa-chevron-left"></i></button>
+                                    <div class="dpad-center"></div>
+                                    <button class="dpad-btn right" id="dpad-right" title="Move Right"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <button class="dpad-btn down" id="dpad-down" title="Move Down"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="snake-controls-guide">Use Arrow Keys / WASD / On-screen D-Pad</div>
+                            <div id="snake-game-over-overlay" class="snake-overlay" style="display: none;">
+                                <h3>GAME OVER</h3>
+                                <p>Press [ENTER] to Restart or [Q] to Exit</p>
+                            </div>
+                        </div>
+
+                        <!-- SYNTH INSTRUMENT BOARD -->
+                        <div id="synth-container" class="synth-board" style="display: none;">
+                            <div class="synth-header">
+                                <h3>VIRTUAL 8-BIT KEYBOARD SYNTH</h3>
+                                <p>Press keys 1 to 8 on your keyboard to play notes (C4 - C5)</p>
+                                <button class="close-synth-btn" onclick="exitSynthMode()">Exit Synth (Q)</button>
+                            </div>
+                            <div class="synth-keys">
+                                <div class="synth-key" data-note="261.63"><span>C4</span><kbd>1</kbd></div>
+                                <div class="synth-key" data-note="293.66"><span>D4</span><kbd>2</kbd></div>
+                                <div class="synth-key" data-note="329.63"><span>E4</span><kbd>3</kbd></div>
+                                <div class="synth-key" data-note="349.23"><span>F4</span><kbd>4</kbd></div>
+                                <div class="synth-key" data-note="392.00"><span>G4</span><kbd>5</kbd></div>
+                                <div class="synth-key" data-note="440.00"><span>A4</span><kbd>6</kbd></div>
+                                <div class="synth-key" data-note="493.88"><span>B4</span><kbd>7</kbd></div>
+                                <div class="synth-key" data-note="523.25"><span>C5</span><kbd>8</kbd></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- Terminal Status Bar -->
+                    <div class="window-footer">
+                        <div class="footer-item"><i class="fas fa-code-branch"></i> main</div>
+                        <div class="footer-item" id="terminal-status-mode">CLI Mode</div>
+                        <div class="footer-item" id="terminal-status-theme">Theme: Matrix</div>
+                        <div class="footer-item hint-text">Type 'help' to get started</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BACK: GRAPHICAL HUD DASHBOARD VIEW -->
+            <div class="card-side back-side">
+                <div class="window dashboard-window">
+                    <!-- Dashboard Window Header -->
+                    <div class="window-header">
+                        <div class="header-buttons">
+                            <span class="dot close"></span>
+                            <span class="dot minimize"></span>
+                            <span class="dot maximize"></span>
+                        </div>
+                        <div class="window-title">
+                            <i class="fas fa-sliders-h"></i> harsh@tiwari-dev: ~/dashboard
+                        </div>
+                        <div class="header-actions">
+                            <select class="theme-select-dropdown" onchange="selectTheme(this.value)" title="Select Theme">
+                                <option value="matrix">Theme: Matrix</option>
+                                <option value="cyberpunk">Theme: Cyberpunk</option>
+                                <option value="dracula">Theme: Dracula</option>
+                                <option value="nord">Theme: Nord</option>
+                                <option value="retro-light">Theme: Retro Light</option>
+                            </select>
+                            <button class="view-toggle-btn" onclick="toggleView('cli')">
+                                <i class="fas fa-terminal"></i> Switch to CLI
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Dashboard Grid Layout -->
+                    <div class="window-body dashboard-body">
+                        
+                        <!-- Left Sidebar - Profile & Meta Info -->
+                        <aside class="dashboard-sidebar">
+                            <div class="profile-card">
+                                <div class="avatar-container">
+                                    <img src="avatar.png" alt="Harsh Tiwari avatar" class="profile-avatar">
+                                    <div class="avatar-pulse"></div>
+                                </div>
+                                <h1 class="profile-name">Harsh Tiwari</h1>
+                                <p class="profile-title">Software Engineer @ TCS</p>
+                                <p class="profile-location"><i class="fas fa-map-marker-alt"></i> Indore/Dewas, India</p>
+                            </div>
+                            
+                            <!-- Quick Links -->
+                            <div class="sidebar-links">
+                                <a href="mailto:harshtiwari493@gmail.com" class="link-btn" target="_blank">
+                                    <i class="fas fa-envelope"></i> Email
+                                </a>
+                                <a href="https://www.linkedin.com/in/harshtiwari29/" class="link-btn" target="_blank">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                                <a href="https://github.com/harshtiwari29" class="link-btn" target="_blank">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+
+                            <!-- VFS Explorer Tree -->
+                            <div class="vfs-explorer">
+                                <h4><i class="fas fa-folder-open"></i> VFS Explorer</h4>
+                                <ul class="vfs-tree">
+                                    <!-- Dynamic content rendered by script.js -->
+                                </ul>
+                            </div>
+                        </aside>
+                        
+                        <!-- Main Content Tabs -->
+                        <main class="dashboard-content">
+                            <!-- Tab Navigation -->
+                            <nav class="content-tabs">
+                                <button class="tab-btn active" data-tab="skills-tab"><i class="fas fa-brain"></i> Skills</button>
+                                <button class="tab-btn" data-tab="experience-tab"><i class="fas fa-briefcase"></i> Experience</button>
+                                <button class="tab-btn" data-tab="projects-tab"><i class="fas fa-cubes"></i> Projects</button>
+                                <button class="tab-btn" data-tab="sysmon-tab"><i class="fas fa-microchip"></i> System Monitor</button>
+                                <button class="tab-btn" data-tab="iot-tab"><i class="fas fa-network-wired"></i> IoT Hub</button>
+                                <button class="tab-btn" data-tab="ai-tab"><i class="fas fa-robot"></i> Ask AI</button>
+                            </nav>
+                            
+                            <!-- Tab Content Panels -->
+                            <div class="tab-panels">
+                                
+                                <!-- SKILLS TAB -->
+                                <section class="tab-panel active" id="skills-tab">
+                                    <div class="skills-grid">
+                                        <!-- Skill Category: Languages -->
+                                        <div class="skill-category">
+                                            <h3><i class="fas fa-code"></i> Languages</h3>
+                                            <div class="skill-list">
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Java</span><span>90%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Python</span><span>80%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Kotlin</span><span>85%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>SQL</span><span>80%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Skill Category: Backend -->
+                                        <div class="skill-category">
+                                            <h3><i class="fas fa-server"></i> Backend Systems</h3>
+                                            <div class="skill-list">
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Spring Boot</span><span>88%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>REST APIs</span><span>90%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Hibernate/JPA</span><span>82%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 82%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>AEM CMS</span><span>75%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Skill Category: Frontend & Mobile -->
+                                        <div class="skill-category">
+                                            <h3><i class="fas fa-mobile-alt"></i> Mobile & Frontend</h3>
+                                            <div class="skill-list">
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Jetpack Compose</span><span>85%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Android SDK</span><span>80%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>HTML & CSS</span><span>75%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Skill Category: Tools & Core CS -->
+                                        <div class="skill-category">
+                                            <h3><i class="fas fa-cogs"></i> Databases & Tools</h3>
+                                            <div class="skill-list">
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>PostgreSQL / MySQL</span><span>82%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 82%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Git / GitHub</span><span>88%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>Docker & Postman</span><span>70%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                                                </div>
+                                                <div class="skill-item">
+                                                    <div class="skill-info"><span>CS Fundamentals (DSA/OOP)</span><span>85%</span></div>
+                                                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                
+                                <!-- EXPERIENCE TAB -->
+                                <section class="tab-panel" id="experience-tab">
+                                    <div class="timeline">
+                                        <!-- TCS -->
+                                        <div class="timeline-item">
+                                            <div class="timeline-dot"></div>
+                                            <div class="timeline-date">Jan 2026 - Present</div>
+                                            <div class="timeline-content">
+                                                <h4>Software Engineer</h4>
+                                                <h5>Tata Consultancy Services (TCS)</h5>
+                                                <p class="timeline-tech"><i class="fas fa-tags"></i> AEM, Java, Spring Frameworks, Agile</p>
+                                                <ul>
+                                                    <li>Developing web architecture using Adobe Experience Manager (AEM), creating modular core components and stable OSGi services.</li>
+                                                    <li>Writing robust backend integrations and business logic in Java and Spring frameworks.</li>
+                                                    <li>Collaborating with cross-functional agile teams to deliver clean, scalable enterprise-level features.</li>
+                                                    <li>Optimizing server response cycles, database scripts, and API integration flows.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Ignitive Software Labs -->
+                                        <div class="timeline-item">
+                                            <div class="timeline-dot"></div>
+                                            <div class="timeline-date">Jan 2025 - Apr 2025</div>
+                                            <div class="timeline-content">
+                                                <h4>Associate Software Engineer Intern</h4>
+                                                <h5>Ignitive Software Labs, Indore</h5>
+                                                <p class="timeline-tech"><i class="fas fa-tags"></i> Android SDK, Kotlin, Jetpack Compose, Room DB, REST APIs</p>
+                                                <ul>
+                                                    <li>Developed Android appointment scheduling app using Kotlin & Jetpack Compose.</li>
+                                                    <li>Implemented booking, rescheduling, cancellation, and slot management algorithms.</li>
+                                                    <li>Used Room database for offline data persistence and state synchronization.</li>
+                                                    <li>Worked with REST APIs and backend services for real-time updates.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                
+                                <!-- PROJECTS TAB -->
+                                <section class="tab-panel" id="projects-tab">
+                                    <div class="projects-grid">
+                                        <!-- Project 1 -->
+                                        <div class="project-card">
+                                            <div class="project-icon"><i class="fas fa-calendar-check"></i></div>
+                                            <h4>Versatile Appointment Scheduling System</h4>
+                                            <p class="project-desc">A full-stack, enterprise-grade appointment booking and scheduling application designed to streamline booking operations for service providers.</p>
+                                            <div class="project-tags">
+                                                <span>Spring Boot</span>
+                                                <span>PostgreSQL</span>
+                                                <span>Docker</span>
+                                                <span>JPA</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Project 2 -->
+                                        <div class="project-card">
+                                            <div class="project-icon"><i class="fas fa-chart-line"></i></div>
+                                            <h4>Student Performance Prediction System</h4>
+                                            <p class="project-desc">An intelligent data-driven machine learning system aimed at predicting academic performance indicators and identifying at-risk students.</p>
+                                            <div class="project-tags">
+                                                <span>Python</span>
+                                                <span>Scikit-Learn</span>
+                                                <span>Pandas</span>
+                                                <span>ML</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Project 3 -->
+                                        <div class="project-card">
+                                            <div class="project-icon"><i class="fas fa-graduation-cap"></i></div>
+                                            <h4>StudyHub Android App</h4>
+                                            <p class="project-desc">A native academic helper app built for students to organize tasks, track lectures, take quizzes, and set dynamic reminders.</p>
+                                            <div class="project-tags">
+                                                <span>Kotlin</span>
+                                                <span>Jetpack Compose</span>
+                                                <span>Room DB</span>
+                                                <span>Firebase</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Project 4 -->
+                                        <div class="project-card">
+                                            <div class="project-icon"><i class="fas fa-gamepad"></i></div>
+                                            <h4>PlayLog Game Session Tracker</h4>
+                                            <p class="project-desc">A lightweight, native Android application that helps gamers record game play times, set session limits, and analyze histories.</p>
+                                            <div class="project-tags">
+                                                <span>Kotlin</span>
+                                                <span>Coroutines</span>
+                                                <span>Flow API</span>
+                                                <span>Compose</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- SYSTEM MONITOR TAB -->
+                                <section class="tab-panel" id="sysmon-tab">
+                                    <div class="sysmon-layout">
+                                        <!-- Realtime System Performance Canvas Grid -->
+                                        <div class="sysmon-cards">
+                                            <div class="sysmon-card">
+                                                <div class="sysmon-card-header">
+                                                    <span>CPU Utilization</span>
+                                                    <span id="cpu-load-text">0.0%</span>
+                                                </div>
+                                                <canvas id="cpu-chart" height="90"></canvas>
+                                            </div>
+                                            
+                                            <div class="sysmon-card">
+                                                <div class="sysmon-card-header">
+                                                    <span>RAM Load</span>
+                                                    <span id="ram-load-text">2.4 / 16 GB</span>
+                                                </div>
+                                                <canvas id="ram-chart" height="90"></canvas>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Tasks & Diagnostics side by side -->
+                                        <div class="sysmon-details-grid">
+                                            <!-- Interactive Todo List Widget -->
+                                            <div class="todo-widget">
+                                                <div class="todo-header">
+                                                    <h4><i class="fas fa-tasks"></i> Tasks / Todo List</h4>
+                                                    <div class="todo-input-row">
+                                                        <input type="text" id="todo-input" placeholder="Add custom task..." autocomplete="off">
+                                                        <button id="add-todo-btn"><i class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                                <ul class="todo-list" id="todo-list-container">
+                                                    <!-- Dynamic Tasks generated here -->
+                                                </ul>
+                                            </div>
+
+                                            <!-- Live System Diagnostics Widget -->
+                                            <div class="diagnostics-widget">
+                                                <div class="diagnostics-header">
+                                                    <h4><i class="fas fa-terminal"></i> System Diagnostics Log</h4>
+                                                    <span class="pulse-indicator"></span>
+                                                </div>
+                                                <div class="diagnostics-body-wrapper">
+                                                    <pre id="diagnostics-log-stream"></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                
+                                <!-- IoT HUB TAB -->
+                                <section class="tab-panel" id="iot-tab">
+                                    <div class="iot-grid">
+                                        <!-- Thermostat Card -->
+                                        <div class="iot-card" id="iot-thermostat-card">
+                                            <div class="iot-card-header">
+                                                <span><i class="fas fa-thermometer-half"></i> Smart Thermostat</span>
+                                                <label class="iot-switch">
+                                                    <input type="checkbox" id="iot-temp-status" checked onchange="toggleIotDevice('thermostat')">
+                                                    <span class="iot-slider-toggle"></span>
+                                                </label>
+                                            </div>
+                                            <div class="iot-thermostat-body">
+                                                <div class="temp-dial">
+                                                    <div class="dial-inner">
+                                                        <span id="iot-temp-display">22.5°C</span>
+                                                        <span class="dial-sub">Humidity: <span id="iot-humidity-display">45%</span></span>
+                                                    </div>
+                                                </div>
+                                                <input type="range" id="iot-temp-slider" min="16" max="30" step="0.5" value="22.5" oninput="setIotThermostatTemp(this.value)">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- RGB Lighting Card -->
+                                        <div class="iot-card" id="iot-lighting-card">
+                                            <div class="iot-card-header">
+                                                <span><i class="fas fa-lightbulb"></i> Ambient RGB Light</span>
+                                                <label class="iot-switch">
+                                                    <input type="checkbox" id="iot-lighting-status" checked onchange="toggleIotDevice('lighting')">
+                                                    <span class="iot-slider-toggle"></span>
+                                                </label>
+                                            </div>
+                                            <div class="iot-lighting-body">
+                                                <div class="lighting-controls">
+                                                    <div class="color-options">
+                                                        <span class="color-dot color-green active" onclick="setIotLightingColor('green')"></span>
+                                                        <span class="color-dot color-cyan" onclick="setIotLightingColor('cyan')"></span>
+                                                        <span class="color-dot color-purple" onclick="setIotLightingColor('purple')"></span>
+                                                        <span class="color-dot color-blue" onclick="setIotLightingColor('blue')"></span>
+                                                        <span class="color-dot color-amber" onclick="setIotLightingColor('amber')"></span>
+                                                    </div>
+                                                    <div class="brightness-row">
+                                                        <div class="brightness-label">Brightness: <span id="iot-brightness-display">80%</span></div>
+                                                        <input type="range" id="iot-brightness-slider" min="10" max="100" step="5" value="80" oninput="setIotLightingBrightness(this.value)">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Security Lock Card -->
+                                        <div class="iot-card" id="iot-security-card">
+                                            <div class="iot-card-header">
+                                                <span><i class="fas fa-shield-alt"></i> VFS Security Lock</span>
+                                                <button class="lock-btn locked" id="iot-lock-btn" onclick="toggleIotDevice('security')">
+                                                    <i class="fas fa-lock"></i> <span id="iot-lock-text">LOCKED</span>
+                                                </button>
+                                            </div>
+                                            <div class="iot-lock-body">
+                                                <div class="lock-indicator-container">
+                                                    <div class="lock-indicator-glow" id="iot-lock-glow"></div>
+                                                </div>
+                                                <p class="subtext">Protects VFS folder: <code class="ansi-cyan">/secrets</code></p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cooling Pump Card -->
+                                        <div class="iot-card" id="iot-cooling-card">
+                                            <div class="iot-card-header">
+                                                <span><i class="fas fa-fan"></i> Cooling Fan Pump</span>
+                                                <label class="iot-switch">
+                                                    <input type="checkbox" id="iot-cooling-status" onchange="toggleIotDevice('cooling')">
+                                                    <span class="iot-slider-toggle"></span>
+                                                </label>
+                                            </div>
+                                            <div class="iot-cooling-body">
+                                                <div class="fan-container">
+                                                    <svg class="fan-icon" id="iot-fan-svg" viewBox="0 0 100 100">
+                                                        <circle cx="50" cy="50" r="8" fill="currentColor"/>
+                                                        <path d="M50,42 C54,22 66,27 66,35 C66,43 56,43 50,42 Z" fill="currentColor"/>
+                                                        <path d="M58,50 C78,54 73,66 65,66 C57,66 57,56 58,50 Z" fill="currentColor"/>
+                                                        <path d="M50,58 C46,78 34,73 34,65 C34,57 44,57 50,58 Z" fill="currentColor"/>
+                                                        <path d="M42,50 C22,46 27,34 35,34 C43,34 43,44 42,50 Z" fill="currentColor"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="pump-info">
+                                                    <span class="pump-rpm-label">Rate: <span id="iot-pump-rpm">0 RPM</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- IoT Telemetry Live Graph Card -->
+                                    <div class="iot-telemetry-card">
+                                        <div class="iot-telemetry-header">
+                                            <span><i class="fas fa-chart-area"></i> Simulated IoT Net Traffic (Packets/Sec)</span>
+                                            <span id="iot-telemetry-rate">0 pkts/s</span>
+                                        </div>
+                                        <canvas id="iot-telemetry-chart" height="100"></canvas>
+                                    </div>
+                                </section>
+                                
+                                <!-- ASK AI CHAT TAB -->
+                                <section class="tab-panel" id="ai-tab">
+                                    <div class="ai-chat-layout">
+                                        <div class="ai-chat-header">
+                                            <div class="ai-chat-title">
+                                                <i class="fas fa-robot"></i> <span>Cyber-Consultant Bot</span>
+                                                <span class="pulse-indicator"></span>
+                                            </div>
+                                            <button id="ai-voice-toggle" class="view-toggle-btn" onclick="toggleVoiceOutput()" title="Toggle Voice synthesis"><i class="fas fa-volume-mute"></i> Speech Off</button>
+                                        </div>
+                                        <div class="ai-chat-body" id="ai-gui-chat-messages">
+                                            <!-- Simulated greeting message -->
+                                            <div class="ai-chat-message bot">
+                                                <span class="message-sender">Consultant:</span>
+                                                <span class="message-text">Greetings! I am Harsh's cyber-consultant assistant. How can I help you navigate his professional background today?</span>
+                                            </div>
+                                        </div>
+                                        <div class="ai-chat-input-row">
+                                            <input type="text" id="ai-gui-chat-input" placeholder="Ask about Harsh's skills, projects, experience..." autocomplete="off">
+                                            <button id="ai-gui-chat-send-btn" onclick="sendGuiChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                                        </div>
+                                        <div class="ai-chat-suggestions">
+                                            <span class="suggestion-tag" onclick="sendGuiChatSuggestion('What are Harsh\'s main coding languages?')">Languages</span>
+                                            <span class="suggestion-tag" onclick="sendGuiChatSuggestion('Tell me about his TCS experience')">TCS Job</span>
+                                            <span class="suggestion-tag" onclick="sendGuiChatSuggestion('Show his Spring Boot projects')">Projects</span>
+                                            <span class="suggestion-tag" onclick="sendGuiChatSuggestion('How to contact him?')">Contact</span>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </main>
+                    </div>
+                    
+                    <!-- Dashboard Footer -->
+                    <div class="window-footer">
+                        <div class="footer-item"><i class="fas fa-user-tag"></i> Software Engineer</div>
+                        <div class="footer-item" id="dashboard-status-mode">GUI Dashboard Mode</div>
+                        <div class="footer-item" id="dashboard-status-theme">Theme: Matrix</div>
+                        <div class="footer-item"><i class="fas fa-heart"></i> Built by Harsh</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Custom Glassmorphism File Viewer Modal -->
+    <div id="file-viewer-modal" class="modal-overlay" style="display: none;" onclick="handleModalOverlayClick(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <span id="modal-title"><i class="far fa-file-alt"></i> File Viewer</span>
+                <button class="modal-close-btn" onclick="closeFileViewer()">&times;</button>
+            </div>
+            <pre class="modal-body" id="modal-file-content"></pre>
+        </div>
+    </div>
+
+    <!-- Theme Selection Terminal Command Suggestion Overlay -->
+    <div class="theme-overlay-menu" id="theme-overlay">
+        <div class="theme-option" onclick="selectTheme('matrix')">Matrix (Green)</div>
+        <div class="theme-option" onclick="selectTheme('cyberpunk')">Cyberpunk (Cyan/Neon)</div>
+        <div class="theme-option" onclick="selectTheme('dracula')">Dracula (Purple)</div>
+        <div class="theme-option" onclick="selectTheme('nord')">Nord (Frost Blue)</div>
+        <div class="theme-option" onclick="selectTheme('retro-light')">Retro Light (Amber/Paper)</div>
+    </div>
+    
+    <!-- Custom script -->
+    <script src="script.js"></script>
+</body>
+</html>
