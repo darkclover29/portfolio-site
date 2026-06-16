@@ -25,12 +25,7 @@ export function buildInitialVfs() {
           'studyhub.txt':          { type: 'file', content: `Name: ${PortfolioData.projects[2].name}\nStack: ${PortfolioData.projects[2].tech}\n${PortfolioData.projects[2].overview}` },
         },
       },
-      secrets: {
-        type: 'dir',
-        children: {
-          'cyber_easter.txt': { type: 'file', content: `SYS_ALERT: Congratulations, hacker! You found the secret terminal configuration.\nRun 'matrix' to witness full rain visualization, or 'theme cyberpunk' for neon layouts.` },
-        },
-      },
+
     },
   };
 }

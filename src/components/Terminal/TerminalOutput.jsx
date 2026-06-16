@@ -10,7 +10,7 @@ export default function TerminalOutput({ lines }) {
   return (
     <div className="terminal-output" role="log" aria-live="polite">
       {lines.map(l => (
-        <div key={l.id} className={`terminal-line terminal-line--${l.type}`}>
+        <div key={l.id} className={[`terminal-line terminal-line--${l.type}`, l.glitch ? 'terminal-line--glitch' : ''].filter(Boolean).join(' ')}>
           {l.type === 'ascii'
             ? <pre className="ascii-art">{l.text}</pre>
             : <span dangerouslySetInnerHTML={{ __html: l.html || l.text || '' }} />

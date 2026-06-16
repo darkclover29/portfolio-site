@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
+import ScrambleText from '../../shared/ScrambleText.jsx';
+import MagneticButton from '../../shared/MagneticButton.jsx';
 
-// ── Typewriter ─────────────────────────────────────────────
 const TITLES = [
-  'Software Engineer @ TCS',
-  'Java & Spring Boot Developer',
+  'Assistant Systems Engineer @ TCS',
+  'Java & AEM Developer',
   'Android App Builder',
   'AEM / CMS Specialist',
   'Open Source Enthusiast',
@@ -15,37 +17,27 @@ function useTypewriter(strings, { typingSpeed = 70, deletingSpeed = 40, pauseMs 
   const [phase, setPhase]     = useState('typing');
   const [idx, setIdx]         = useState(0);
   const [charIdx, setCharIdx] = useState(0);
-
   useEffect(() => {
     const current = strings[idx % strings.length];
     let timer;
     if (phase === 'typing') {
       if (charIdx < current.length) {
         timer = setTimeout(() => { setText(current.slice(0, charIdx + 1)); setCharIdx(c => c + 1); }, typingSpeed);
-      } else {
-        timer = setTimeout(() => setPhase('pausing'), pauseMs);
-      }
-    } else if (phase === 'pausing') {
-      setPhase('deleting');
-    } else {
+      } else { timer = setTimeout(() => setPhase('pausing'), pauseMs); }
+    } else if (phase === 'pausing') { setPhase('deleting'); }
+    else {
       if (charIdx > 0) {
         timer = setTimeout(() => { setText(current.slice(0, charIdx - 1)); setCharIdx(c => c - 1); }, deletingSpeed);
-      } else {
-        setIdx(i => (i + 1) % strings.length);
-        setPhase('typing');
-      }
+      } else { setIdx(i => (i + 1) % strings.length); setPhase('typing'); }
     }
     return () => clearTimeout(timer);
   }, [phase, charIdx, idx, strings, typingSpeed, deletingSpeed, pauseMs]);
-
   return text;
 }
 
-// ── Count-up hook ──────────────────────────────────────────
-function useCountUp(target, duration = 1100) {
+function useCountUp(target, duration = 1000) {
   const [value, setValue] = useState(0);
   const started = useRef(false);
-
   useEffect(() => {
     if (started.current) return;
     started.current = true;
@@ -54,191 +46,153 @@ function useCountUp(target, duration = 1100) {
     const startTime = performance.now();
     const tick = (now) => {
       const t = Math.min(1, (now - startTime) / duration);
-      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      const current = ease * num;
-      setValue(Number.isInteger(num) ? Math.floor(current) : Math.round(current * 10) / 10);
-      if (t < 1) requestAnimationFrame(tick);
-      else setValue(num);
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      setValue(Number.isInteger(num) ? Math.floor(ease*num) : Math.round(ease*num*10)/10);
+      if (t < 1) requestAnimationFrame(tick); else setValue(num);
     };
     requestAnimationFrame(tick);
   }, []); // eslint-disable-line
-
-  const suffix = typeof target === 'string' ? target.replace(/[\d.]/g, '') : '';
+  const suffix = typeof target === 'string' ? target.replace(/[\d.]/g,'') : '';
   return `${value}${suffix}`;
 }
 
-// ── Contribution Heatmap ──────────────────────────────────
-function pseudo(seed) {
-  let s = seed;
-  s = (s ^ (s << 13)) >>> 0;
-  s = (s ^ (s >>> 17)) >>> 0;
-  s = (s ^ (s << 5)) >>> 0;
-  return s % 5;
+function ISTTime() {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    const tick = () => setTime(new Date().toLocaleTimeString('en-IN',{
+      timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+    }));
+    tick();
+    const id = setInterval(tick,1000);
+    return () => clearInterval(id);
+  },[]);
+  return <>{time} IST</>;
 }
 
-function buildHeatmap() {
-  const weeks = [];
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(start.getDate() - 364);
-  let cursor = new Date(start);
-  for (let w = 0; w < 53; w++) {
-    const week = [];
-    for (let d = 0; d < 7; d++) {
-      const seed = cursor.getFullYear() * 10000 + (cursor.getMonth() + 1) * 100 + cursor.getDate();
-      const recency = w / 53;
-      const raw = pseudo(seed + w * 7 + d);
-      const level = recency < 0.3 ? 0 : raw;
-      week.push({ level, date: cursor.toDateString() });
-      cursor = new Date(cursor);
-      cursor.setDate(cursor.getDate() + 1);
-    }
-    weeks.push(week);
-  }
-  return weeks;
-}
-
-const HEATMAP = buildHeatmap();
-
-function ContribHeatmap() {
-  return (
-    <div className="heatmap-section">
-      <div className="heatmap-title">
-        <i className="fas fa-chart-simple" />
-        Activity
-      </div>
-      <div className="heatmap-scroll">
-        <div className="heatmap-grid">
-          {HEATMAP.map((week, wi) => (
-            <div key={wi} className="heatmap-week">
-              {week.map((cell, di) => (
-                <div key={di} className="heatmap-cell" data-level={cell.level} title={cell.date} />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="heatmap-legend">
-        Less
-        <div className="heatmap-legend-cells">
-          {[0,1,2,3,4].map(l => <div key={l} className="heatmap-cell" data-level={l} />)}
-        </div>
-        More
-      </div>
-    </div>
-  );
-}
-
-// ── Stat card ─────────────────────────────────────────────
-const RAW_STATS = [
-  { raw: '1+',  label: 'Years at TCS'   },
-  { raw: '4',   label: 'Projects built' },
-  { raw: '10+', label: 'Tech skills'    },
-  { raw: '8.3', label: 'B.Tech CGPA'   },
-];
-
-function StatCard({ raw, label }) {
+// ── Extracted component so useCountUp is called at top level (no hooks-in-loop) ──
+function BentoStat({ raw, label, icon, variants, fadeUp }) {
   const display = useCountUp(raw);
   return (
-    <div className="stat-card">
-      <div className="stat-number">{display}</div>
-      <div className="stat-label">{label}</div>
-    </div>
+    <motion.div className="bento-card bento-stat" variants={fadeUp}
+      whileHover={{ y:-2, transition:{duration:0.15} }}>
+      <i className={`fas ${icon} bento-stat-icon`}/>
+      <div className="bento-stat-num">{display}</div>
+      <div className="bento-stat-label">{label}</div>
+    </motion.div>
   );
 }
 
-// ── Stack badges ──────────────────────────────────────────
+const STATS = [
+  { raw: '9',   label: 'Projects', icon: 'fa-folder'   },
+  { raw: '10+', label: 'Skills',   icon: 'fa-code'     },
+  { raw: '8.3', label: 'CGPA',     icon: 'fa-star'     },
+  { raw: '2+',  label: 'Yrs exp',  icon: 'fa-clock'    },
+];
+
 const STACK = [
-  { icon: 'fa-coffee',   label: 'Java'        },
-  { icon: 'fa-leaf',     label: 'Spring Boot' },
-  { icon: 'fa-python',   label: 'Python'      },
-  { icon: 'fa-k',        label: 'Kotlin'      },
-  { icon: 'fa-mobile',   label: 'Android'     },
-  { icon: 'fa-database', label: 'PostgreSQL'  },
-  { icon: 'fa-docker',   label: 'Docker'      },
-  { icon: 'fa-git-alt',  label: 'Git'         },
+  'Java','Spring Boot','AEM','Kotlin','Android',
+  'Python','PostgreSQL','Docker','Git','REST APIs',
 ];
 
-const HIGHLIGHTS = [
-  { icon: 'fa-building', title: 'TCS',           desc: 'AEM, Java, Spring — enterprise-scale web platform engineering.' },
-  { icon: 'fa-rocket',   title: 'Projects',       desc: 'Full-stack web, ML pipelines, and cross-platform Android apps.' },
-  { icon: 'fa-book',     title: 'CS Fundamentals',desc: 'Strong foundation in DSA, OS, DBMS, and system design.' },
-  { icon: 'fa-globe',    title: 'Open Source',    desc: 'Actively exploring open-source contributions and side projects.' },
-];
+const stagger = { hidden:{}, visible:{ transition:{ staggerChildren:0.06, delayChildren:0.05 } } };
+const fadeUp  = { hidden:{ opacity:0, y:16 }, visible:{ opacity:1, y:0, transition:{ duration:0.3, ease:[.25,.46,.45,.94] } } };
 
-// ── Component ─────────────────────────────────────────────
 export default function AboutTab() {
   const title = useTypewriter(TITLES);
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="about-hero">
-        <div className="about-hero-text">
-          <div className="about-availability">
-            <span className="about-avail-dot" />
-            Available for opportunities
-          </div>
-          <h1 className="about-name">{PortfolioData.name}</h1>
-          <p className="about-title">
-            {title}<span className="typewriter-cursor" />
+    <motion.div className="bento-grid" variants={stagger} initial="hidden" animate="visible">
+
+      {/* ── Hero card — spans full width on desktop ── */}
+      <motion.div className="bento-card bento-hero" variants={fadeUp}>
+        <div className="bento-hero-text">
+          <h1 className="bento-name">
+            <ScrambleText text="Harsh Tiwari" />
+          </h1>
+          <p className="bento-title">{title}<span className="typewriter-cursor"/></p>
+          <p className="bento-bio">
+            Assistant Systems Engineer at <strong>TCS</strong> building enterprise web platforms
+            with Java &amp; AEM. Passionate about compilers, Android, and clean system design.
           </p>
-          <p className="about-summary">
-            Software Engineer at <strong>Tata Consultancy Services</strong> with hands-on
-            experience building enterprise-grade web platforms using Java, Spring Boot, and Adobe
-            Experience Manager. Passionate about clean architecture, mobile development with Kotlin,
-            and continuously sharpening system design skills.
-          </p>
-          <div className="about-links">
-            <a href="mailto:harshtiwari493@gmail.com" className="about-link about-link--primary">
-              <i className="fas fa-envelope" /> Contact Me
-            </a>
-            <a href="https://github.com/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
+          <div className="bento-links">
+            <MagneticButton tag="a" href="mailto:harshtiwari493@gmail.com" className="about-link about-link--primary">
+              <ScrambleText text="Contact Me" />
+            </MagneticButton>
+            <MagneticButton tag="a" href="https://github.com/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
               <i className="fa-brands fa-github" /> GitHub
-            </a>
-            <a href="https://linkedin.com/in/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
+            </MagneticButton>
+            <MagneticButton tag="a" href="https://linkedin.com/in/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
               <i className="fa-brands fa-linkedin" /> LinkedIn
-            </a>
+            </MagneticButton>
           </div>
         </div>
-        <div className="about-avatar">
+        <div className="bento-avatar">
           <div className="about-avatar-ring">
             <div className="about-avatar-inner">HT</div>
           </div>
+          <span className="bento-avail-dot-wrap">
+            <span className="bento-avail-pulse"/>
+            <span className="bento-avail-text">Available</span>
+          </span>
         </div>
-      </section>
+      </motion.div>
 
-      {/* Stats */}
-      <div className="about-stats">
-        {RAW_STATS.map(s => <StatCard key={s.label} {...s} />)}
-      </div>
+      {/* ── Clock card ── */}
+      <motion.div className="bento-card bento-clock" variants={fadeUp}>
+        <div className="bento-card-label"><i className="fas fa-location-dot"/> Indore, India</div>
+        <div className="bento-time"><ISTTime /></div>
+        <div className="bento-tz">Asia / Kolkata · IST</div>
+      </motion.div>
 
-      {/* Tech stack */}
-      <div className="about-stack">
-        <div className="about-stack-title">Core Stack</div>
-        <div className="tech-badges">
-          {STACK.map(({ icon, label }) => (
-            <div key={label} className="tech-badge">
-              <i className={`fas ${icon}`} />
-              <span>{label}</span>
-            </div>
+      {/* ── Status card ── */}
+      <motion.div className="bento-card bento-status" variants={fadeUp}>
+        <div className="bento-card-label">Current role</div>
+        <div className="bento-status-role">
+          <i className="fas fa-building" style={{color:'var(--accent)',marginRight:6}}/>
+          TCS
+        </div>
+        <div className="bento-status-sub">Java · AEM · Agile</div>
+        <div className="bento-status-tag">Jan 2026 – Present</div>
+      </motion.div>
+
+      {/* ── Stats row — 4 small cards (hooks-safe via BentoStat component) ── */}
+      {STATS.map((s) => (
+        <BentoStat key={s.label} {...s} fadeUp={fadeUp} />
+      ))}
+
+      {/* ── Tech stack card ── */}
+      <motion.div className="bento-card bento-stack" variants={fadeUp}>
+        <div className="bento-card-label"><i className="fas fa-layer-group"/> Core Stack</div>
+        <div className="bento-stack-pills">
+          {STACK.map(s => (
+            <span key={s} className="bento-stack-pill">
+              <ScrambleText text={s}/>
+            </span>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Highlights */}
-      <div className="about-highlights">
-        {HIGHLIGHTS.map(h => (
-          <div key={h.title} className="highlight-card">
-            <div className="highlight-card-icon"><i className={`fas ${h.icon}`} /></div>
-            <div className="highlight-card-title">{h.title}</div>
-            <div className="highlight-card-desc">{h.desc}</div>
-          </div>
-        ))}
-      </div>
+      {/* ── Currently building card ── */}
+      <motion.div className="bento-card bento-building" variants={fadeUp}>
+        <div className="bento-card-label"><span className="bento-live-dot"/>Now building</div>
+        <div className="bento-building-name">Chronoscapes</div>
+        <div className="bento-building-sub">Audio-visual ambient workspace · Vanilla JS + Web Audio API</div>
+        <a href="https://chronoscapes.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-building-link">
+          <ScrambleText text="Visit →"/>
+        </a>
+      </motion.div>
 
-      {/* Heatmap */}
-      <ContribHeatmap />
-    </div>
+      {/* ── Open source card ── */}
+      <motion.div className="bento-card bento-open" variants={fadeUp}>
+        <div className="bento-card-label"><i className="fab fa-github"/> Open Source</div>
+        <div className="bento-open-text">
+          Exploring contributions &amp; building side projects in public.
+        </div>
+        <a href="https://github.com/harshtiwari29" target="_blank" rel="noopener noreferrer" className="bento-building-link">
+          <ScrambleText text="darkclover29 →"/>
+        </a>
+      </motion.div>
+
+    </motion.div>
   );
 }
