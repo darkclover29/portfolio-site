@@ -6877,9 +6877,12 @@ body.theme-light .gn-text.active { color: #fff; }
 }
 
 /* Fix 2: gn-filter::before MUST be pure black for mix-blend-mode:lighten to
-   make it invisible (lighten(black, dest) = dest — zero overlay) */
+   make it invisible (lighten(black, dest) = dest — zero overlay).
+   Inset reduced from -75px → -30px (3× blur radius is enough); -75px was
+   bleeding outside the topbar and creating a black shadow on the left. */
 .gn-filter::before {
   background: black !important;
+  inset: -30px !important;
 }
 
 /* Fix 3: skip the pill entry animation on first load so pill shows immediately */
@@ -6905,11 +6908,4 @@ body.theme-light .gn-text.active { color: #fff; }
   z-index: 9999;
 }
 
-/* Fix 6: the filter span needs to be positioned relative to container,
-   not clipped by the nav ul */
-.gooey-nav-container nav ul {
-  overflow: visible !important;
-}
-.gooey-nav-container nav ul li {
-  overflow: visible !important;
-}
+

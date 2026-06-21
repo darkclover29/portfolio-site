@@ -49,7 +49,8 @@ const GooeyNav = ({
     };
     Object.assign(filterRef.current.style, s);
     Object.assign(textRef.current.style, s);
-    textRef.current.innerText = element.innerText;
+    // Use innerHTML so the <i> FA icon copies across, not just the text label
+    textRef.current.innerHTML = element.querySelector('a')?.innerHTML ?? element.innerText;
   }, []);
 
   const makeParticles = useCallback((element) => {

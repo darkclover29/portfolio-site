@@ -61,9 +61,11 @@ export default function Terminal({
           <span className="terminal-title">harsh@portfolio — terminal</span>
 
           <div className="terminal-titlebar-right">
-            <span className="titlebar-vis-wrap">
-              <AudioVisualizer analyserRef={analyserRef} active={!muted} />
-            </span>
+            {!muted && (
+              <span className="titlebar-vis-wrap">
+                <AudioVisualizer analyserRef={analyserRef} active />
+              </span>
+            )}
 
             <button
               className={`icon-btn ${mechKeys ? 'icon-btn--active' : ''}`}
@@ -101,7 +103,7 @@ export default function Terminal({
               onClick={() => setMatrixOn(v => !v)}
               onPointerDown={e => e.preventDefault()}
             >
-              <i className="fas fa-rain" />
+              <i className="fas fa-cloud-rain" />
             </button>
 
             <button
