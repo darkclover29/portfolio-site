@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import RainLens from './RainLens.jsx';
 import TerminalOutput from './TerminalOutput.jsx';
 import TerminalInput from './TerminalInput.jsx';
 import NanoEditor from './NanoEditor.jsx';
@@ -19,6 +20,7 @@ export default function Terminal({
 }) {
   const [matrixOn, setMatrixOn] = useState(true);
   const [game, setGame]         = useState(null);
+  const [lensActive, setLensActive] = useState(false);
 
   // Blur any focused input when a game opens — prevents mobile keyboard popup
   useEffect(() => {
@@ -48,10 +50,20 @@ export default function Terminal({
   const handleSubmit = (raw) => terminal.execute(raw, vfsHooks);
 
   return (
-    <div className="terminal-view">
+    <div
+      className="terminal-view"
+      onMouseEnter={() => setLensActive(true)}
+      onMouseLeave={() => setLensActive(false)}
+    >
       <MatrixCanvas visible={matrixOn} getAccentRgb={getAccentRgb} />
 
-      <div className="terminal-window">
+      {lensActive && <RainLens />}
+
+      <div
+        className="terminal-window"
+        onMouseEnter={() => setLensActive(false)}
+        onMouseLeave={() => setLensActive(true)}
+      >
         <div className="terminal-titlebar">
           <div className="win-dots">
             <span className="win-dot win-dot--red" />
