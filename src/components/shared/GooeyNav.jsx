@@ -20,8 +20,8 @@ const GooeyNav = ({
     controlledIndex !== undefined ? controlledIndex : initialActiveIndex
   );
 
-  const noise  = (n = 1) => n / 2 - Math.random() * n;
-  const getXY  = (distance, pointIndex, totalPoints) => {
+  const noise = (n = 1) => n / 2 - Math.random() * n;
+  const getXY = (distance, pointIndex, totalPoints) => {
     const angle = ((360 + noise(8)) / totalPoints) * pointIndex * (Math.PI / 180);
     return [distance * Math.cos(angle), distance * Math.sin(angle)];
   };
@@ -41,7 +41,12 @@ const GooeyNav = ({
     if (!containerRef.current || !filterRef.current || !textRef.current) return;
     const cr  = containerRef.current.getBoundingClientRect();
     const pos = element.getBoundingClientRect();
-    const s   = { left:`${pos.x-cr.x}px`, top:`${pos.y-cr.y}px`, width:`${pos.width}px`, height:`${pos.height}px` };
+    const s   = {
+      left:   `${pos.x - cr.x}px`,
+      top:    `${pos.y - cr.y}px`,
+      width:  `${pos.width}px`,
+      height: `${pos.height}px`,
+    };
     Object.assign(filterRef.current.style, s);
     Object.assign(textRef.current.style, s);
     textRef.current.innerText = element.innerText;
@@ -102,25 +107,42 @@ const GooeyNav = ({
     }
   };
 
-  // Sync when controlled prop changes (e.g. keyboard shortcut from outside)
+  // Sync when controlled prop changes (keyboard shortcuts, terminal command)
   useEffect(() => {
     if (controlledIndex === undefined || controlledIndex === activeIndex) return;
     setActiveIndex(controlledIndex);
     const liEl = navRef.current?.querySelectorAll('li')[controlledIndex];
     if (liEl) {
       updateEffectPosition(liEl);
+      // Show pill instantly (no particle burst for external nav)
+      if (filterRef.current) {
+        filterRef.current.classList.remove('active');
+        void filterRef.current.offsetWidth;
+        filterRef.current.classList.add('active');
+      }
+      textRef.current?.classList.remove('active');
+      void textRef.current?.offsetWidth;
       textRef.current?.classList.add('active');
     }
   }, [controlledIndex]); // eslint-disable-line
 
-  // Initial position on mount
+  // Initial position + pill on mount
   useEffect(() => {
-    if (!navRef.current) return;
-    const idx   = controlledIndex ?? initialActiveIndex;
-    const liEl  = navRef.current.querySelectorAll('li')[idx];
+    if (!navRef.current || !containerRef.current) return;
+    const idx  = controlledIndex !== undefined ? controlledIndex : initialActiveIndex;
+    const liEl = navRef.current.querySelectorAll('li')[idx];
     if (liEl) {
       updateEffectPosition(liEl);
-      textRef.current?.classList.add('active');
+      // Slight delay so layout is settled before measuring
+      requestAnimationFrame(() => {
+        updateEffectPosition(liEl);
+        // Show pill without animation on load
+        if (filterRef.current) {
+          filterRef.current.style.setProperty('--skip-anim', '1');
+          filterRef.current.classList.add('active');
+        }
+        textRef.current?.classList.add('active');
+      });
     }
     const ro = new ResizeObserver(() => {
       const cur = navRef.current?.querySelectorAll('li')[activeIndex];

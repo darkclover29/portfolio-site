@@ -6858,3 +6858,58 @@ body.theme-light .gn-text.active { color: #fff; }
 @media (max-width: 767px) {
   .dash-tabs-gooey { display: none; }
 }
+
+/* ── GooeyNav fixes ─────────────────────────────────────────── */
+
+/* Fix 1: allow particles to burst OUTSIDE the topbar bounds */
+.dash-topbar {
+  overflow: visible !important;
+}
+.dash-tabs-gooey {
+  overflow: visible !important;
+  /* contain scroll but not clip */
+}
+.gooey-nav-container {
+  overflow: visible !important;
+}
+.gooey-nav-container nav {
+  overflow: visible !important;
+}
+
+/* Fix 2: gn-filter::before MUST be pure black for mix-blend-mode:lighten to
+   make it invisible (lighten(black, dest) = dest — zero overlay) */
+.gn-filter::before {
+  background: black !important;
+}
+
+/* Fix 3: skip the pill entry animation on first load so pill shows immediately */
+.gn-filter[style*="--skip-anim"]::after,
+.gn-filter.active[style*="--skip-anim"]::after {
+  animation: none !important;
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
+/* Fix 4: make sure the gooey filter composites against the page root,
+   not an isolated stacking context in the topbar */
+.dash-topbar {
+  isolation: auto !important;
+}
+.dash-tabs-gooey {
+  isolation: auto !important;
+}
+
+/* Fix 5: give particles more vertical room — raise z-index above topbar clip */
+.gooey-nav-container .gn-particle,
+.gooey-nav-container .gn-point {
+  z-index: 9999;
+}
+
+/* Fix 6: the filter span needs to be positioned relative to container,
+   not clipped by the nav ul */
+.gooey-nav-container nav ul {
+  overflow: visible !important;
+}
+.gooey-nav-container nav ul li {
+  overflow: visible !important;
+}
