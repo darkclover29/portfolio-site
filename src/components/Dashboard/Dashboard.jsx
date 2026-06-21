@@ -4,6 +4,7 @@ import Sidebar from './Sidebar.jsx';
 import CommandPalette from '../shared/CommandPalette.jsx';
 import MatrixCanvas from '../shared/MatrixCanvas.jsx';
 import ScrollToTop from '../shared/ScrollToTop.jsx';
+import GooeyNav from '../shared/GooeyNav.jsx';
 import AboutTab from './tabs/AboutTab.jsx';
 import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
@@ -22,6 +23,9 @@ const TABS = [
 ];
 
 const TAB_KEY_MAP = Object.fromEntries(TABS.map(t => [t.key, t.id]));
+
+// GooeyNav item list (maps 1:1 with TABS array)
+const GOOEY_ITEMS = TABS.map(t => ({ label: t.label, icon: t.icon, href: '#' }));
 
 const makeTabVariants = (dir) => ({
   initial: { opacity: 0, x: dir === 'back' ? -20 : 20, y: 4 },
@@ -66,18 +70,18 @@ export default function Dashboard({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isMatrixTheme = theme === 'matrix' || theme === 'cyberpunk';
-
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
+  const activeTabIndex = TABS.findIndex(t => t.id === activeTab);
 
-  // Open a project from terminal "open [name]" command
+  // Open project from terminal "open [name]"
   useEffect(() => {
     if (!openProject) return;
     setActiveTab('projects');
     onProjectOpened?.();
   }, [openProject]); // eslint-disable-line
 
-  const handleTab = (id) => {
+  const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
     const curIdx = TABS.findIndex(t => t.id === activeTab);
     const newIdx = TABS.findIndex(t => t.id === id);
@@ -85,7 +89,11 @@ export default function Dashboard({
     setActiveTab(id);
     playClick?.();
     closeDrawer();
-  };
+  }, [activeTab, playClick, onFlipToCli, closeDrawer]);
+
+  const handleGooeyClick = useCallback((index) => {
+    handleTab(TABS[index].id);
+  }, [handleTab]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -102,7 +110,7 @@ export default function Dashboard({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onFlipToCli]); // eslint-disable-line
+  }, [handleTab, closeDrawer]);
 
   return (
     <div className="dash">
@@ -132,21 +140,20 @@ export default function Dashboard({
           <i className="fas fa-bars" />
         </button>
 
-        <nav className="dash-tabs" role="tablist">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={activeTab === t.id}
-              className={['dash-tab', activeTab === t.id ? 'active' : '', t.id === 'cli' ? 'dash-tab--cli' : ''].filter(Boolean).join(' ')}
-              onClick={() => handleTab(t.id)}
-              title={t.label + ' (' + t.key + ')'}
-            >
-              <i className={'fas ' + t.icon} />
-              <span>{t.label}</span>
-            </button>
-          ))}
-        </nav>
+        {/* GooeyNav replaces the old .dash-tabs on desktop */}
+        <div className="dash-tabs-gooey" role="tablist">
+          <GooeyNav
+            items={GOOEY_ITEMS}
+            activeIndex={activeTabIndex}
+            onItemClick={handleGooeyClick}
+            particleCount={14}
+            particleDistances={[80, 8]}
+            particleR={160}
+            animationTime={550}
+            timeVariance={800}
+            colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+          />
+        </div>
 
         <div className="dash-topbar-actions">
           <button

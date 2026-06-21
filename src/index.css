@@ -6641,3 +6641,220 @@ a, label[for], select,
   position: relative;
   z-index: 1;
 }
+
+/* ================================================================
+   REACT BITS — GooeyNav component
+   ================================================================ */
+.gooey-nav-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  /* Particle color palette — maps to theme accent */
+  --color-1: var(--accent);
+  --color-2: rgba(var(--accent-rgb), 0.75);
+  --color-3: rgba(var(--accent-rgb), 0.5);
+  --color-4: #ffffff;
+}
+
+.gooey-nav-container nav {
+  display: flex;
+  position: relative;
+  transform: translate3d(0, 0, 0.01px);
+  height: 100%;
+  align-items: center;
+}
+
+.gooey-nav-container nav ul {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  padding: 0 4px;
+  margin: 0;
+  position: relative;
+  z-index: 3;
+  height: 100%;
+}
+
+.gooey-nav-container nav ul li {
+  border-radius: 100vw;
+  position: relative;
+  cursor: pointer;
+  transition: color 0.25s ease;
+  color: var(--text-muted);
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.gooey-nav-container nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 100%;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.gooey-nav-container nav ul li a i {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.gooey-nav-container nav ul li:focus-within:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.gooey-nav-container nav ul li::after {
+  content: '';
+  position: absolute;
+  inset: 6px 0;
+  border-radius: 100vw;
+  background: var(--accent);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.gooey-nav-container nav ul li.active {
+  color: var(--bg-primary, #0a0c0f);
+}
+
+.gooey-nav-container nav ul li.active::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Light theme — active tab text stays dark */
+body.theme-light .gooey-nav-container nav ul li.active {
+  color: #fff;
+}
+
+/* Effect layers */
+.gn-effect {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 1;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+
+.gn-text {
+  color: var(--accent);
+  transition: color 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.gn-text.active {
+  color: var(--bg-primary, #0a0c0f);
+}
+
+body.theme-light .gn-text.active { color: #fff; }
+
+.gn-filter {
+  filter: blur(7px) contrast(100) blur(0);
+  mix-blend-mode: lighten;
+}
+
+.gn-filter::before {
+  content: '';
+  position: absolute;
+  inset: -75px;
+  z-index: -2;
+  background: var(--bg-primary, #0a0c0f);
+}
+
+.gn-filter::after {
+  content: '';
+  position: absolute;
+  inset: 6px 0;
+  background: var(--accent);
+  transform: scale(0);
+  opacity: 0;
+  z-index: -1;
+  border-radius: 100vw;
+}
+
+.gn-filter.active::after {
+  animation: gn-pill 0.3s ease both;
+}
+
+@keyframes gn-pill {
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Particles — scoped to avoid conflict */
+.gooey-nav-container .gn-particle,
+.gooey-nav-container .gn-point {
+  display: block;
+  opacity: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
+  transform-origin: center;
+}
+
+.gooey-nav-container .gn-particle {
+  --time: 5s;
+  position: absolute;
+  top: calc(50% - 7px);
+  left: calc(50% - 7px);
+  animation: gn-particle calc(var(--time)) ease 1 -350ms;
+}
+
+.gooey-nav-container .gn-point {
+  background: var(--color);
+  opacity: 1;
+  animation: gn-point calc(var(--time)) ease 1 -350ms;
+}
+
+@keyframes gn-particle {
+  0%  { transform: rotate(0deg) translate(var(--start-x), var(--start-y)); opacity:1; animation-timing-function: cubic-bezier(.55,0,1,.45); }
+  70% { transform: rotate(calc(var(--rotate)*.5)) translate(calc(var(--end-x)*1.2),calc(var(--end-y)*1.2)); opacity:1; animation-timing-function:ease; }
+  85% { transform: rotate(calc(var(--rotate)*.66)) translate(var(--end-x),var(--end-y)); opacity:1; }
+  100%{ transform: rotate(calc(var(--rotate)*1.2)) translate(calc(var(--end-x)*.5),calc(var(--end-y)*.5)); opacity:1; }
+}
+
+@keyframes gn-point {
+  0%  { transform:scale(0); opacity:0; animation-timing-function:cubic-bezier(.55,0,1,.45); }
+  25% { transform:scale(calc(var(--scale)*.25)); }
+  38% { opacity:1; }
+  65% { transform:scale(var(--scale)); opacity:1; animation-timing-function:ease; }
+  85% { transform:scale(var(--scale)); opacity:1; }
+  100%{ transform:scale(0); opacity:0; }
+}
+
+/* ── Hide original dash-tabs on desktop (GooeyNav replaces it) ── */
+.dash-tabs-gooey {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* On mobile GooeyNav is hidden — mob-nav handles it */
+@media (max-width: 767px) {
+  .dash-tabs-gooey { display: none; }
+}
