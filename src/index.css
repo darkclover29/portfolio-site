@@ -3073,76 +3073,76 @@ a.contact-row-value:hover { color: var(--accent); }
    ============================================================= */
 
 /* Avatar ring: static border, no spinning glow */
-body.theme-minimal .about-avatar-ring,
+body.theme-dark .about-avatar-ring,
 body.theme-light .about-avatar-ring {
   animation: none;
   box-shadow: 0 0 0 2px var(--border-bright);
 }
 
 /* Status dot: no pulsing */
-body.theme-minimal .sidebar-status,
+body.theme-dark .sidebar-status,
 body.theme-light .sidebar-status {
   animation: none;
   background: #4ade80;
 }
 
 /* Availability dot: no pulse */
-body.theme-minimal .about-avail-dot,
+body.theme-dark .about-avail-dot,
 body.theme-light .about-avail-dot {
   animation: none;
 }
 
 /* Skill bars: flat fill, no glow */
-body.theme-minimal .skill-bar-fill,
+body.theme-dark .skill-bar-fill,
 body.theme-light .skill-bar-fill {
   box-shadow: none;
 }
 
 /* Cards: clean border, no glow on hover */
-body.theme-minimal .stat-card:hover,
+body.theme-dark .stat-card:hover,
 body.theme-light .stat-card:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   border-color: var(--border-bright);
 }
 
-body.theme-minimal .project-card:hover,
+body.theme-dark .project-card:hover,
 body.theme-light .project-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
-body.theme-minimal .timeline-card:hover,
+body.theme-dark .timeline-card:hover,
 body.theme-light .timeline-card:hover {
   border-color: var(--border-bright);
 }
 
 /* Topbar tab active: clean underline, no text glow */
-body.theme-minimal .dash-tab.active,
+body.theme-dark .dash-tab.active,
 body.theme-light .dash-tab.active {
   text-shadow: none;
 }
 
 /* Input focus: clean ring, no glow */
-body.theme-minimal input:focus,
-body.theme-minimal textarea:focus,
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
 body.theme-light input:focus,
 body.theme-light textarea:focus {
   box-shadow: 0 0 0 2px var(--accent-dim);
 }
 
 /* Terminal window in minimal: flat shadow */
-body.theme-minimal .terminal-window,
+body.theme-dark .terminal-window,
 body.theme-light .terminal-window {
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 
 /* Command palette: clean shadow */
-body.theme-minimal .cmd-box,
+body.theme-dark .cmd-box,
 body.theme-light .cmd-box {
   box-shadow: 0 8px 32px rgba(0,0,0,0.35);
 }
 
 /* Resume button: no translate/glow on hover */
-body.theme-minimal .resume-download-btn:hover,
+body.theme-dark .resume-download-btn:hover,
 body.theme-light .resume-download-btn:hover {
   box-shadow: none;
   transform: none;
@@ -3150,7 +3150,7 @@ body.theme-light .resume-download-btn:hover {
 }
 
 /* Sidebar links: no slide effect */
-body.theme-minimal .link-btn:hover,
+body.theme-dark .link-btn:hover,
 body.theme-light .link-btn:hover {
   transform: none;
   padding-left: 10px;
@@ -6644,14 +6644,13 @@ a, label[for], select,
 
 
 /* ================================================================
-   SlideTabNav — clean sliding-pill navigation (replaces GooeyNav)
-   No mix-blend-mode. No z-index stacking issues. No overflow bleed.
+   SlideTabNav — pure-CSS active state (no JS pill positioning)
+   Active class is toggled by React; CSS handles all visuals.
+   overflow:hidden on topbar restored — no bleed issues possible.
    ================================================================ */
 
-/* Revert the GooeyNav overflow hack — topbar should clip again */
-.dash-topbar {
-  overflow: hidden;
-}
+/* Restore topbar clipping */
+.dash-topbar { overflow: hidden; }
 
 .dash-tabs-slide {
   flex: 1;
@@ -6660,10 +6659,7 @@ a, label[for], select,
   overflow: hidden;
   height: 100%;
 }
-
-@media (max-width: 767px) {
-  .dash-tabs-slide { display: none; }
-}
+@media (max-width: 767px) { .dash-tabs-slide { display: none; } }
 
 .stnav {
   flex: 1;
@@ -6674,54 +6670,25 @@ a, label[for], select,
   overflow: hidden;
 }
 
-.stnav-track {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 3px;
-  /* CRITICAL: clip pill so it never bleeds outside this box */
-  overflow: hidden;
-  max-width: 100%;
-}
-
-body.theme-light .stnav-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.09);
-}
-
-/* Sliding pill — pure CSS transitions, no JS animation loop */
-.stnav-pill {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 0;
-  width: 60px;           /* initial value; overridden by JS immediately */
-  border-radius: 7px;
-  background: var(--accent);
-  opacity: 0.16;
-  pointer-events: none;
-  will-change: left, width;
-  transition:
-    left  0.28s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.theme-light .stnav-pill {
-  opacity: 0.22;
-}
-
-.stnav-track ul {
+.stnav-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 3px;
   display: flex;
   align-items: center;
-  gap: 0;
-  position: relative;
-  z-index: 1;            /* sit above the pill */
+  gap: 2px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.stnav-list::-webkit-scrollbar { display: none; }
+
+body.theme-light .stnav-list {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.09);
 }
 
 .stnav-btn {
@@ -6738,35 +6705,36 @@ body.theme-light .stnav-pill {
   font-family: var(--font-sans);
   font-weight: 500;
   white-space: nowrap;
-  line-height: 1;
   min-height: 32px;
-  transition: color 0.2s;
+  line-height: 1;
+  transition: color 0.18s, background 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .stnav-btn i {
   font-size: 11px;
   opacity: 0.55;
-  transition: opacity 0.2s;
+  transition: opacity 0.18s;
   flex-shrink: 0;
 }
 
-/* Hover state for inactive tabs */
 .stnav-btn:hover:not(.active) {
   color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+}
+body.theme-light .stnav-btn:hover:not(.active) {
+  background: rgba(0,0,0,0.05);
 }
 .stnav-btn:hover:not(.active) i { opacity: 0.8; }
 
-/* Active tab */
+/* Active — pure CSS, React toggles the class, transitions handle the rest */
 .stnav-btn.active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
   color: var(--accent);
   font-weight: 600;
 }
-.stnav-btn.active i {
-  opacity: 1;
-}
+.stnav-btn.active i { opacity: 1; }
 
-/* Focus ring */
 .stnav-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;

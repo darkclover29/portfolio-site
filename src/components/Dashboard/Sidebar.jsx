@@ -6,27 +6,29 @@ import Modal from '../shared/Modal.jsx';
 const THEMES = SWATCH_THEMES;
 
 const THEME_COLORS = {
-  minimal:       '#6366f1',
+  mono:          '#ffffff',
+  minimal:       '#d4c9b8',
+  dark:          '#6366f1',
   matrix:        '#4ade80',
   cyberpunk:     '#60a5fa',
   dracula:       '#a78bfa',
   nord:          '#7eb8c9',
   light:         '#4f46e5',
-  mono:          '#e8e8e8',
   solarized:     '#268bd2',
   'tokyo-night': '#7aa2f7',
   catppuccin:    '#cba6f7',
 };
 
 const THEME_LABELS = {
+  mono:          'Mono',
   minimal:       'Minimal',
+  dark:          'Dark',
   matrix:        'Matrix',
   cyberpunk:     'Cyber',
   dracula:       'Dracula',
   nord:          'Nord',
   light:         'Light',
-  mono:          'Mono',
-  solarized:     'Solarized',
+  solarized:     'Solar',
   'tokyo-night': 'Tokyo',
   catppuccin:    'Catppuccin',
 };
