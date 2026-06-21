@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
 import ComingSoon from '../../shared/ComingSoon.jsx';
+import BorderGlow from '../../shared/BorderGlow.jsx';
 
 const listVariants = {
   hidden:  {},
@@ -21,6 +22,13 @@ const filterItemVariants = {
   hidden:  { opacity: 0, scale: 0.85 },
   visible: { opacity: 1, scale: 1,    transition: { duration: 0.22 } },
 };
+
+// Per-project glow accent colors (cycles through 3 palettes)
+const GLOW_PALETTES = [
+  { glowColor: '262 52 72', colors: ['#a78bfa', '#818cf8', '#38bdf8'] },
+  { glowColor: '217 91 60', colors: ['#38bdf8', '#22d3ee', '#818cf8'] },
+  { glowColor: '315 60 68', colors: ['#f472b6', '#c084fc', '#38bdf8'] },
+];
 
 export default function ProjectsTab({ highlightProject }) {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -46,8 +54,6 @@ export default function ProjectsTab({ highlightProject }) {
     else { setCsProject(p.name); setCsOpen(true); }
   };
 
-
-  // Scroll + highlight the matching card when opened from terminal
   const cardRefs = useRef({});
   useEffect(() => {
     if (!highlightProject) return;
@@ -99,80 +105,97 @@ export default function ProjectsTab({ highlightProject }) {
         initial="hidden"
         animate="visible"
       >
-        {visible.map((p, i) => (
-          <motion.div
-            key={p.name + i}
-            ref={el => { cardRefs.current[p.name] = el; }}
-            variants={cardVariants}
-            className={`project-card${p.featured ? ' project-card--featured' : ''} ${highlightProject === p.name ? 'project-card--highlight' : ''}`}
-            whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
-          >
-            {p.featured && (
-              <div className="project-featured-badge">
-                <i className="fas fa-star" /> Featured
-              </div>
-            )}
-
-            <div className="project-card-top">
-              <div className="project-icon-wrap">
-                <i className={`fas ${p.icon}`} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 className="project-name">
-                  {p.name}
-                  {p.featured && p.liveUrl && (
-                    <a
-                      href={p.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-live-inline"
-                      title="Open live demo"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <i className="fas fa-arrow-up-right-from-square" />
-                    </a>
-                  )}
-                </h3>
-                <p className="project-tech-line">{p.tech}</p>
-              </div>
-            </div>
-
-            <p className="project-overview">{p.overview}</p>
-            <ul className="project-details">
-              {p.details.map((d, j) => <li key={j}>{d}</li>)}
-            </ul>
-            <div className="project-tags">
-              {p.tags?.map(t => (
-                <span
-                  key={t}
-                  className={`tag${t === activeFilter ? ' tag--active' : ''}`}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setActiveFilter(t === activeFilter ? 'All' : t)}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-            <div className="project-card-links">
-              <button
-                className="project-link-btn"
-                onClick={() => openLink(p, 'github')}
+        {visible.map((p, i) => {
+          const palette = GLOW_PALETTES[i % GLOW_PALETTES.length];
+          return (
+            <motion.div
+              key={p.name + i}
+              ref={el => { cardRefs.current[p.name] = el; }}
+              variants={cardVariants}
+              className={`project-card-anim${highlightProject === p.name ? ' project-card--highlight' : ''}`}
+              whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+            >
+              <BorderGlow
+                backgroundColor="var(--surface)"
+                glowColor={palette.glowColor}
+                colors={palette.colors}
+                borderRadius={14}
+                glowRadius={32}
+                glowIntensity={0.85}
+                coneSpread={22}
+                edgeSensitivity={28}
+                fillOpacity={0.4}
+                animated={p.featured}
+                className={`project-card${p.featured ? ' project-card--featured' : ''}`}
               >
-                <i className="fab fa-github" /> GitHub
-                {!p.github && <span className="coming-soon-tag">Soon</span>}
-              </button>
-              {(p.liveUrl !== undefined) && (
-                <button
-                  className={`project-link-btn${p.featured && p.liveUrl ? ' project-link-btn--featured' : ''}`}
-                  onClick={() => openLink(p, 'live')}
-                >
-                  <i className="fas fa-arrow-up-right-from-square" /> Live
-                  {!p.liveUrl && <span className="coming-soon-tag">Soon</span>}
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))}
+                {p.featured && (
+                  <div className="project-featured-badge">
+                    <i className="fas fa-star" /> Featured
+                  </div>
+                )}
+
+                <div className="project-card-top">
+                  <div className="project-icon-wrap">
+                    <i className={`fas ${p.icon}`} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 className="project-name">
+                      {p.name}
+                      {p.featured && p.liveUrl && (
+                        <a
+                          href={p.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-live-inline"
+                          title="Open live demo"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <i className="fas fa-arrow-up-right-from-square" />
+                        </a>
+                      )}
+                    </h3>
+                    <p className="project-tech-line">{p.tech}</p>
+                  </div>
+                </div>
+
+                <p className="project-overview">{p.overview}</p>
+                <ul className="project-details">
+                  {p.details.map((d, j) => <li key={j}>{d}</li>)}
+                </ul>
+                <div className="project-tags">
+                  {p.tags?.map(t => (
+                    <span
+                      key={t}
+                      className={`tag${t === activeFilter ? ' tag--active' : ''}`}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setActiveFilter(t === activeFilter ? 'All' : t)}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <div className="project-card-links">
+                  <button
+                    className="project-link-btn"
+                    onClick={() => openLink(p, 'github')}
+                  >
+                    <i className="fab fa-github" /> GitHub
+                    {!p.github && <span className="coming-soon-tag">Soon</span>}
+                  </button>
+                  {(p.liveUrl !== undefined) && (
+                    <button
+                      className={`project-link-btn${p.featured && p.liveUrl ? ' project-link-btn--featured' : ''}`}
+                      onClick={() => openLink(p, 'live')}
+                    >
+                      <i className="fas fa-arrow-up-right-from-square" /> Live
+                      {!p.liveUrl && <span className="coming-soon-tag">Soon</span>}
+                    </button>
+                  )}
+                </div>
+              </BorderGlow>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {visible.length === 0 && (
