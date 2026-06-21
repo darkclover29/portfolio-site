@@ -6644,8 +6644,15 @@ a, label[for], select,
 
 
 /* ================================================================
-   SlideTabNav — clean sliding-pill tab navigation (replaces GooeyNav)
+   SlideTabNav — clean sliding-pill navigation (replaces GooeyNav)
+   No mix-blend-mode. No z-index stacking issues. No overflow bleed.
    ================================================================ */
+
+/* Revert the GooeyNav overflow hack — topbar should clip again */
+.dash-topbar {
+  overflow: hidden;
+}
+
 .dash-tabs-slide {
   flex: 1;
   display: flex;
@@ -6663,51 +6670,47 @@ a, label[for], select,
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 6px;
+  padding: 0 8px;
   overflow: hidden;
 }
 
 .stnav-track {
   position: relative;
-  display: flex;
-  align-items: stretch;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 10px;
-  padding: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  padding: 3px;
+  /* CRITICAL: clip pill so it never bleeds outside this box */
+  overflow: hidden;
   max-width: 100%;
 }
-.stnav-track::-webkit-scrollbar { display: none; }
 
-/* Sliding pill — no mix-blend-mode, no z-index war */
+body.theme-light .stnav-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.09);
+}
+
+/* Sliding pill — pure CSS transitions, no JS animation loop */
 .stnav-pill {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 3px;
+  bottom: 3px;
   left: 0;
-  width: 0;
+  width: 60px;           /* initial value; overridden by JS immediately */
   border-radius: 7px;
-  background: var(--surface, #1a1d25);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface, #1a1d25));
-  border-top: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.3),
-    0 0 10px color-mix(in srgb, var(--accent) 10%, transparent);
+  background: var(--accent);
+  opacity: 0.16;
   pointer-events: none;
+  will-change: left, width;
   transition:
-    left   0.28s cubic-bezier(0.4, 0, 0.2, 1),
-    width  0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    left  0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light theme: invert pill so it's visible on light bg */
-body.theme-light .stnav-track {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
-}
 body.theme-light .stnav-pill {
-  background: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  opacity: 0.22;
 }
 
 .stnav-track ul {
@@ -6715,10 +6718,10 @@ body.theme-light .stnav-pill {
   margin: 0;
   padding: 0;
   display: flex;
-  align-items: stretch;
-  gap: 2px;
+  align-items: center;
+  gap: 0;
   position: relative;
-  z-index: 1;
+  z-index: 1;            /* sit above the pill */
 }
 
 .stnav-btn {
@@ -6735,38 +6738,37 @@ body.theme-light .stnav-pill {
   font-family: var(--font-sans);
   font-weight: 500;
   white-space: nowrap;
-  transition: color 0.2s, background 0.15s;
   line-height: 1;
   min-height: 32px;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .stnav-btn i {
   font-size: 11px;
   opacity: 0.55;
-  transition: opacity 0.2s, color 0.2s;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
 }
 
+/* Hover state for inactive tabs */
 .stnav-btn:hover:not(.active) {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
 }
 .stnav-btn:hover:not(.active) i { opacity: 0.8; }
 
-body.theme-light .stnav-btn:hover:not(.active) {
-  background: rgba(0, 0, 0, 0.04);
-}
-
+/* Active tab */
 .stnav-btn.active {
   color: var(--accent);
   font-weight: 600;
 }
 .stnav-btn.active i {
   opacity: 1;
-  color: var(--accent);
 }
 
 /* Focus ring */
 .stnav-btn:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: -2px;
+  border-radius: 7px;
 }
