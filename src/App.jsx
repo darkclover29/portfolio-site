@@ -82,7 +82,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <CustomCursor />
+      {view === 'gui' && <CustomCursor />}
       <CardTilt />
       <AshParticles active={theme === 'anti-magic'} />
 
