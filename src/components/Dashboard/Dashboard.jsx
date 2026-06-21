@@ -4,7 +4,7 @@ import Sidebar from './Sidebar.jsx';
 import CommandPalette from '../shared/CommandPalette.jsx';
 import MatrixCanvas from '../shared/MatrixCanvas.jsx';
 import ScrollToTop from '../shared/ScrollToTop.jsx';
-import GooeyNav from '../shared/GooeyNav.jsx';
+import SlideTabNav from '../shared/SlideTabNav.jsx';
 import AboutTab from './tabs/AboutTab.jsx';
 import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
@@ -24,8 +24,8 @@ const TABS = [
 
 const TAB_KEY_MAP = Object.fromEntries(TABS.map(t => [t.key, t.id]));
 
-// GooeyNav item list (maps 1:1 with TABS array)
-const GOOEY_ITEMS = TABS.map(t => ({ label: t.label, icon: t.icon, href: '#' }));
+// SlideTabNav items (maps 1:1 with TABS array)
+const SLIDE_ITEMS = TABS.map(t => ({ label: t.label, icon: t.icon }));
 
 const makeTabVariants = (dir) => ({
   initial: { opacity: 0, x: dir === 'back' ? -20 : 20, y: 4 },
@@ -140,18 +140,12 @@ export default function Dashboard({
           <i className="fas fa-bars" />
         </button>
 
-        {/* GooeyNav replaces the old .dash-tabs on desktop */}
-        <div className="dash-tabs-gooey" role="tablist">
-          <GooeyNav
-            items={GOOEY_ITEMS}
+        {/* SlideTabNav — clean sliding pill, replaces GooeyNav */}
+        <div className="dash-tabs-slide">
+          <SlideTabNav
+            items={SLIDE_ITEMS}
             activeIndex={activeTabIndex}
-            onItemClick={handleGooeyClick}
-            particleCount={14}
-            particleDistances={[80, 8]}
-            particleR={160}
-            animationTime={550}
-            timeVariance={800}
-            colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+            onItemClick={(i) => handleTab(TABS[i].id)}
           />
         </div>
 
