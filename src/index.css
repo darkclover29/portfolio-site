@@ -6887,3 +6887,174 @@ body.theme-light .stnav-btn:hover:not(.active) {
 /* Skills grid cursor when drag-scrollable */
 .skills-pill-grid { cursor: grab; }
 .skills-pill-grid:active { cursor: grabbing; }
+
+/* ================================================================
+   1. Nav active pill glow
+   ================================================================ */
+.stnav-btn.active {
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.35),
+              0 0 4px  rgba(var(--accent-rgb), 0.2);
+}
+
+/* ================================================================
+   2. Page-load progress bar (top of screen)
+   ================================================================ */
+.page-progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
+  z-index: 99999;
+  transition: width 0.2s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* ================================================================
+   3. Copy email button - checkmark animation
+   ================================================================ */
+.sidebar-copy-btn .fa-check { color: #4ade80; }
+.sidebar-copy-btn {
+  transition: color 0.2s, transform 0.15s;
+}
+.sidebar-copy-btn:active { transform: scale(0.88); }
+
+/* ================================================================
+   4. Keyboard shortcut modal
+   ================================================================ */
+.shortcut-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.15s ease;
+}
+.shortcut-modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  padding: 28px 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  animation: slideUp 0.18s cubic-bezier(0.4,0,0.2,1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.shortcut-modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.shortcut-modal-title i { color: var(--accent); }
+.shortcut-section {
+  margin-bottom: 18px;
+}
+.shortcut-section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+.shortcut-row:last-child { border-bottom: none; }
+.shortcut-desc { color: var(--text-secondary); }
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+kbd {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  box-shadow: 0 2px 0 var(--border-bright);
+}
+.shortcut-close-hint {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 18px;
+}
+
+/* ================================================================
+   5. Cursor trail (fading dots) — canvas overlay
+   ================================================================ */
+.cursor-trail-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ================================================================
+   6. Print-friendly resume
+   ================================================================ */
+@media print {
+  /* Hide everything except the main content */
+  .dash-sidebar, .dash-topbar, .mob-tab-bar,
+  .hidden-clover, .custom-cursor-dot, .custom-cursor-ring,
+  .cursor-trail-canvas, .page-progress-bar,
+  .shortcut-overlay, .project-preview-overlay,
+  .tab-burst-canvas, .dash-tabs-slide,
+  button:not(.print-keep), nav { display: none !important; }
+
+  body, html { background: #fff !important; color: #111 !important; }
+
+  .app-root, .app-view, .dash-main, .dash-content { 
+    position: static !important;
+    transform: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  /* Show all tabs on print */
+  .tab-panel[hidden] { display: block !important; }
+
+  .bento-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+
+  .project-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #666;
+  }
+
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+}

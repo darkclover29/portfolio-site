@@ -1,4 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
+import PageProgress from './components/shared/PageProgress.jsx';
+import ShortcutModal from './components/shared/ShortcutModal.jsx';
+import CursorTrail from './components/shared/CursorTrail.jsx';
 import Terminal from './components/Terminal/Terminal.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import DarkCloverEgg from './components/shared/DarkCloverEgg.jsx';
@@ -19,6 +22,7 @@ export default function App() {
   const [demonCursor, setDemonCursor]     = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
   const [openProject, setOpenProject]     = useState(null);
+  const [shortcutOpen, setShortcutOpen]   = useState(false);
 
   const { theme, setTheme, getAccentColor, getAccentRgb } = useTheme();
   const audio  = useAudio();
@@ -39,6 +43,18 @@ export default function App() {
     return () => { vv.removeEventListener('resize', update); vv.removeEventListener('scroll', update); };
   }, []);
 
+  // ? key opens shortcut modal
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        setShortcutOpen(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const toggleAntiMagic = useCallback(() => {
     setAntiMagicMode(v => {
@@ -80,7 +96,9 @@ export default function App() {
 
   return (
     <div className="app-root">
+      <PageProgress />
       {view === 'gui' && <CustomCursor />}
+      {view === 'gui' && <CursorTrail />}
       <CardTilt />
       <AshParticles active={theme === 'anti-magic'} />
 
@@ -138,6 +156,7 @@ export default function App() {
       {matrixOverlay && <MatrixOverlay onExit={() => setMatrixOverlay(false)} />}
       {eggOpen   && <DarkCloverEgg onDismiss={dismissEgg} />}
       {konamiOn  && <DemonForm onDismiss={dismissKonami} />}
+      {shortcutOpen && <ShortcutModal onClose={() => setShortcutOpen(false)} />}
     </div>
   );
 }
