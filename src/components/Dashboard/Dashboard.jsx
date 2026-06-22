@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from './Sidebar.jsx';
 import CommandPalette from '../shared/CommandPalette.jsx';
 import MatrixCanvas from '../shared/MatrixCanvas.jsx';
 import ScrollToTop from '../shared/ScrollToTop.jsx';
 import SlideTabNav from '../shared/SlideTabNav.jsx';
+import TabBurst from '../shared/TabBurst.jsx';;
 import AboutTab from './tabs/AboutTab.jsx';
 import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
@@ -64,6 +65,7 @@ export default function Dashboard({
   openProject,
   onProjectOpened,
 }) {
+  const burstRef = useRef(null);
   const [activeTab, setActiveTab]   = useState('about');
   const [tabDir, setTabDir]         = useState('forward');
   const [cmdOpen, setCmdOpen]       = useState(false);
@@ -83,6 +85,15 @@ export default function Dashboard({
 
   const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
+    // particle burst at active nav button
+    const btns = document.querySelectorAll('.stnav-btn');
+    const nextIdx = TABS.findIndex(t => t.id === id);
+    const btn = btns[nextIdx];
+    if (btn && burstRef.current) {
+      const r = btn.getBoundingClientRect();
+      const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#fff';
+      burstRef.current.burst(r.left + r.width / 2, r.top + r.height / 2, accent);
+    }
     const curIdx = TABS.findIndex(t => t.id === activeTab);
     const newIdx = TABS.findIndex(t => t.id === id);
     setTabDir(newIdx >= curIdx ? 'forward' : 'back');
@@ -194,6 +205,7 @@ export default function Dashboard({
         onCli={onFlipToCli}
         setTheme={setTheme}
       />
+      <TabBurst ref={burstRef} />
     </div>
   );
 }

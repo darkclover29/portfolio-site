@@ -20,7 +20,7 @@ const ALL_COMMANDS = [
   'touch', 'rm', 'nano', 'grep', 'pwd', 'theme', 'gui', 'matrix',
   'snake', 'synth', 'chat', 'socials', 'download',
   'darkclover', 'clover', 'ign', 'hack', 'ping', 'sudo', 'anti-magic',
-  'hire', 'weather', 'cowsay', 'neofetch', 'open',
+  'hire', 'weather', 'github', 'joke', 'quote', 'cowsay', 'neofetch', 'open',
 ];
 
 function makeId() {
@@ -166,6 +166,9 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
           `  <span class="accent">uptime</span>        -- Session uptime`,
           `  <span class="accent">hire</span>          -- Open email to hire me`,
           `  <span class="accent">weather [city]</span>-- Real weather data`,
+  `  <span class="accent">github</span>        -- My GitHub stats`,
+  `  <span class="accent">joke</span>          -- Random dev joke`,
+  `  <span class="accent">quote</span>         -- Dev/life quote`,
           `  <span class="accent">cowsay [msg]</span>  -- Classic ASCII cow`,
           `  <span class="accent">neofetch</span>      -- System info card`,
           `  <span class="accent">ls [path]</span>     -- List files`,
@@ -264,6 +267,89 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
             ].join('\n')));
           })
           .catch(() => push(line('error', `weather: could not fetch data for "${city}". Try: weather London`)));
+        break;
+      }
+
+
+      case 'github': {
+        push(line('output', 'Fetching <span class="accent">darkclover29</span> GitHub stats...'));
+        Promise.all([
+          fetch('https://api.github.com/users/darkclover29').then(r => r.json()),
+          fetch('https://api.github.com/users/darkclover29/repos?per_page=100').then(r => r.json()),
+        ]).then(([user, repos]) => {
+          const stars = Array.isArray(repos) ? repos.reduce((a, r) => a + (r.stargazers_count || 0), 0) : '?';
+          const forks = Array.isArray(repos) ? repos.reduce((a, r) => a + (r.forks_count || 0), 0) : '?';
+          const topLangs = Array.isArray(repos)
+            ? [...new Set(repos.map(r => r.language).filter(Boolean))].slice(0, 4).join(', ')
+            : '?';
+          push(line('output', [
+            `<b>GitHub — ${user.login || 'darkclover29'}</b>`,
+            ``,
+            `  <span class="accent">★</span>  Stars earned    : ${stars}`,
+            `  <span class="accent">⑂</span>  Forks           : ${forks}`,
+            `  <span class="accent">◉</span>  Public repos    : ${user.public_repos ?? '?'}`,
+            `  <span class="accent">◈</span>  Followers       : ${user.followers ?? '?'}`,
+            `  <span class="accent">◈</span>  Following       : ${user.following ?? '?'}`,
+            `  <span class="accent">⌂</span>  Top languages   : ${topLangs}`,
+            `  <span class="accent">↗</span>  Profile         : github.com/darkclover29`,
+          ].join('\n')));
+        }).catch(() => push(line('error', 'github: could not fetch stats (rate limit?)')));
+        break;
+      }
+
+      case 'joke': {
+        push(line('output', 'Fetching a dev joke...'));
+        fetch('https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,racist,sexist&type=twopart')
+          .then(r => r.json())
+          .then(d => {
+            if (d.error) throw new Error();
+            push(line('output', [
+              `<b>😂 Dev Joke</b>`,
+              ``,
+              `  Q: ${d.setup}`,
+              `  A: <span class="accent">${d.delivery}</span>`,
+            ].join('\n')));
+          })
+          .catch(() => {
+            const fallbacks = [
+              ['Why do Java developers wear glasses?', 'Because they don\'t C#!'],
+              ['How many programmers does it take to change a light bulb?', 'None. It\'s a hardware problem.'],
+              ['Why do programmers prefer dark mode?', 'Because light attracts bugs.'],
+              ['A SQL query walks into a bar, walks up to two tables and asks...', '"Can I JOIN you?"'],
+              ['What\'s a developer\'s favourite movie?', 'Null and Void.'],
+            ];
+            const [q, a] = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+            push(line('output', [
+              `<b>😂 Dev Joke</b>`,
+              ``,
+              `  Q: ${q}`,
+              `  A: <span class="accent">${a}</span>`,
+            ].join('\n')));
+          });
+        break;
+      }
+
+      case 'quote': {
+        const quotes = [
+          ['The best code is no code at all.', 'Jeff Atwood'],
+          ['Programs must be written for people to read, and only incidentally for machines to execute.', 'Harold Abelson'],
+          ['First, solve the problem. Then, write the code.', 'John Johnson'],
+          ['Any fool can write code that a computer can understand. Good programmers write code that humans can understand.', 'Martin Fowler'],
+          ['It\'s not a bug — it\'s an undocumented feature.', 'Anonymous'],
+          ['Talk is cheap. Show me the code.', 'Linus Torvalds'],
+          ['Make it work, make it right, make it fast.', 'Kent Beck'],
+          ['The most dangerous phrase is "we\'ve always done it this way."', 'Grace Hopper'],
+          ['Simplicity is the soul of efficiency.', 'Austin Freeman'],
+          ['Before software can be reusable, it first has to be usable.', 'Ralph Johnson'],
+        ];
+        const [q, a] = quotes[Math.floor(Math.random() * quotes.length)];
+        push(line('output', [
+          `<b>💬 Quote</b>`,
+          ``,
+          `  "<span class="accent">${q}</span>"`,
+          `  — ${a}`,
+        ].join('\n')));
+        playEnter?.();
         break;
       }
 

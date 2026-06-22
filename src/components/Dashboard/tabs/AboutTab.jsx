@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
 import ScrambleText from '../../shared/ScrambleText.jsx';
@@ -69,12 +69,33 @@ function ISTTime() {
   return <>{time} IST</>;
 }
 
+// ── Bento card parallax handler factory ─────────────────────────
+function makeTiltHandlers(strength = 7) {
+  return {
+    onMouseMove(e) {
+      const el = e.currentTarget;
+      const { left, top, width, height } = el.getBoundingClientRect();
+      const x = ((e.clientX - left) / width  - 0.5) * 2;
+      const y = ((e.clientY - top)  / height - 0.5) * 2;
+      el.style.setProperty('--tilt-x', `${(-y * strength).toFixed(2)}deg`);
+      el.style.setProperty('--tilt-y', `${( x * strength).toFixed(2)}deg`);
+      el.style.setProperty('--tilt-z', '4px');
+    },
+    onMouseLeave(e) {
+      e.currentTarget.style.setProperty('--tilt-x', '0deg');
+      e.currentTarget.style.setProperty('--tilt-y', '0deg');
+      e.currentTarget.style.setProperty('--tilt-z', '0px');
+    },
+  };
+}
+const tilt = makeTiltHandlers();
+
 // ── Extracted component so useCountUp is called at top level (no hooks-in-loop) ──
 function BentoStat({ raw, label, icon, variants, fadeUp }) {
   const display = useCountUp(raw);
   return (
     <motion.div className="bento-card bento-stat" variants={fadeUp}
-      whileHover={{ y:-2, transition:{duration:0.15} }}>
+      whileHover={{ y:-2, transition:{duration:0.15} }} {...tilt}>
       <i className={`fas ${icon} bento-stat-icon`}/>
       <div className="bento-stat-num">{display}</div>
       <div className="bento-stat-label">{label}</div>
@@ -104,7 +125,7 @@ export default function AboutTab() {
     <motion.div className="bento-grid" variants={stagger} initial="hidden" animate="visible">
 
       {/* ── Hero card — spans full width on desktop ── */}
-      <motion.div className="bento-card bento-hero" variants={fadeUp}>
+      <motion.div className="bento-card bento-hero" variants={fadeUp} {...tilt}>
         <div className="bento-hero-text">
           <h1 className="bento-name">
             <ScrambleText text="Harsh Tiwari" />
@@ -138,14 +159,14 @@ export default function AboutTab() {
       </motion.div>
 
       {/* ── Clock card ── */}
-      <motion.div className="bento-card bento-clock" variants={fadeUp}>
+      <motion.div className="bento-card bento-clock" variants={fadeUp} {...tilt}>
         <div className="bento-card-label"><i className="fas fa-location-dot"/> Indore, India</div>
         <div className="bento-time"><ISTTime /></div>
         <div className="bento-tz">Asia / Kolkata · IST</div>
       </motion.div>
 
       {/* ── Status card ── */}
-      <motion.div className="bento-card bento-status" variants={fadeUp}>
+      <motion.div className="bento-card bento-status" variants={fadeUp} {...tilt}>
         <div className="bento-card-label">Current role</div>
         <div className="bento-status-role">
           <i className="fas fa-building" style={{color:'var(--accent)',marginRight:6}}/>
@@ -161,7 +182,7 @@ export default function AboutTab() {
       ))}
 
       {/* ── Tech stack card ── */}
-      <motion.div className="bento-card bento-stack" variants={fadeUp}>
+      <motion.div className="bento-card bento-stack" variants={fadeUp} {...tilt}>
         <div className="bento-card-label"><i className="fas fa-layer-group"/> Core Stack</div>
         <div className="bento-stack-pills">
           {STACK.map(s => (

@@ -65,7 +65,26 @@ export default function ProjectsTab({ highlightProject }) {
     return () => clearTimeout(timer);
   }, [highlightProject]);
 
+  const scrollRef  = useRef(null);
+  const [prog, setProg] = useState(0);
+  useEffect(() => {
+    const el = scrollRef.current?.closest('.dash-content, .tab-scroll, [class*="content"]')
+      || document.querySelector('.dash-content');
+    if (!el) return;
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const max = scrollHeight - clientHeight;
+      setProg(max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
+    <div ref={scrollRef} className="projects-scroll-wrap">
+      <div className="projects-scroll-progress">
+        <div className="projects-scroll-fill" style={{ width: `${prog}%` }} />
+      </div>
     <div>
       <motion.div
         className="section-header"
@@ -213,6 +232,7 @@ export default function ProjectsTab({ highlightProject }) {
       )}
 
       <ComingSoon open={csOpen} onClose={() => setCsOpen(false)} projectName={csProject} />
+    </div>
     </div>
   );
 }
