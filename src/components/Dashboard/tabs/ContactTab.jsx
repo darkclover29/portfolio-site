@@ -6,7 +6,7 @@ const c = PortfolioData.contact;
 
 const EMAILJS_SERVICE  = 'service_f7cwww7';
 const EMAILJS_TEMPLATE = 'template_350qlpr';
-const EMAILJS_KEY      = 'O8ei-Yhu5mABSMnxWIb4C';
+const EMAILJS_KEY      = 'OEPbC_woi70xrZ-U8';
 
 function copyToClipboard(text) {
   return navigator.clipboard?.writeText(text) ?? Promise.reject();
