@@ -7090,20 +7090,25 @@ kbd {
 }
 
 /* ================================================================
-   EDUCATION — 3D card flip
+   EDUCATION — 3D card flip (pure CSS, no framer-motion on flip)
    ================================================================ */
 .edu-flip-wrap {
-  perspective: 900px;
+  perspective: 1000px;
   cursor: pointer;
 }
 .edu-flip-inner {
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 130px;
 }
-.edu-flip-inner.is-flipped {
+/* is-flipped lives on the OUTER wrapper now */
+.edu-flip-wrap.is-flipped .edu-flip-inner {
   transform: rotateY(180deg);
+}
+/* subtle lift on hover — only when NOT flipped, no scale (breaks 3D) */
+.edu-flip-wrap:not(.is-flipped):hover .edu-flip-inner {
+  transform: translateY(-3px);
 }
 .edu-flip-face {
   backface-visibility: hidden;
@@ -7121,14 +7126,12 @@ kbd {
   flex-direction: column;
   gap: 8px;
 }
-.edu-card-body {
-  flex: 1;
-}
+.edu-card-body { flex: 1; }
 .edu-flip-hint {
   font-size: 0.7rem;
   color: var(--text-muted);
   align-self: flex-end;
-  opacity: 0.6;
+  opacity: 0.55;
   letter-spacing: 0.04em;
 }
 .edu-back-label {
@@ -7141,8 +7144,7 @@ kbd {
 }
 .edu-course-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 0; margin: 0;
   display: flex;
   flex-direction: column;
   gap: 5px;
