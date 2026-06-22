@@ -19,7 +19,7 @@ const ALL_COMMANDS = [
   'experience', 'projects', 'education', 'contact', 'ls', 'cd', 'cat',
   'touch', 'rm', 'nano', 'grep', 'pwd', 'theme', 'gui', 'matrix',
   'snake', 'synth', 'chat', 'socials', 'download',
-  'darkclover', 'clover', 'ign', 'hack', 'ping', 'sudo', 'anti-magic',
+  'darkclover', 'clover', 'ign', 'hack', 'ping', 'sudo', 'anti-magic', 'history', 'vim', 'history', 'vim',
   'hire', 'weather', 'github', 'joke', 'quote', 'cowsay', 'neofetch', 'open',
 ];
 
@@ -92,7 +92,9 @@ function buildCowsay(msg) {
 
 export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
   const [lines, setLines]     = useState(BOOT_LINES.map(l => ({ id: makeId(), ...l })));
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('term_history') || '[]'); } catch { return []; }
+  });
   const [histIdx, setHistIdx] = useState(-1);
   const [nanoOpen, setNanoOpen] = useState(false);
   const [nanoFile, setNanoFile] = useState({ name: '', node: null });
@@ -141,7 +143,25 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
     const trimmed = raw.trim();
     if (!trimmed) return;
 
-    setHistory(prev => [trimmed, ...prev.slice(0, 99)]);
+    // vim trap — intercept all input while inside fake vim
+    if (window.__vimTrapped) {
+      push(line('input', trimmed));
+      if (trimmed === ':q!' || trimmed === ':wq!' || trimmed === ':wq') {
+        push(line('output', `<span class="accent">Exited vim. Freedom restored.</span>`));
+        window.__vimTrapped = false;
+      } else if (trimmed.startsWith(':')) {
+        push(line('error', `E492: Not an editor command: ${trimmed.slice(1)}`));
+      } else {
+        push(line('output', `<span class="text-muted">-- INSERT --  (type :q! to exit)</span>`));
+      }
+      return;
+    }
+
+    setHistory(prev => {
+      const next = [trimmed, ...prev.slice(0, 99)];
+      try { localStorage.setItem('term_history', JSON.stringify(next)); } catch {}
+      return next;
+    });
     setHistIdx(-1);
     push(line('prompt', `<span class="prompt-user">harsh@portfolio</span>:<span class="prompt-dir">${vfs.pwd}</span>$ ${trimmed}`));
 
@@ -616,7 +636,43 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
         playEnter?.();
         break;
 
-      case 'sudo':
+      case 'history': {
+        if (history.length === 0) {
+          push(line('output', 'No history yet.'));
+        } else {
+          const hist = [...history].reverse();
+          const html = hist.map((h, i) => `<span class="text-muted">${String(i+1).padStart(3,' ')}</span>  ${h}`).join('\n');
+          push(line('output', html));
+        }
+        playEnter?.();
+        break;
+      }
+
+      case 'vim': {
+        push(
+          line('output', `<span class="accent">VIM - Vi IMproved 9.1  (${arg || 'No Name'})</span>`),
+          line('output', ``),
+          line('output', `<span class="text-muted">You are trapped. Type </span><kbd>:q!</kbd><span class="text-muted"> to escape.</span>`),
+        );
+        window.__vimTrapped = true;
+        playEnter?.();
+        break;
+      }
+
+      case 'sudo': {
+        const sudoArg = arg?.trim() || '';
+        if (sudoArg === 'hire me' || sudoArg === 'hire harsh') {
+          push(
+            line('output', `[sudo] password for recruiter: ············`),
+            line('output', `<span class="accent">✓ sudo access granted</span>`),
+            line('output', `Dispatching hire request to harshtiwari493@gmail.com...`),
+          );
+          setTimeout(() => {
+            push(line('output', `<span style="color:#4ade80">✓ Request sent! Harsh will respond within 24 hours.</span>`));
+          }, 1200);
+          playEnter?.();
+          break;
+        }
         push(line('error', [
           `sudo: permission denied.`,
           `This system is owned by <span class="accent">darkclover</span>.`,
@@ -624,6 +680,7 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
         ].join('\n')));
         playError?.();
         break;
+      }
 
       case 'hack':
         push(line('output', [

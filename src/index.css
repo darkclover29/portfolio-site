@@ -7340,3 +7340,154 @@ kbd {
 .edu-flip-back.edu-card:hover {
   transform: rotateY(180deg) !important;
 }
+
+/* ================================================================
+   CONTACT FORM (EmailJS)
+   ================================================================ */
+.contact-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.contact-form-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.contact-form-title i { color: var(--accent); }
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 500px) { .contact-form-row { grid-template-columns: 1fr; } }
+.contact-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.contact-form-field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.contact-form-field input,
+.contact-form-field textarea {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.contact-form-field input:focus,
+.contact-form-field textarea:focus {
+  border-color: rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.08);
+}
+.contact-form-send {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  transition: opacity 0.2s, transform 0.15s;
+  align-self: flex-start;
+}
+.contact-form-send:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+.contact-form-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.contact-form-error {
+  font-size: 0.78rem;
+  color: #f87171;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.contact-form-success {
+  background: var(--bg-card);
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.contact-form-success i { font-size: 2rem; color: #4ade80; }
+.contact-form-success p { color: var(--text-secondary); font-size: 0.88rem; margin: 0; }
+
+/* ================================================================
+   SHARE BUTTON + BOTTOM ROW
+   ================================================================ */
+.contact-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.contact-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.contact-share-btn:hover { background: rgba(var(--accent-rgb), 0.18); transform: translateY(-1px); }
+
+/* ================================================================
+   SCROLL-TO-TOP — progress ring
+   ================================================================ */
+.scroll-top-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scroll-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.scroll-ring-bg  { fill: none; stroke: var(--border); stroke-width: 2.5; }
+.scroll-ring-arc { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round;
+                   transition: stroke-dashoffset 0.2s linear; }
