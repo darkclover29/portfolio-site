@@ -69,7 +69,6 @@ export default function Dashboard({
   const [activeTab, setActiveTab]   = useState('about');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [tabDir, setTabDir]         = useState('forward');
-  const [cmdOpen, setCmdOpen]       = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isMatrixTheme = theme === 'matrix' || theme === 'cyberpunk';
@@ -112,7 +111,7 @@ export default function Dashboard({
     const handler = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        setCmdOpen(v => !v);
+        setPaletteOpen(v => !v);
         return;
       }
       if (e.key === 'Escape') { closeDrawer(); return; }
@@ -124,18 +123,6 @@ export default function Dashboard({
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [handleTab, closeDrawer]);
-
-  // Cmd+K / Ctrl+K → open command palette
-  useEffect(() => {
-    const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setPaletteOpen(v => !v);
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, []);
 
   return (
     <div className="dash">
@@ -177,7 +164,7 @@ export default function Dashboard({
         <div className="dash-topbar-actions">
           <button
             className="cmd-trigger-btn"
-            onClick={() => setCmdOpen(true)}
+            onClick={() => setPaletteOpen(true)}
             title="Command palette (Ctrl+K)"
             aria-label="Open command palette"
           >

@@ -53,12 +53,6 @@ export default function CommandPalette({ onNavigate, onClose }) {
   // Auto-focus input
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  // Global Escape closes palette even when input loses focus
-  useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
 
   // Reset cursor on query change
   useEffect(() => { setCursor(0); }, [query]);
@@ -76,12 +70,17 @@ export default function CommandPalette({ onNavigate, onClose }) {
     onClose();
   };
 
-  const onKey = (e) => {
-    if (e.key === 'ArrowDown')  { e.preventDefault(); setCursor(c => Math.min(c + 1, results.length - 1)); }
-    if (e.key === 'ArrowUp')    { e.preventDefault(); setCursor(c => Math.max(c - 1, 0)); }
-    if (e.key === 'Enter')      { if (results[cursor]) select(results[cursor]); }
-    if (e.key === 'Escape')     { onClose(); }
-  };
+  // Global keyboard nav — works even when input loses focus
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowDown')  { e.preventDefault(); setCursor(c => Math.min(c + 1, results.length - 1)); }
+      if (e.key === 'ArrowUp')    { e.preventDefault(); setCursor(c => Math.max(c - 1, 0)); }
+      if (e.key === 'Enter')      { if (results[cursor]) select(results[cursor]); }
+      if (e.key === 'Escape')     { onClose(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [results, cursor, onClose]);
 
   const typeIcon = (type) => ({ tab:'fa-arrow-right', project:'fa-folder', cmd:'fa-terminal' })[type];
 
@@ -96,7 +95,6 @@ export default function CommandPalette({ onNavigate, onClose }) {
             placeholder="Search tabs, projects, commands…"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            onKeyDown={onKey}
             autoComplete="off"
             spellCheck="false"
           />
