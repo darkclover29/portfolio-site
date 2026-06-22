@@ -212,13 +212,6 @@ export default function Dashboard({
         ))}
       </nav>
 
-      <CommandPalette
-        open={cmdOpen}
-        onClose={() => setCmdOpen(false)}
-        onNavigate={(id) => handleTab(id)}
-        onCli={onFlipToCli}
-        setTheme={setTheme}
-      />
       <TabBurst ref={burstRef} />
       {paletteOpen && (
         <CommandPalette
