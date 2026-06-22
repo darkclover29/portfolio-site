@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
 import ComingSoon from '../../shared/ComingSoon.jsx';
@@ -29,6 +29,41 @@ const GLOW_PALETTES = [
   { glowColor: '217 91 60', colors: ['#38bdf8', '#22d3ee', '#818cf8'] },
   { glowColor: '315 60 68', colors: ['#f472b6', '#c084fc', '#38bdf8'] },
 ];
+
+
+function ProjectPreviewOverlay({ project, onDismiss }) {
+  return (
+    <div className="project-preview-overlay" onClick={onDismiss}>
+      <div className="project-preview-card" onClick={e => e.stopPropagation()}>
+        <div className="project-preview-header">
+          <i className={`fas ${project.icon} project-preview-icon`} />
+          <div>
+            <h3 className="project-preview-name">{project.name}</h3>
+            <p className="project-preview-tech">{project.tech}</p>
+          </div>
+          <button className="project-preview-close" onClick={onDismiss}>
+            <i className="fas fa-times" />
+          </button>
+        </div>
+        <p className="project-preview-overview">{project.overview}</p>
+        {project.details?.length > 0 && (
+          <ul className="project-preview-details">
+            {project.details.slice(0, 3).map((d, i) => <li key={i}>{d}</li>)}
+          </ul>
+        )}
+        <div className="project-preview-tags">
+          {project.tags?.map(t => <span key={t} className="tag">{t}</span>)}
+        </div>
+        {project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer"
+             className="project-preview-link">
+            <i className="fas fa-arrow-up-right-from-square" /> View Live
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function ProjectsTab({ highlightProject }) {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -67,6 +102,14 @@ export default function ProjectsTab({ highlightProject }) {
 
   const scrollRef  = useRef(null);
   const [prog, setProg] = useState(0);
+  const [preview, setPreview] = useState(null);
+  const holdTimer = useRef(null);
+  const startHold = useCallback((p) => {
+    holdTimer.current = setTimeout(() => setPreview(p), 500);
+  }, []);
+  const cancelHold = useCallback(() => {
+    clearTimeout(holdTimer.current);
+  }, []);
   useEffect(() => {
     const el = scrollRef.current?.closest('.dash-content, .tab-scroll, [class*="content"]')
       || document.querySelector('.dash-content');
@@ -133,6 +176,12 @@ export default function ProjectsTab({ highlightProject }) {
               variants={cardVariants}
               className={`project-card-anim${highlightProject === p.name ? ' project-card--highlight' : ''}`}
               whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+              onMouseDown={() => startHold(p)}
+              onMouseUp={cancelHold}
+              onMouseLeave={cancelHold}
+              onTouchStart={() => startHold(p)}
+              onTouchEnd={cancelHold}
+              onTouchCancel={cancelHold}
             >
               <BorderGlow
                 backgroundColor="var(--surface)"

@@ -81,7 +81,51 @@ const fadeUp  = { hidden:{ opacity:0, y:14 }, visible:{ opacity:1, y:0, transiti
 const tagStagger = { hidden:{}, visible:{ transition:{ staggerChildren:0.04 } } };
 const tagFade = { hidden:{ opacity:0, scale:0.8 }, visible:{ opacity:1, scale:1, transition:{ duration:0.2 } } };
 
+
+// ── Drag-to-scroll hook (mouse drag + momentum) ──────────────
+function useDragScroll() {
+  const ref      = useRef(null);
+  const drag     = useRef({ active: false, startX: 0, scrollX: 0 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onDown = (e) => {
+      drag.current = { active: true, startX: e.pageX - el.offsetLeft, scrollX: el.scrollLeft };
+      el.style.cursor = 'grabbing';
+      el.style.userSelect = 'none';
+    };
+    const onUp = () => {
+      drag.current.active = false;
+      el.style.cursor = '';
+      el.style.userSelect = '';
+    };
+    const onMove = (e) => {
+      if (!drag.current.active) return;
+      e.preventDefault();
+      const x    = e.pageX - el.offsetLeft;
+      const walk = (x - drag.current.startX) * 1.4;
+      el.scrollLeft = drag.current.scrollX - walk;
+    };
+
+    el.addEventListener('mousedown',  onDown);
+    el.addEventListener('mouseup',    onUp);
+    el.addEventListener('mouseleave', onUp);
+    el.addEventListener('mousemove',  onMove);
+    return () => {
+      el.removeEventListener('mousedown',  onDown);
+      el.removeEventListener('mouseup',    onUp);
+      el.removeEventListener('mouseleave', onUp);
+      el.removeEventListener('mousemove',  onMove);
+    };
+  }, []);
+
+  return ref;
+}
+
 export default function SkillsTab() {
+  const gridRef = useDragScroll();
   return (
     <div>
       <motion.div className="section-header" initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} transition={{duration:0.3}}>
@@ -100,7 +144,7 @@ export default function SkillsTab() {
         ))}
       </motion.div>
 
-      <motion.div className="skills-pill-grid" variants={stagger} initial="hidden" animate="visible">
+      <motion.div className="skills-pill-grid" ref={gridRef} variants={stagger} initial="hidden" animate="visible">
         {SKILLS.map(cat => (
           <motion.div key={cat.category} className="skills-pill-card" variants={fadeUp}
             whileHover={{ y:-2, transition:{duration:0.15} }}>

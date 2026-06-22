@@ -15,7 +15,6 @@ import { useSecretCode, useKonamiCode } from './hooks/useSecretCode.js';
 
 export default function App() {
   const [view, setView]           = useState('gui');
-  const [transitioning, setTrans] = useState(false);
   const [antiMagicMode, setAntiMagicMode] = useState(false);
   const [demonCursor, setDemonCursor]     = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
@@ -61,10 +60,9 @@ export default function App() {
   }, []);
 
   const switchView = useCallback((target) => {
-    if (transitioning || view === target) return;
-    setTrans(true);
-    setTimeout(() => { setView(target); setTrans(false); }, 300);
-  }, [transitioning, view]);
+    if (view === target) return;
+    setView(target);
+  }, [view]);
 
   const goGui = useCallback(() => switchView('gui'), [switchView]);
   const goCli = useCallback(() => switchView('cli'), [switchView]);
@@ -97,7 +95,7 @@ export default function App() {
       <DemonCursorOverlay active={demonCursor} onDeactivate={deactivateDemonCursor} />
 
       <div
-        className={`app-view${view === 'cli' ? ' is-active' : ''}`}
+        className={`app-view app-view--cli${view === 'cli' ? ' is-active' : ''}`}
         style={{ zIndex: view === 'cli' ? 2 : 1 }}
       >
         <Terminal
@@ -121,10 +119,10 @@ export default function App() {
       </div>
 
       <div
-        className={`app-view${view === 'gui' ? ' is-active' : ''}`}
+        className={`app-view app-view--gui${view === 'gui' ? ' is-active' : ''}`}
         style={{ zIndex: view === 'gui' ? 2 : 1 }}
       >
-        {(view === 'gui' || transitioning) && (
+        {
           <Dashboard
             theme={theme} setTheme={setTheme}
             getAccentColor={getAccentColor} getAccentRgb={getAccentRgb}
@@ -134,7 +132,7 @@ export default function App() {
             openProject={openProject}
             onProjectOpened={() => setOpenProject(null)}
           />
-        )}
+        }
       </div>
 
       {matrixOverlay && <MatrixOverlay onExit={() => setMatrixOverlay(false)} />}
