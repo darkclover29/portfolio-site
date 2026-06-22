@@ -83,6 +83,13 @@ export default function Dashboard({
     onProjectOpened?.();
   }, [openProject]); // eslint-disable-line
 
+  // HireMeCTA custom event -> navigate to tab
+  useEffect(() => {
+    const handler = (e) => handleTab(e.detail);
+    window.addEventListener('portfolio:navigate', handler);
+    return () => window.removeEventListener('portfolio:navigate', handler);
+  }, [handleTab]);
+
   const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
     // particle burst at active nav button

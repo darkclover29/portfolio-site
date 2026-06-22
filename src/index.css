@@ -7491,3 +7491,70 @@ kbd {
 .scroll-ring-bg  { fill: none; stroke: var(--border); stroke-width: 2.5; }
 .scroll-ring-arc { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round;
                    transition: stroke-dashoffset 0.2s linear; }
+
+/* ================================================================
+   HIRE ME FLOATING CTA
+   ================================================================ */
+.hire-cta {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  border-radius: 40px;
+  padding: 10px 14px 10px 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(var(--accent-rgb),0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.hire-cta-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  animation: hire-pulse 1.8s ease-in-out infinite;
+}
+@keyframes hire-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+}
+.hire-cta-text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.hire-cta-btn {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.hire-cta-btn:hover { opacity: 0.85; transform: scale(1.04); }
+.hire-cta-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.hire-cta-close:hover { color: var(--text-primary); }
+@media (max-width: 480px) {
+  .hire-cta { bottom: 70px; right: 12px; padding: 8px 10px 8px 10px; gap: 7px; }
+  .hire-cta-text { display: none; }
+}

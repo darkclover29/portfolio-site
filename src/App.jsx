@@ -12,6 +12,7 @@ import MatrixOverlay from './components/shared/MatrixOverlay.jsx';
 import DemonCursorOverlay from './components/shared/DemonCursorOverlay.jsx';
 import CustomCursor from './components/shared/CustomCursor.jsx';
 import CardTilt from './components/shared/CardTilt.jsx';
+import HireMeCTA from './components/shared/HireMeCTA.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useAudio } from './hooks/useAudio.js';
 import { useVFS } from './hooks/useVFS.js';
@@ -158,6 +159,7 @@ export default function App() {
         }
       </div>
 
+      <HireMeCTA onNavigate={tab => window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: tab }))} />
       {matrixOverlay && <MatrixOverlay onExit={() => setMatrixOverlay(false)} />}
       {eggOpen   && <DarkCloverEgg onDismiss={dismissEgg} />}
       {konamiOn  && <DemonForm onDismiss={dismissKonami} />}
