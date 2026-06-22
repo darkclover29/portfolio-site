@@ -4,7 +4,7 @@ import { PortfolioData } from '../../../data/portfolioData.js';
 
 const c = PortfolioData.contact;
 
-const EMAILJS_SERVICE  = 'service_f7cwww7';
+const EMAILJS_SERVICE  = 'service_jlcyi0i';
 const EMAILJS_TEMPLATE = 'template_350qlpr';
 const EMAILJS_KEY      = 'OEPbC_woi70xrZ-U8';
 
