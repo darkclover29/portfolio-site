@@ -7107,8 +7107,10 @@ kbd {
   transform: rotateY(180deg);
 }
 /* subtle lift on hover — only when NOT flipped, no scale (breaks 3D) */
-.edu-flip-wrap:not(.is-flipped):hover .edu-flip-inner {
-  transform: translateY(-3px);
+/* hover feedback via shadow on card face only — never on the flip container */
+.edu-flip-wrap:hover .edu-card {
+  border-color: rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.08);
 }
 .edu-flip-face {
   backface-visibility: hidden;
@@ -7327,4 +7329,14 @@ kbd {
     border-radius: 2px;
     margin: 0 auto 16px;
   }
+}
+
+/* ── Edu flip: neutralise ALL hover/theme transforms inside 3D container ── */
+.edu-flip-face.edu-card,
+.edu-flip-face.edu-card:hover {
+  transform: none !important;
+}
+.edu-flip-back.edu-card,
+.edu-flip-back.edu-card:hover {
+  transform: rotateY(180deg) !important;
 }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SEL = '.project-card,.stat-card,.highlight-card,.exp-card,.edu-card,.cert-card';
+const SEL = '.project-card,.stat-card,.highlight-card,.exp-card,.cert-card';
 const MAX = 8;
 
 export default function CardTilt() {
