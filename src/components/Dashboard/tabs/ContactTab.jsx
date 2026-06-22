@@ -4,7 +4,6 @@ import { PortfolioData } from '../../../data/portfolioData.js';
 
 const c = PortfolioData.contact;
 
-// ── EmailJS config — fill in your real keys from emailjs.com ──
 const EMAILJS_SERVICE  = 'service_f7cwww7';
 const EMAILJS_TEMPLATE = 'template_350qlpr';
 const EMAILJS_KEY      = 'O8ei-Yhu5mABSMnxWIb4C';
@@ -25,7 +24,6 @@ function CopyBtn({ value, label }) {
   );
 }
 
-// ── Confetti burst ──────────────────────────────────────────────
 function fireConfetti() {
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;width:100%;height:100%';
@@ -64,7 +62,6 @@ function fireConfetti() {
   raf = requestAnimationFrame(tick);
 }
 
-// ── Share button ────────────────────────────────────────────────
 function ShareBtn() {
   const [copied, setCopied] = useState(false);
   const share = async () => {
@@ -84,23 +81,22 @@ function ShareBtn() {
 }
 
 const CHANNELS = [
-  { icon: 'fa-envelope',    label: 'Email',    value: c.email,    copy: c.email,
+  { icon: 'fa-envelope',     label: 'Email',    value: c.email,    copy: c.email,
     actions: [{ label: 'Open Gmail', icon: 'fa-arrow-up-right-from-square', href: `https://mail.google.com/mail/?view=cm&to=${c.email}` }] },
   { icon: 'fab fa-linkedin', label: 'LinkedIn', value: c.linkedin, copy: c.linkedin,
     actions: [{ label: 'View Profile', icon: 'fa-arrow-up-right-from-square', href: c.linkedinUrl }] },
-  { icon: 'fab fa-github',  label: 'GitHub',   value: c.github,   copy: c.github,
+  { icon: 'fab fa-github',   label: 'GitHub',   value: c.github,   copy: c.github,
     actions: [{ label: 'View Profile', icon: 'fa-arrow-up-right-from-square', href: c.githubUrl }] },
-  { icon: 'fa-phone',       label: 'Phone',    value: c.phone,    copy: c.phone,    actions: [] },
-  { icon: 'fa-location-dot',label: 'Location', value: c.location, copy: c.location, actions: [] },
+  { icon: 'fa-phone',        label: 'Phone',    value: c.phone,    copy: c.phone,    actions: [] },
+  { icon: 'fa-location-dot', label: 'Location', value: c.location, copy: c.location, actions: [] },
 ];
 
 const cardList = { hidden:{}, visible:{ transition:{ staggerChildren:0.08, delayChildren:0.1 } } };
 const cardItem = { hidden:{ opacity:0, y:18 }, visible:{ opacity:1, y:0, transition:{ duration:0.3, ease:[.25,.46,.45,.94] } } };
 
-// ── Contact form ────────────────────────────────────────────────
 function ContactForm() {
   const [form, setForm]     = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [status, setStatus] = useState('idle');
 
   const send = async (e) => {
     e.preventDefault();
@@ -127,7 +123,7 @@ function ContactForm() {
   if (status === 'sent') return (
     <motion.div className="contact-form-success" initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }}>
       <i className="fas fa-circle-check" />
-      <p>Message sent! I'll get back to you within 24 hours.</p>
+      <p>Message sent! I&apos;ll get back to you within 24 hours.</p>
       <button className="filter-btn active" onClick={() => setStatus('idle')}>Send another</button>
     </motion.div>
   );
@@ -160,10 +156,14 @@ function ContactForm() {
       </div>
       <button type="submit" className="contact-form-send" disabled={status === 'sending'}>
         {status === 'sending'
-          ? <><i className="fas fa-spinner fa-spin" /> Sending…</>
+          ? <><i className="fas fa-spinner fa-spin" /> Sending&hellip;</>
           : <><i className="fas fa-paper-plane" /> Send message</>}
       </button>
-      {status === 'error' && <p className="contact-form-error"><i className="fas fa-triangle-exclamation" /> Failed to send. Try emailing directly.</p>}
+      {status === 'error' && (
+        <p className="contact-form-error">
+          <i className="fas fa-triangle-exclamation" /> Failed to send. Try emailing directly.
+        </p>
+      )}
     </motion.form>
   );
 }
@@ -178,7 +178,7 @@ export default function ContactTab() {
       </motion.div>
 
       <motion.p className="contact-intro" initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3, delay:0.1 }}>
-        Open to new roles, collaborations, and side projects. Reach out directly — I respond fastest on email and LinkedIn.
+        Open to new roles, collaborations, and side projects. Reach out directly &mdash; I respond fastest on email and LinkedIn.
       </motion.p>
 
       <motion.div className="contact-cards" variants={cardList} initial="hidden" animate="visible">
@@ -208,4 +208,10 @@ export default function ContactTab() {
       <motion.div className="contact-bottom-row" initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.5 }}>
         <ShareBtn />
         <p className="contact-note">
-          <i className="fas fa-circle-info" /> Prefer email or Linked
+          <i className="fas fa-circle-info" /> Prefer email or LinkedIn &mdash; response within 24 hours.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
