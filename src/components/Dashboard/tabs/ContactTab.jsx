@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
 
@@ -101,7 +101,6 @@ const cardItem = { hidden:{ opacity:0, y:18 }, visible:{ opacity:1, y:0, transit
 function ContactForm() {
   const [form, setForm]     = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
-  const formRef             = useRef(null);
 
   const send = async (e) => {
     e.preventDefault();
@@ -109,11 +108,17 @@ function ContactForm() {
     setStatus('sending');
     try {
       const { default: emailjs } = await import('@emailjs/browser');
-      await emailjs.sendForm(EMAILJS_SERVICE, EMAILJS_TEMPLATE, formRef.current, EMAILJS_KEY);
+      await emailjs.send(
+        EMAILJS_SERVICE,
+        EMAILJS_TEMPLATE,
+        { from_name: form.name, reply_to: form.email, message: form.message },
+        { publicKey: EMAILJS_KEY },
+      );
       setStatus('sent');
       setForm({ name: '', email: '', message: '' });
       fireConfetti();
-    } catch {
+    } catch (err) {
+      console.error('EmailJS error:', err);
       setStatus('error');
       setTimeout(() => setStatus('idle'), 3000);
     }
@@ -129,7 +134,6 @@ function ContactForm() {
 
   return (
     <motion.form
-      ref={formRef}
       className="contact-form"
       onSubmit={send}
       initial={{ opacity:0, y:12 }}
@@ -204,9 +208,4 @@ export default function ContactTab() {
       <motion.div className="contact-bottom-row" initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.5 }}>
         <ShareBtn />
         <p className="contact-note">
-          <i className="fas fa-circle-info" /> Prefer email or LinkedIn — response within 24 hours.
-        </p>
-      </motion.div>
-    </div>
-  );
-}
+          <i className="fas fa-circle-info" /> Prefer email or Linked
