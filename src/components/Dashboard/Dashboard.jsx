@@ -84,19 +84,7 @@ export default function Dashboard({
     onProjectOpened?.();
   }, [openProject]); // eslint-disable-line
 
-  const handlePaletteNav = useCallback(({ type, id }) => {
-    if (type === 'tab') { handleTab(id); }
-    if (type === 'project') {
-      handleTab('projects');
-      setTimeout(() => window.dispatchEvent(new CustomEvent('portfolio:highlight', { detail: { name: id } })), 200);
-    }
-    if (type === 'cmd') {
-      handleTab('cli');
-      setTimeout(() => window.dispatchEvent(new CustomEvent('terminal:run', { detail: { cmd: id } })), 300);
-    }
-  }, [handleTab]);
-
-    const handleTab = useCallback((id) => {
+  const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
     // particle burst at active nav button
     const btns = document.querySelectorAll('.stnav-btn');
