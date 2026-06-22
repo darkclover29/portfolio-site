@@ -5,9 +5,9 @@ import { PortfolioData } from '../../../data/portfolioData.js';
 const c = PortfolioData.contact;
 
 // ── EmailJS config — fill in your real keys from emailjs.com ──
-const EMAILJS_SERVICE  = 'service_portfolio';
-const EMAILJS_TEMPLATE = 'template_contact';
-const EMAILJS_KEY      = 'YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE  = 'service_f7cwww7';
+const EMAILJS_TEMPLATE = 'template_350qlpr';
+const EMAILJS_KEY      = 'O8ei-Yhu5mABSMnxWIb4C';
 
 function copyToClipboard(text) {
   return navigator.clipboard?.writeText(text) ?? Promise.reject();
@@ -210,3 +210,4 @@ export default function ContactTab() {
     </div>
   );
 }
+    
