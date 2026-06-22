@@ -7558,3 +7558,67 @@ kbd {
   .hire-cta { bottom: 70px; right: 12px; padding: 8px 10px 8px 10px; gap: 7px; }
   .hire-cta-text { display: none; }
 }
+
+/* ================================================================
+   PROJECT FILTER — EMPTY STATE
+   ================================================================ */
+.projects-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.projects-empty-state i {
+  font-size: 2.2rem;
+  opacity: 0.35;
+}
+.projects-empty-state p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+.projects-empty-state strong {
+  color: var(--text-secondary);
+}
+.projects-empty-state button {
+  margin-top: 4px;
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.projects-empty-state button:hover {
+  background: rgba(var(--accent-rgb), 0.2);
+}
+
+/* ================================================================
+   TERMINAL — GITHUB SKELETON LOADER
+   ================================================================ */
+.term-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 4px 0;
+}
+.term-skeleton-row {
+  height: 11px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.06) 25%,
+    rgba(255,255,255,0.13) 50%,
+    rgba(255,255,255,0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skel-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

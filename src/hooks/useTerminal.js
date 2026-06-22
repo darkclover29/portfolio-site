@@ -292,11 +292,24 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
 
 
       case 'github': {
-        push(line('output', 'Fetching <span class="accent">darkclover29</span> GitHub stats...'));
+        // animated skeleton while fetching
+        const skelLine = line('output', [
+          '<div class="term-skeleton">',
+          '  <div class="term-skeleton-row" style="width:55%"></div>',
+          '  <div class="term-skeleton-row" style="width:75%"></div>',
+          '  <div class="term-skeleton-row" style="width:60%"></div>',
+          '  <div class="term-skeleton-row" style="width:80%"></div>',
+          '  <div class="term-skeleton-row" style="width:45%"></div>',
+          '</div>',
+        ].join(''));
+        const skelId = skelLine.id;
+        push(skelLine);
         Promise.all([
           fetch('https://api.github.com/users/darkclover29').then(r => r.json()),
           fetch('https://api.github.com/users/darkclover29/repos?per_page=100').then(r => r.json()),
         ]).then(([user, repos]) => {
+          // remove skeleton
+          setLines(prev => prev.filter(l => l.id !== skelId));
           const stars = Array.isArray(repos) ? repos.reduce((a, r) => a + (r.stargazers_count || 0), 0) : '?';
           const forks = Array.isArray(repos) ? repos.reduce((a, r) => a + (r.forks_count || 0), 0) : '?';
           const topLangs = Array.isArray(repos)
