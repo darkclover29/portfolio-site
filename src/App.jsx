@@ -51,7 +51,7 @@ export default function App() {
       if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
         const tag = document.activeElement?.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        setShortcutOpen(v => !v);
+        setShortcutOpen(true);
       }
     };
     window.addEventListener('keydown', handler);

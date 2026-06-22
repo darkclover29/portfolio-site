@@ -42,7 +42,7 @@ const SHORTCUTS = [
 export default function ShortcutModal({ onClose }) {
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'Escape' || e.key === '?') onClose();
+      if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
