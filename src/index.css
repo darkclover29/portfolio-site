@@ -7058,3 +7058,271 @@ kbd {
     size: A4;
   }
 }
+
+/* ================================================================
+   TIMELINE — animated connector line + dot glow
+   ================================================================ */
+.timeline {
+  position: relative;
+}
+.timeline-line {
+  position: absolute;
+  left: 9px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  opacity: 0.35;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.timeline-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-bright);
+  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.timeline-dot--lit {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.6);
+}
+
+/* ================================================================
+   EDUCATION — 3D card flip
+   ================================================================ */
+.edu-flip-wrap {
+  perspective: 900px;
+  cursor: pointer;
+}
+.edu-flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 130px;
+}
+.edu-flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.edu-flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.edu-flip-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  overflow-y: auto;
+}
+.edu-flip-front,
+.edu-flip-back {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.edu-card-body {
+  flex: 1;
+}
+.edu-flip-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  align-self: flex-end;
+  opacity: 0.6;
+  letter-spacing: 0.04em;
+}
+.edu-back-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.edu-course-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.edu-course-list i {
+  color: var(--accent);
+  margin-right: 6px;
+  font-size: 0.7rem;
+}
+
+/* ================================================================
+   COMMAND PALETTE
+   ================================================================ */
+.cp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: clamp(60px, 12vh, 140px);
+  animation: fadeIn 0.12s ease;
+}
+.cp-modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  width: min(580px, calc(100vw - 32px));
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  overflow: hidden;
+  animation: slideUp 0.16s cubic-bezier(0.4,0,0.2,1);
+}
+.cp-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.cp-search-icon {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.cp-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+.cp-input::placeholder { color: var(--text-muted); }
+.cp-esc-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.cp-group-label {
+  padding: 8px 16px 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cp-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 340px;
+  overflow-y: auto;
+}
+.cp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 1px 6px;
+  transition: background 0.1s;
+}
+.cp-item--active,
+.cp-item:hover {
+  background: rgba(var(--accent-rgb), 0.12);
+}
+.cp-item-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: rgba(var(--accent-rgb), 0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.cp-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cp-item-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-item-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-item-type {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.cp-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.cp-footer {
+  display: flex;
+  gap: 16px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.cp-footer kbd {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  margin-right: 3px;
+}
+
+/* ================================================================
+   PROJECT PREVIEW — bottom sheet on mobile
+   ================================================================ */
+@media (max-width: 600px) {
+  .project-preview-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .project-preview-card {
+    border-radius: 20px 20px 0 0;
+    max-height: 82vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    animation: slideUp 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .project-preview-card::before {
+    content: "";
+    display: block;
+    width: 36px; height: 4px;
+    background: var(--border-bright);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+}

@@ -5,7 +5,7 @@ import CommandPalette from '../shared/CommandPalette.jsx';
 import MatrixCanvas from '../shared/MatrixCanvas.jsx';
 import ScrollToTop from '../shared/ScrollToTop.jsx';
 import SlideTabNav from '../shared/SlideTabNav.jsx';
-import TabBurst from '../shared/TabBurst.jsx';;
+import TabBurst from '../shared/TabBurst.jsx';
 import AboutTab from './tabs/AboutTab.jsx';
 import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
@@ -67,6 +67,7 @@ export default function Dashboard({
 }) {
   const burstRef = useRef(null);
   const [activeTab, setActiveTab]   = useState('about');
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [tabDir, setTabDir]         = useState('forward');
   const [cmdOpen, setCmdOpen]       = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -83,7 +84,19 @@ export default function Dashboard({
     onProjectOpened?.();
   }, [openProject]); // eslint-disable-line
 
-  const handleTab = useCallback((id) => {
+  const handlePaletteNav = useCallback(({ type, id }) => {
+    if (type === 'tab') { handleTab(id); }
+    if (type === 'project') {
+      handleTab('projects');
+      setTimeout(() => window.dispatchEvent(new CustomEvent('portfolio:highlight', { detail: { name: id } })), 200);
+    }
+    if (type === 'cmd') {
+      handleTab('cli');
+      setTimeout(() => window.dispatchEvent(new CustomEvent('terminal:run', { detail: { cmd: id } })), 300);
+    }
+  }, [handleTab]);
+
+    const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
     // particle burst at active nav button
     const btns = document.querySelectorAll('.stnav-btn');
@@ -99,6 +112,7 @@ export default function Dashboard({
     setTabDir(newIdx >= curIdx ? 'forward' : 'back');
     setActiveTab(id);
     playClick?.();
+    navigator.vibrate?.(8);
     closeDrawer();
   }, [activeTab, playClick, onFlipToCli, closeDrawer]);
 
@@ -122,6 +136,18 @@ export default function Dashboard({
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [handleTab, closeDrawer]);
+
+  // Cmd+K / Ctrl+K → open command palette
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setPaletteOpen(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
     <div className="dash">
@@ -206,6 +232,12 @@ export default function Dashboard({
         setTheme={setTheme}
       />
       <TabBurst ref={burstRef} />
+      {paletteOpen && (
+        <CommandPalette
+          onNavigate={handlePaletteNav}
+          onClose={() => setPaletteOpen(false)}
+        />
+      )}
     </div>
   );
 }

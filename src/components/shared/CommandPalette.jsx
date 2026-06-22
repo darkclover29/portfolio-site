@@ -1,164 +1,132 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+/**
+ * CommandPalette — Cmd+K fuzzy search over tabs, projects, skills, commands.
+ */
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { PortfolioData } from '../../data/portfolioData.js';
 
-const COMMANDS = [
-  // Navigation
-  { group: 'Navigate', id: 'about',       label: 'About',          icon: 'fa-user',            action: 'tab' },
-  { group: 'Navigate', id: 'skills',      label: 'Skills',         icon: 'fa-code',            action: 'tab' },
-  { group: 'Navigate', id: 'experience',  label: 'Experience',     icon: 'fa-briefcase',       action: 'tab' },
-  { group: 'Navigate', id: 'projects',    label: 'Projects',       icon: 'fa-folder-open',     action: 'tab' },
-  { group: 'Navigate', id: 'education',   label: 'Education',      icon: 'fa-graduation-cap',  action: 'tab' },
-  { group: 'Navigate', id: 'chat',        label: 'AI Chat',        icon: 'fa-comment-dots',    action: 'tab' },
-  { group: 'Navigate', id: 'cli',         label: 'Switch to CLI',  icon: 'fa-terminal',        action: 'cli' },
-  // Contact
-  { group: 'Contact',  id: 'copy-email',  label: 'Copy Email',     icon: 'fa-envelope',        action: 'copy',  value: 'harshtiwari493@gmail.com' },
-  { group: 'Contact',  id: 'copy-phone',  label: 'Copy Phone',     icon: 'fa-phone',           action: 'copy',  value: '+91-7805841898' },
-  { group: 'Contact',  id: 'linkedin',    label: 'Open LinkedIn',  icon: 'fa-linkedin',        action: 'link',  url: 'https://linkedin.com/in/harshtiwari29' },
-  { group: 'Contact',  id: 'github',      label: 'Open GitHub',    icon: 'fa-github',          action: 'link',  url: 'https://github.com/harshtiwari29' },
-  // Themes
-  { group: 'Theme',    id: 'tm-matrix',   label: 'Matrix',         icon: 'fa-circle',          action: 'theme', theme: 'matrix' },
-  { group: 'Theme',    id: 'tm-cyber',    label: 'Cyberpunk',      icon: 'fa-circle',          action: 'theme', theme: 'cyberpunk' },
-  { group: 'Theme',    id: 'tm-dracula',  label: 'Dracula',        icon: 'fa-circle',          action: 'theme', theme: 'dracula' },
-  { group: 'Theme',    id: 'tm-nord',     label: 'Nord',           icon: 'fa-circle',          action: 'theme', theme: 'nord' },
-  { group: 'Theme',    id: 'tm-retro',    label: 'Retro Light',    icon: 'fa-circle',          action: 'theme', theme: 'retro-light' },
+const TABS = [
+  { type: 'tab', id: 'about',      label: 'About',      icon: 'fa-user',         desc: 'Bio, stack, GitHub stats' },
+  { type: 'tab', id: 'skills',     label: 'Skills',     icon: 'fa-code',         desc: 'Technical skills & proficiency' },
+  { type: 'tab', id: 'experience', label: 'Experience', icon: 'fa-briefcase',    desc: 'Work history at TCS' },
+  { type: 'tab', id: 'projects',   label: 'Projects',   icon: 'fa-folder-open',  desc: 'All portfolio projects' },
+  { type: 'tab', id: 'education',  label: 'Education',  icon: 'fa-graduation-cap', desc: 'Academic background' },
+  { type: 'tab', id: 'contact',    label: 'Contact',    icon: 'fa-envelope',     desc: 'Get in touch' },
+  { type: 'tab', id: 'cli',        label: 'Terminal',   icon: 'fa-terminal',     desc: 'Open CLI / terminal view' },
 ];
 
-const ICON_BRANDS = new Set(['fa-linkedin', 'fa-github']);
+const TERMINAL_CMDS = [
+  'help','about','skills','projects','experience','education','contact',
+  'weather','github','joke','quote','hire','clear','matrix','snake','music',
+  'cowsay','neofetch','open','history','darkclover',
+].map(c => ({ type: 'cmd', id: c, label: c, icon: 'fa-terminal', desc: `Run "${c}" in terminal` }));
 
-function CmdItem({ cmd, isSelected, onHover, onClick }) {
-  const iconClass = ICON_BRANDS.has(cmd.icon)
-    ? `fa-brands ${cmd.icon}`
-    : `fas ${cmd.icon}`;
-  return (
-    <button
-      className={`cmd-item${isSelected ? ' is-selected' : ''}`}
-      onMouseEnter={onHover}
-      onClick={onClick}
-    >
-      <span className="cmd-item-icon"><i className={iconClass} /></span>
-      <span className="cmd-item-label">{cmd.label}</span>
-      <span className="cmd-item-badge">{cmd.group}</span>
-    </button>
-  );
+function buildItems() {
+  const projects = PortfolioData.projects.map(p => ({
+    type: 'project', id: p.name, label: p.name, icon: p.icon || 'fa-folder',
+    desc: p.tech, tags: p.tags,
+  }));
+  return [...TABS, ...projects, ...TERMINAL_CMDS];
 }
 
-export default function CommandPalette({ open, onClose, onNavigate, onCli, setTheme }) {
+function fuzzy(query, item) {
+  const q = query.toLowerCase();
+  const haystack = `${item.label} ${item.desc || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
+  return haystack.includes(q);
+}
+
+function GroupLabel({ label }) {
+  return <div className="cp-group-label">{label}</div>;
+}
+
+export default function CommandPalette({ onNavigate, onClose }) {
   const [query, setQuery]   = useState('');
-  const [sel, setSel]       = useState(0);
-  const [notice, setNotice] = useState('');
-  const inputRef = useRef(null);
-  const listRef  = useRef(null);
+  const [cursor, setCursor] = useState(0);
+  const inputRef            = useRef(null);
+  const listRef             = useRef(null);
+  const allItems            = useMemo(buildItems, []);
 
-  const filtered = query.trim()
-    ? COMMANDS.filter(c =>
-        `${c.label} ${c.group}`.toLowerCase().includes(query.toLowerCase())
-      )
-    : COMMANDS;
+  const results = useMemo(() => {
+    if (!query.trim()) return TABS.slice(0, 7);
+    return allItems.filter(item => fuzzy(query, item)).slice(0, 12);
+  }, [query, allItems]);
 
-  // Focus + reset on open
+  // Auto-focus input
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  // Reset cursor on query change
+  useEffect(() => { setCursor(0); }, [query]);
+
+  // Scroll selected item into view
   useEffect(() => {
-    if (open) {
-      setQuery(''); setSel(0); setNotice('');
-      requestAnimationFrame(() => inputRef.current?.focus());
-    }
-  }, [open]);
+    const el = listRef.current?.children[cursor];
+    el?.scrollIntoView({ block: 'nearest' });
+  }, [cursor]);
 
-  useEffect(() => { setSel(0); }, [query]);
+  const select = (item) => {
+    if (item.type === 'tab')     onNavigate?.({ type: 'tab',     id: item.id });
+    if (item.type === 'project') onNavigate?.({ type: 'project', id: item.id });
+    if (item.type === 'cmd')     onNavigate?.({ type: 'cmd',     id: item.id });
+    onClose();
+  };
 
-  // Keep selected item scrolled into view
-  useEffect(() => {
-    listRef.current?.querySelector('[data-selected="true"]')
-      ?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-  }, [sel]);
+  const onKey = (e) => {
+    if (e.key === 'ArrowDown')  { e.preventDefault(); setCursor(c => Math.min(c + 1, results.length - 1)); }
+    if (e.key === 'ArrowUp')    { e.preventDefault(); setCursor(c => Math.max(c - 1, 0)); }
+    if (e.key === 'Enter')      { if (results[cursor]) select(results[cursor]); }
+    if (e.key === 'Escape')     { onClose(); }
+  };
 
-  const flash = (msg) => { setNotice(msg); setTimeout(() => setNotice(''), 2200); };
-
-  const execute = useCallback((cmd) => {
-    if (!cmd) return;
-    switch (cmd.action) {
-      case 'tab':   onNavigate(cmd.id); onClose(); break;
-      case 'cli':   onCli(); onClose(); break;
-      case 'theme': setTheme(cmd.theme); flash(`Theme: ${cmd.label}`); break;  // keep open
-      case 'copy':
-        navigator.clipboard?.writeText(cmd.value)
-          .then(() => flash(`Copied "${cmd.value}"`))
-          .catch(() => flash('Copy failed'));
-        break;
-      case 'link':
-        window.open(cmd.url, '_blank', 'noopener noreferrer');
-        onClose();
-        break;
-    }
-  }, [onNavigate, onCli, setTheme, onClose]);
-
-  const handleKey = useCallback((e) => {
-    if (e.key === 'Escape')    { onClose(); return; }
-    if (e.key === 'ArrowDown') { e.preventDefault(); setSel(s => Math.min(s + 1, filtered.length - 1)); }
-    if (e.key === 'ArrowUp')   { e.preventDefault(); setSel(s => Math.max(s - 1, 0)); }
-    if (e.key === 'Enter')     { e.preventDefault(); execute(filtered[sel]); }
-  }, [filtered, sel, execute, onClose]);
-
-  if (!open) return null;
-
-  // Group display when no query
-  const groups = {};
-  filtered.forEach(c => (groups[c.group] ??= []).push(c));
+  const typeIcon = (type) => ({ tab:'fa-arrow-right', project:'fa-folder', cmd:'fa-terminal' })[type];
 
   return (
-    <div className="cmd-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Command palette">
-      <div className="cmd-box" onClick={e => e.stopPropagation()}>
-
-        <div className="cmd-header">
-          <i className="fas fa-magnifying-glass cmd-search-icon" />
+    <div className="cp-overlay" onClick={onClose}>
+      <div className="cp-modal" onClick={e => e.stopPropagation()}>
+        <div className="cp-search-row">
+          <i className="fas fa-search cp-search-icon" />
           <input
             ref={inputRef}
-            className="cmd-input"
-            placeholder="Search commands, tabs, themes…"
+            className="cp-input"
+            placeholder="Search tabs, projects, commands…"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            onKeyDown={handleKey}
+            onKeyDown={onKey}
             autoComplete="off"
             spellCheck="false"
           />
-          {notice && <span className="cmd-notice">{notice}</span>}
-          <kbd className="cmd-esc-key">Esc</kbd>
+          <kbd className="cp-esc-hint">Esc</kbd>
         </div>
-
-        <div className="cmd-list" ref={listRef}>
-          {filtered.length === 0 ? (
-            <div className="cmd-empty">No results for "<strong>{query}</strong>"</div>
-          ) : query.trim() ? (
-            filtered.map((c, i) => (
-              <CmdItem key={c.id} cmd={c}
-                isSelected={i === sel}
-                onHover={() => setSel(i)}
-                onClick={() => execute(c)}
-                data-selected={i === sel}
-              />
-            ))
-          ) : (
-            Object.entries(groups).map(([group, cmds]) => (
-              <div key={group} className="cmd-group">
-                <div className="cmd-group-label">{group}</div>
-                {cmds.map(c => {
-                  const gi = filtered.indexOf(c);
-                  return (
-                    <CmdItem key={c.id} cmd={c}
-                      isSelected={gi === sel}
-                      onHover={() => setSel(gi)}
-                      onClick={() => execute(c)}
-                    />
-                  );
-                })}
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="cmd-footer">
-          <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
-          <span><kbd>↵</kbd> select</span>
+        {results.length > 0 ? (
+          <ul className="cp-list" ref={listRef} role="listbox">
+            {!query && <GroupLabel label="Navigate" />}
+            {results.map((item, i) => (
+              <li
+                key={item.type + item.id}
+                className={`cp-item${i === cursor ? ' cp-item--active' : ''}`}
+                onClick={() => select(item)}
+                onMouseEnter={() => setCursor(i)}
+                role="option"
+                aria-selected={i === cursor}
+              >
+                <span className="cp-item-icon">
+                  <i className={`fas ${item.icon}`} />
+                </span>
+                <span className="cp-item-body">
+                  <span className="cp-item-label">{item.label}</span>
+                  {item.desc && <span className="cp-item-desc">{item.desc}</span>}
+                </span>
+                <span className="cp-item-type">
+                  <i className={`fas ${typeIcon(item.type)}`} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="cp-empty">No results for "<strong>{query}</strong>"</div>
+        )}
+        <div className="cp-footer">
+          <span><kbd>↑↓</kbd> navigate</span>
+          <span><kbd>Enter</kbd> select</span>
           <span><kbd>Esc</kbd> close</span>
-          <span className="cmd-footer-tip">Ctrl+K to toggle</span>
         </div>
       </div>
     </div>
