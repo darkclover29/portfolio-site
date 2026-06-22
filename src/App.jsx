@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import PageProgress from './components/shared/PageProgress.jsx';
+import BootSequence from './components/Boot/BootSequence.jsx';
 import ShortcutModal from './components/shared/ShortcutModal.jsx';
 import CursorTrail from './components/shared/CursorTrail.jsx';
 import Terminal from './components/Terminal/Terminal.jsx';
@@ -18,6 +19,7 @@ import { useSecretCode, useKonamiCode } from './hooks/useSecretCode.js';
 
 export default function App() {
   const [view, setView]           = useState('gui');
+  const [bootDone, setBootDone]   = useState(() => !!sessionStorage.getItem('booted'));
   const [antiMagicMode, setAntiMagicMode] = useState(false);
   const [demonCursor, setDemonCursor]     = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
@@ -96,6 +98,12 @@ export default function App() {
 
   return (
     <div className="app-root">
+      {!bootDone && (
+        <BootSequence onDone={() => {
+          sessionStorage.setItem('booted', '1');
+          setBootDone(true);
+        }} />
+      )}
       <PageProgress />
       {view === 'gui' && <CustomCursor />}
       {view === 'gui' && <CursorTrail />}

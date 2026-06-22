@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ScrambleText from '../../shared/ScrambleText.jsx';
 
