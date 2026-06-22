@@ -19,7 +19,7 @@ import { useSecretCode, useKonamiCode } from './hooks/useSecretCode.js';
 
 export default function App() {
   const [view, setView]           = useState('gui');
-  const [bootDone, setBootDone]   = useState(() => !!sessionStorage.getItem('booted'));
+  const [bootDone, setBootDone]   = useState(false);
   const [antiMagicMode, setAntiMagicMode] = useState(false);
   const [demonCursor, setDemonCursor]     = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
@@ -99,10 +99,7 @@ export default function App() {
   return (
     <div className="app-root">
       {!bootDone && (
-        <BootSequence onDone={() => {
-          sessionStorage.setItem('booted', '1');
-          setBootDone(true);
-        }} />
+        <BootSequence onDone={() => setBootDone(true)} />
       )}
       <PageProgress />
       {view === 'gui' && <CustomCursor />}
