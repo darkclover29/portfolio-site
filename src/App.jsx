@@ -155,6 +155,7 @@ export default function App() {
             playClick={audio.playClick}
             openProject={openProject}
             onProjectOpened={() => setOpenProject(null)}
+            vfs={vfs}
           />
         }
       </div>

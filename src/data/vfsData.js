@@ -25,7 +25,13 @@ export function buildInitialVfs() {
           'studyhub.txt':          { type: 'file', content: `Name: ${PortfolioData.projects[2].name}\nStack: ${PortfolioData.projects[2].tech}\n${PortfolioData.projects[2].overview}` },
         },
       },
-
+      guestbook: {
+        type: 'dir',
+        children: {
+          'readme.txt': { type: 'file', content: `Welcome to the Guestbook!\n\nYou can sign this guestbook by running:\n  echo "[Your Name]: [Your Message]" >> guestbook/messages.txt\n\nOr submit a message from the GUI Guestbook tab!` },
+          'messages.txt': { type: 'file', content: `Visitor [2026-06-20]: Awesome portfolio, Harsh!\nVisitor [2026-06-21]: Love the terminal interface. The virtual filesystem is amazing.` },
+        },
+      },
     },
   };
 }

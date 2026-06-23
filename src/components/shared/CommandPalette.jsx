@@ -10,13 +10,14 @@ const TABS = [
   { type: 'tab', id: 'experience', label: 'Experience', icon: 'fa-briefcase',    desc: 'Work history at TCS' },
   { type: 'tab', id: 'projects',   label: 'Projects',   icon: 'fa-folder-open',  desc: 'All portfolio projects' },
   { type: 'tab', id: 'education',  label: 'Education',  icon: 'fa-graduation-cap', desc: 'Academic background' },
+  { type: 'tab', id: 'guestbook',  label: 'Guestbook',  icon: 'fa-book-open',    desc: 'View & sign the VFS guestbook' },
   { type: 'tab', id: 'contact',    label: 'Contact',    icon: 'fa-envelope',     desc: 'Get in touch' },
   { type: 'tab', id: 'cli',        label: 'Terminal',   icon: 'fa-terminal',     desc: 'Open CLI / terminal view' },
 ];
 
 const TERMINAL_CMDS = [
   'help','about','skills','projects','experience','education','contact',
-  'weather','github','joke','quote','hire','clear','matrix','snake','music',
+  'weather','github','joke','quote','hire','clear','matrix','snake','echo','guestbook',
   'cowsay','neofetch','open','history','darkclover',
 ].map(c => ({ type: 'cmd', id: c, label: c, icon: 'fa-terminal', desc: `Run "${c}" in terminal` }));
 

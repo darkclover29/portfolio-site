@@ -11,6 +11,7 @@ import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
 import ProjectsTab from './tabs/ProjectsTab.jsx';
 import EducationTab from './tabs/EducationTab.jsx';
+import GuestbookTab from './tabs/GuestbookTab.jsx';
 import ContactTab from './tabs/ContactTab.jsx';
 
 const TABS = [
@@ -19,8 +20,9 @@ const TABS = [
   { id: 'experience', label: 'Experience',  icon: 'fa-briefcase',     key: '3' },
   { id: 'projects',   label: 'Projects',    icon: 'fa-folder-open',   key: '4' },
   { id: 'education',  label: 'Education',   icon: 'fa-graduation-cap',key: '5' },
-  { id: 'contact',    label: 'Contact',     icon: 'fa-paper-plane',   key: '6' },
-  { id: 'cli',        label: 'CLI',         icon: 'fa-terminal',      key: '7' },
+  { id: 'guestbook',  label: 'Guestbook',   icon: 'fa-book-open',     key: '6' },
+  { id: 'contact',    label: 'Contact',     icon: 'fa-paper-plane',   key: '7' },
+  { id: 'cli',        label: 'CLI',         icon: 'fa-terminal',      key: '8' },
 ];
 
 const TAB_KEY_MAP = Object.fromEntries(TABS.map(t => [t.key, t.id]));
@@ -34,7 +36,7 @@ const makeTabVariants = (dir) => ({
   exit:    { opacity: 0, x: dir === 'back' ? 20 : -20, y: -4, transition: { duration: 0.14, ease: 'easeIn' } },
 });
 
-function TabContent({ activeTab, openProject, tabDir }) {
+function TabContent({ activeTab, openProject, tabDir, vfs }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -50,6 +52,7 @@ function TabContent({ activeTab, openProject, tabDir }) {
         {activeTab === 'experience' && <ExperienceTab />}
         {activeTab === 'projects'   && <ProjectsTab highlightProject={openProject} />}
         {activeTab === 'education'  && <EducationTab />}
+        {activeTab === 'guestbook'  && <GuestbookTab vfs={vfs} />}
         {activeTab === 'contact'    && <ContactTab />}
       </motion.div>
     </AnimatePresence>
@@ -64,6 +67,7 @@ export default function Dashboard({
   playClick,
   openProject,
   onProjectOpened,
+  vfs,
 }) {
   const burstRef = useRef(null);
   const [activeTab, setActiveTab]   = useState('about');
@@ -185,7 +189,7 @@ export default function Dashboard({
       <a href="#dash-content" className="skip-link">Skip to content</a>
       <main className="dash-main" id="dash-content" tabIndex={-1}>
         <div className="dash-content">
-          <TabContent activeTab={activeTab} openProject={openProject} tabDir={tabDir} />
+          <TabContent activeTab={activeTab} openProject={openProject} tabDir={tabDir} vfs={vfs} />
         </div>
         <ScrollToTop />
       </main>

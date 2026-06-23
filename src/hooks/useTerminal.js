@@ -18,7 +18,7 @@ const ALL_COMMANDS = [
   'help', 'clear', 'whoami', 'date', 'uptime', 'resume', 'skills',
   'experience', 'projects', 'education', 'contact', 'ls', 'cd', 'cat',
   'touch', 'rm', 'nano', 'grep', 'pwd', 'theme', 'gui', 'matrix',
-  'snake', 'synth', 'chat', 'socials', 'download',
+  'snake', 'synth', 'echo', 'guestbook', 'socials', 'download',
   'darkclover', 'clover', 'ign', 'hack', 'ping', 'sudo', 'anti-magic', 'history', 'vim', 'history', 'vim',
   'hire', 'weather', 'github', 'joke', 'quote', 'cowsay', 'neofetch', 'open',
 ];
@@ -31,31 +31,7 @@ function line(type, html, raw) {
   return { id: makeId(), type, html: html ?? raw ?? '', raw: raw ?? html ?? '' };
 }
 
-const CHATBOT_KEYWORDS = {
-  skills:     () => `My primary skills include Java, Python, Spring Boot, Kotlin, Android (Jetpack Compose), and AEM.\nType <span class="accent">skills</span> for a detailed breakdown.`,
-  experience: () => `I'm currently an Assistant Systems Engineer at TCS (Jan 2026-Present), working on AEM & Java backends.\nPreviously interned at Ignitive Software Labs building Android apps in Kotlin & Compose.\nType <span class="accent">experience</span> for full details.`,
-  projects:   () => `I've built: (1) Mini Compiler & Web IDE (2) Appointment Scheduling System (3) StudyHub Android App (4) PlayLog Session Tracker.\nType <span class="accent">projects</span> for details.`,
-  education:  () => `B.Tech IT (2021-2025) at SVVV Indore - CGPA 8.33/10. Type <span class="accent">education</span> for full details.`,
-  contact:    () => `Email: ${PortfolioData.contact.email}\nLinkedIn: ${PortfolioData.contact.linkedin}\nGitHub: ${PortfolioData.contact.github}`,
-  java:       () => `Java is my strongest language. I use it at TCS with AEM, OSGi services, and Sling models.`,
-  kotlin:     () => `I use Kotlin for Android development with Jetpack Compose -- built 2 complete apps.`,
-  spring:     () => `Spring Boot -- REST APIs, Spring Security, Spring Data JPA, and MVC.`,
-  android:    () => `I've built 2 Android apps: StudyHub and PlayLog. Kotlin, Jetpack Compose, Room DB.`,
-  aem:        () => `Adobe Experience Manager (AEM) -- my current stack at TCS. Core components, OSGi services, Sling models.`,
-  tcs:        () => `I joined TCS as an Assistant Systems Engineer in January 2026, working on AEM-based enterprise web projects.`,
-  location:   () => `Based in Indore/Dewas, Madhya Pradesh, India.`,
-  resume:     () => `Type <span class="accent">resume</span> to view my full resume inline.`,
-  hello:      () => `Hello! I'm Harsh Tiwari's terminal assistant. Ask me about skills, projects, or experience!`,
-  hi:         () => `Hey! Type <span class="accent">help</span> for commands, or ask me anything about Harsh.`,
-};
-
-function chatBot(query) {
-  const q = query.toLowerCase();
-  for (const [key, fn] of Object.entries(CHATBOT_KEYWORDS)) {
-    if (q.includes(key)) return fn();
-  }
-  return `I didn't understand that. Try asking about: skills, projects, experience, education, or contact. Or type <span class="accent">help</span>.`;
-}
+// FAQ chatbot disabled - replaced by VFS Guestbook
 
 // cowsay helper
 function buildCowsay(msg) {
@@ -186,9 +162,9 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
           `  <span class="accent">uptime</span>        -- Session uptime`,
           `  <span class="accent">hire</span>          -- Open email to hire me`,
           `  <span class="accent">weather [city]</span>-- Real weather data`,
-  `  <span class="accent">github</span>        -- My GitHub stats`,
-  `  <span class="accent">joke</span>          -- Random dev joke`,
-  `  <span class="accent">quote</span>         -- Dev/life quote`,
+          `  <span class="accent">github</span>        -- My GitHub stats`,
+          `  <span class="accent">joke</span>          -- Random dev joke`,
+          `  <span class="accent">quote</span>         -- Dev/life quote`,
           `  <span class="accent">cowsay [msg]</span>  -- Classic ASCII cow`,
           `  <span class="accent">neofetch</span>      -- System info card`,
           `  <span class="accent">ls [path]</span>     -- List files`,
@@ -205,7 +181,8 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
           `  <span class="accent">matrix</span>        -- Toggle matrix rain`,
           `  <span class="accent">snake</span>         -- Play snake`,
           `  <span class="accent">synth</span>         -- Open synthesizer`,
-          `  <span class="accent">chat [msg]</span>    -- AI assistant`,
+          `  <span class="accent">echo [msg]</span>    -- Print or append to a file (e.g. echo "hi" >> guestbook/messages.txt)`,
+          `  <span class="accent">guestbook</span>     -- View guestbook file`,
           `  <span class="accent">socials</span>       -- Social links`,
         ].join('\n')));
         playEnter?.();
@@ -610,11 +587,55 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
         playEnter?.();
         break;
 
-      case 'chat':
-        if (!arg) { push(line('output', 'Usage: chat <your question>')); break; }
-        push(line('output', `<span class="accent">AI&gt;</span> ${chatBot(arg)}`));
-        playEnter?.();
+      case 'echo': {
+        const match = arg.match(/^(.*?)(?:\s*(>>|>)\s*(.+))?$/);
+        if (!match) {
+          push(line('error', 'echo: syntax error'));
+          playError?.();
+          break;
+        }
+        let [, content, operator, filePath] = match;
+        content = content.trim().replace(/^['"]|['"]$/g, '');
+
+        if (operator && filePath) {
+          filePath = filePath.trim();
+          const res = vfsHooks.openNano(filePath);
+          if (res.error) {
+            push(line('error', res.error));
+            playError?.();
+          } else {
+            let newContent = content;
+            if (operator === '>>') {
+              newContent = res.fileNode.content ? (res.fileNode.content + '\n' + content) : content;
+            }
+            vfsHooks.saveNano(res.fileNode, newContent);
+            push(line('output', `Appended message to: ${filePath}`));
+            playEnter?.();
+          }
+        } else {
+          push(line('output', content));
+          playEnter?.();
+        }
         break;
+      }
+
+      case 'guestbook': {
+        const res = vfsHooks.cmdCat('guestbook/messages.txt');
+        if (res.error) {
+          push(line('error', 'Guestbook file (guestbook/messages.txt) not found.'));
+          playError?.();
+        } else {
+          push(line('output', [
+            `<b>📖 VFS Guestbook Logs:</b>`,
+            `────────────────────────────────────────`,
+            res.text || '(guestbook is currently empty)',
+            `────────────────────────────────────────`,
+            `Type: <span class="accent">echo "Your message" >> guestbook/messages.txt</span> to sign!`,
+          ].join('\n')));
+          playEnter?.();
+        }
+        break;
+      }
 
       case 'unlock':
         if (arg === 'secrets') {
