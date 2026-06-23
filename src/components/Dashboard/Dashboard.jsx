@@ -74,22 +74,6 @@ export default function Dashboard({
   const isMatrixTheme = theme === 'matrix' || theme === 'cyberpunk';
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
-  const activeTabIndex = TABS.findIndex(t => t.id === activeTab);
-
-  // Open project from terminal "open [name]"
-  useEffect(() => {
-    if (!openProject) return;
-    setActiveTab('projects');
-    onProjectOpened?.();
-  }, [openProject]); // eslint-disable-line
-
-  // HireMeCTA custom event -> navigate to tab
-  useEffect(() => {
-    const handler = (e) => handleTab(e.detail);
-    window.addEventListener('portfolio:navigate', handler);
-    return () => window.removeEventListener('portfolio:navigate', handler);
-  }, [handleTab]);
-
   const handleTab = useCallback((id) => {
     if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
     // particle burst at active nav button
@@ -109,6 +93,22 @@ export default function Dashboard({
     navigator.vibrate?.(8);
     closeDrawer();
   }, [activeTab, playClick, onFlipToCli, closeDrawer]);
+
+  const activeTabIndex = TABS.findIndex(t => t.id === activeTab);
+
+  // Open project from terminal "open [name]"
+  useEffect(() => {
+    if (!openProject) return;
+    setActiveTab('projects');
+    onProjectOpened?.();
+  }, [openProject]); // eslint-disable-line
+
+  // HireMeCTA custom event -> navigate to tab
+  useEffect(() => {
+    const handler = (e) => handleTab(e.detail);
+    window.addEventListener('portfolio:navigate', handler);
+    return () => window.removeEventListener('portfolio:navigate', handler);
+  }, [handleTab]);
 
   const handleGooeyClick = useCallback((index) => {
     handleTab(TABS[index].id);
