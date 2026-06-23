@@ -181,7 +181,6 @@ export default function AboutTab() {
         <BentoStat key={s.label} {...s} fadeUp={fadeUp} />
       ))}
 
-      {/* ── Tech stack card ── */}
       <motion.div className="bento-card bento-stack" variants={fadeUp} {...tilt}>
         <div className="bento-card-label"><i className="fas fa-layer-group"/> Core Stack</div>
         <div className="bento-stack-pills">
@@ -202,6 +201,8 @@ export default function AboutTab() {
           <ScrambleText text="Visit →"/>
         </a>
       </motion.div>
+
+      <hr className="bento-section-divider" aria-hidden="true" />
 
       {/* ── Open source card ── */}
       <motion.div className="bento-card bento-open" variants={fadeUp}>

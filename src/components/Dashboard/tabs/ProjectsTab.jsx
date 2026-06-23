@@ -30,7 +30,6 @@ const GLOW_PALETTES = [
   { glowColor: '315 60 68', colors: ['#f472b6', '#c084fc', '#38bdf8'] },
 ];
 
-
 function ProjectPreviewOverlay({ project, onDismiss }) {
   return (
     <div className="project-preview-overlay" onClick={onDismiss}>
@@ -64,7 +63,6 @@ function ProjectPreviewOverlay({ project, onDismiss }) {
     </div>
   );
 }
-
 export default function ProjectsTab({ highlightProject }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [csOpen, setCsOpen]             = useState(false);
@@ -267,20 +265,15 @@ export default function ProjectsTab({ highlightProject }) {
       </motion.div>
 
       {visible.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          style={{ textAlign:'center', padding:'48px 0', color:'var(--text-muted)', fontSize:'13px' }}
-        >
-          No projects match <strong style={{ color:'var(--accent)' }}>{activeFilter}</strong>.
-          <button
-            style={{ marginLeft:'10px', background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontSize:'13px' }}
-            onClick={() => setActiveFilter('All')}
-          >Clear filter</button>
+        <motion.div className="projects-empty-state" initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}>
+          <i className="fas fa-folder-open" />
+          <p>No projects match <strong>{activeFilter}</strong></p>
+          <button onClick={() => setActiveFilter('All')}>Clear filter</button>
         </motion.div>
       )}
 
       <ComingSoon open={csOpen} onClose={() => setCsOpen(false)} projectName={csProject} />
+      {preview && <ProjectPreviewOverlay project={preview} onDismiss={() => setPreview(null)} />}
     </div>
     </div>
   );

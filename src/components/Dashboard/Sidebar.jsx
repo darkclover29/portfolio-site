@@ -255,6 +255,7 @@ export default function Sidebar({
 
         <div className="sidebar-profile">
           <div className="sidebar-avatar-wrap">
+            <div className="sidebar-avatar-ring-spin" aria-hidden="true" />
             <div className="sidebar-avatar-mono">HT</div>
           </div>
           <h2 className="sidebar-name">Harsh Tiwari</h2>
