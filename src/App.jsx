@@ -109,12 +109,12 @@ export default function App() {
       <AshParticles active={theme === 'anti-magic'} />
 
       <button
-        className="hidden-clover"
+        className="hidden-secret"
         type="button"
         onClick={constellationMode ? deactivateConstellationMode : activateConstellationMode}
         title="???"
         aria-label="secret"
-      >🍀</button>
+      >✨</button>
 
       {constellationMode && <InteractiveConstellation onDeactivate={deactivateConstellationMode} />}
 
