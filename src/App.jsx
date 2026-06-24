@@ -6,10 +6,10 @@ import CursorTrail from './components/shared/CursorTrail.jsx';
 import Terminal from './components/Terminal/Terminal.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import DarkCloverEgg from './components/shared/DarkCloverEgg.jsx';
-import SystemDiagnosticOverlay from './components/shared/SystemDiagnosticOverlay.jsx';
+import DigitalGlitchOverlay from './components/shared/DigitalGlitchOverlay.jsx';
 import AshParticles from './components/shared/AshParticles.jsx';
 import MatrixOverlay from './components/shared/MatrixOverlay.jsx';
-import RefactorSlicerOverlay from './components/shared/RefactorSlicerOverlay.jsx';
+import InteractiveConstellation from './components/shared/InteractiveConstellation.jsx';
 import CustomCursor from './components/shared/CustomCursor.jsx';
 import CardTilt from './components/shared/CardTilt.jsx';
 import HireMeCTA from './components/shared/HireMeCTA.jsx';
@@ -22,7 +22,7 @@ export default function App() {
   const [view, setView]           = useState('gui');
   const [bootDone, setBootDone]   = useState(false);
   const [, setAntiMagicMode] = useState(false);
-  const [refactorMode, setRefactorMode]   = useState(false);
+  const [constellationMode, setConstellationMode] = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
   const [openProject, setOpenProject]     = useState(null);
   const [shortcutOpen, setShortcutOpen]   = useState(false);
@@ -68,14 +68,14 @@ export default function App() {
     });
   }, []);
 
-  const activateRefactorMode = useCallback(() => {
-    setRefactorMode(true);
-    document.body.classList.add('refactor-slicer-mode');
+  const activateConstellationMode = useCallback(() => {
+    setConstellationMode(true);
+    document.body.classList.add('constellation-mode');
   }, []);
 
-  const deactivateRefactorMode = useCallback(() => {
-    setRefactorMode(false);
-    document.body.classList.remove('refactor-slicer-mode');
+  const deactivateConstellationMode = useCallback(() => {
+    setConstellationMode(false);
+    document.body.classList.remove('constellation-mode');
   }, []);
 
   const switchView = useCallback((target) => {
@@ -111,12 +111,12 @@ export default function App() {
       <button
         className="hidden-clover"
         type="button"
-        onClick={refactorMode ? deactivateRefactorMode : activateRefactorMode}
+        onClick={constellationMode ? deactivateConstellationMode : activateConstellationMode}
         title="???"
         aria-label="secret"
       >🍀</button>
 
-      {refactorMode && <RefactorSlicerOverlay active={refactorMode} onDeactivate={deactivateRefactorMode} />}
+      {constellationMode && <InteractiveConstellation onDeactivate={deactivateConstellationMode} />}
 
       <div
         className={`app-view app-view--cli${view === 'cli' ? ' is-active' : ''}`}
@@ -163,7 +163,7 @@ export default function App() {
       <HireMeCTA onNavigate={tab => window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: tab }))} />
       {matrixOverlay && <MatrixOverlay onExit={() => setMatrixOverlay(false)} />}
       {eggOpen   && <DarkCloverEgg onDismiss={dismissEgg} />}
-      {konamiOn  && <SystemDiagnosticOverlay onDismiss={dismissKonami} />}
+      {konamiOn  && <DigitalGlitchOverlay onDismiss={dismissKonami} />}
       {shortcutOpen && <ShortcutModal onClose={() => setShortcutOpen(false)} />}
     </div>
   );
