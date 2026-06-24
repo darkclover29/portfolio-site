@@ -7622,3 +7622,148 @@ kbd {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ==========================================================================
+   PREMIUM CUSTOM UI REFINEMENTS (HAND-CRAFTED)
+   ========================================================================== */
+
+/* 1. Global Glassmorphism & Saturation */
+.bento-card,
+.project-card,
+.skills-pill-card,
+.contact-card,
+.contact-form,
+.border-glow-card,
+.timeline-card,
+.timeline-item,
+.resume-pre,
+.vfs-file-pre {
+  background: rgba(var(--bg-card-rgb), 0.62) !important;
+  backdrop-filter: blur(14px) saturate(110%);
+  -webkit-backdrop-filter: blur(14px) saturate(110%);
+  border: 1px solid rgba(var(--accent-rgb), 0.1) !important;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.35),
+              inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Light theme adjustments to ensure readability and gorgeous visuals */
+body.theme-light .bento-card,
+body.theme-light .project-card,
+body.theme-light .skills-pill-card,
+body.theme-light .contact-card,
+body.theme-light .contact-form,
+body.theme-light .border-glow-card,
+body.theme-light .resume-pre,
+body.theme-light .vfs-file-pre {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(var(--accent-rgb), 0.18) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05),
+              inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 2. Premium Glows & Smooth Transits on Hover */
+.bento-card,
+.project-card-anim,
+.skills-pill-card,
+.contact-card,
+.timeline-item {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.bento-card:hover,
+.skills-pill-card:hover,
+.contact-card:hover {
+  transform: translateY(-4px) scale(1.015) !important;
+  box-shadow: 0 12px 36px -8px rgba(var(--accent-rgb), 0.28),
+              0 2px 8px -2px rgba(var(--accent-rgb), 0.06),
+              inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(var(--accent-rgb), 0.35) !important;
+}
+
+/* Light theme hover overrides */
+body.theme-light .bento-card:hover,
+body.theme-light .skills-pill-card:hover,
+body.theme-light .contact-card:hover {
+  box-shadow: 0 12px 32px -8px rgba(var(--accent-rgb), 0.18),
+              inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(var(--accent-rgb), 0.45) !important;
+}
+
+/* Highlighted project card animation/pulse (used when navigated from cmd palette) */
+.project-card--highlight {
+  animation: project-highlight-pulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes project-highlight-pulse {
+  0% {
+    box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.4),
+                inset 0 0 2px rgba(var(--accent-rgb), 0.2);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    transform: scale(1.015);
+  }
+  100% {
+    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.8),
+                0 0 48px rgba(var(--accent-rgb), 0.25),
+                inset 0 0 6px rgba(var(--accent-rgb), 0.35);
+    border-color: rgba(var(--accent-rgb), 0.9);
+    transform: scale(1.03);
+  }
+}
+
+/* 3. Form input aesthetics */
+.contact-form input,
+.contact-form textarea,
+.contact-form select,
+.vfs-search {
+  background: rgba(var(--bg-card-rgb), 0.4) !important;
+  border: 1px solid rgba(var(--accent-rgb), 0.15) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s !important;
+  padding: 10px 14px !important;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus,
+.vfs-search:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25) !important;
+  background: rgba(var(--bg-card-rgb), 0.7) !important;
+}
+
+/* 4. Elegant custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(var(--bg-card-rgb), 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-rgb), 0.22);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--accent-rgb), 0.45);
+}
+
+/* 5. Custom typography polish */
+.section-title {
+  letter-spacing: -0.025em;
+  font-weight: 750;
+  text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.08);
+}
+.bento-name {
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+.bento-title {
+  letter-spacing: 0.02em;
+}

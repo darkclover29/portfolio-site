@@ -36,7 +36,7 @@ const makeTabVariants = (dir) => ({
   exit:    { opacity: 0, x: dir === 'back' ? 20 : -20, y: -4, transition: { duration: 0.14, ease: 'easeIn' } },
 });
 
-function TabContent({ activeTab, openProject, tabDir, vfs }) {
+function TabContent({ activeTab, openProject, highlightProject, tabDir, vfs }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -50,7 +50,7 @@ function TabContent({ activeTab, openProject, tabDir, vfs }) {
         {activeTab === 'about'      && <AboutTab />}
         {activeTab === 'skills'     && <SkillsTab />}
         {activeTab === 'experience' && <ExperienceTab />}
-        {activeTab === 'projects'   && <ProjectsTab highlightProject={openProject} />}
+        {activeTab === 'projects'   && <ProjectsTab highlightProject={openProject || highlightProject} />}
         {activeTab === 'education'  && <EducationTab />}
         {activeTab === 'guestbook'  && <GuestbookTab vfs={vfs} />}
         {activeTab === 'contact'    && <ContactTab />}
@@ -74,6 +74,7 @@ export default function Dashboard({
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [tabDir, setTabDir]         = useState('forward');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [localHighlight, setLocalHighlight] = useState(null);
 
   const isMatrixTheme = theme === 'matrix' || theme === 'cyberpunk';
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
@@ -97,6 +98,19 @@ export default function Dashboard({
     navigator.vibrate?.(8);
     closeDrawer();
   }, [activeTab, playClick, onFlipToCli, closeDrawer]);
+
+  const handlePaletteNav = useCallback(({ type, id }) => {
+    if (type === 'tab') { handleTab(id); }
+    if (type === 'project') {
+      setLocalHighlight(id);
+      handleTab('projects');
+      setTimeout(() => setLocalHighlight(null), 2000);
+    }
+    if (type === 'cmd') {
+      handleTab('cli');
+      setTimeout(() => window.dispatchEvent(new CustomEvent('terminal:run', { detail: { cmd: id } })), 300);
+    }
+  }, [handleTab]);
 
   const activeTabIndex = TABS.findIndex(t => t.id === activeTab);
 
@@ -189,7 +203,13 @@ export default function Dashboard({
       <a href="#dash-content" className="skip-link">Skip to content</a>
       <main className="dash-main" id="dash-content" tabIndex={-1}>
         <div className="dash-content">
-          <TabContent activeTab={activeTab} openProject={openProject} tabDir={tabDir} vfs={vfs} />
+          <TabContent
+            activeTab={activeTab}
+            openProject={openProject}
+            highlightProject={localHighlight}
+            tabDir={tabDir}
+            vfs={vfs}
+          />
         </div>
         <ScrollToTop />
       </main>
