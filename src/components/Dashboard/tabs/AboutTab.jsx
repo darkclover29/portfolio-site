@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
-import ScrambleText from '../../shared/ScrambleText.jsx';
-import MagneticButton from '../../shared/MagneticButton.jsx';
 
-const TITLES = [
-  'Assistant Systems Engineer @ TCS',
-  'Java & AEM Developer',
-  'Android App Builder',
-  'AEM / CMS Specialist',
-  'Open Source Enthusiast',
+// Outcome-focused rotating headlines — answers "what can he do for me?"
+const HEADLINES = [
+  'I build Java backends that scale.',
+  'I ship Android apps to Play Store.',
+  'I architect AEM content platforms.',
+  'I turn specs into production code.',
 ];
 
-function useTypewriter(strings, { typingSpeed = 70, deletingSpeed = 40, pauseMs = 1600 } = {}) {
+function useTypewriter(strings, { typingSpeed = 65, deletingSpeed = 35, pauseMs = 1800 } = {}) {
   const [text, setText]       = useState('');
   const [phase, setPhase]     = useState('typing');
   const [idx, setIdx]         = useState(0);
@@ -69,7 +67,6 @@ function ISTTime() {
   return <>{time} IST</>;
 }
 
-// ── Bento card parallax handler factory ─────────────────────────
 function makeTiltHandlers(strength = 7) {
   return {
     onMouseMove(e) {
@@ -90,13 +87,12 @@ function makeTiltHandlers(strength = 7) {
 }
 const tilt = makeTiltHandlers();
 
-// ── Extracted component so useCountUp is called at top level (no hooks-in-loop) ──
-function BentoStat({ raw, label, icon, variants, fadeUp }) {
+function BentoStat({ raw, label, icon, fadeUp }) {
   const display = useCountUp(raw);
   return (
     <motion.div className="bento-card bento-stat" variants={fadeUp}
       whileHover={{ y:-2, transition:{duration:0.15} }} {...tilt}>
-      <i className={`fas ${icon} bento-stat-icon`}/>
+      <i className={`fas ${icon} bento-stat-icon`} aria-hidden="true"/>
       <div className="bento-stat-num">{display}</div>
       <div className="bento-stat-label">{label}</div>
     </motion.div>
@@ -110,41 +106,56 @@ const STATS = [
   { raw: '2+',  label: 'Yrs exp',  icon: 'fa-clock'    },
 ];
 
-const STACK = [
-  'Java','Spring Boot','AEM','Kotlin','Android',
-  'Python','PostgreSQL','Docker','Git','REST APIs',
+const STACK_GROUPS = [
+  { category: 'Languages', desc: 'Strong foundation in Java, Kotlin, Python, and SQL.', items: ['Java', 'Kotlin', 'Python', 'SQL', 'JavaScript'] },
+  { category: 'Backend & CMS', desc: 'Enterprise engineering in Spring Boot and AEM platforms.', items: ['Spring Boot', 'REST APIs', 'AEM', 'Docker', 'PostgreSQL'] },
+  { category: 'Mobile & Frontend', desc: 'Native Android SDK and modern declarative layouts.', items: ['Android SDK', 'Jetpack Compose', 'HTML & CSS', 'Git'] }
+];
+
+// Services offered to freelance clients / collaborators
+const SERVICES = [
+  { icon: 'fa-server',      label: 'Java / Spring Boot backends',   desc: 'REST APIs, microservices, Spring Data JPA, PostgreSQL' },
+  { icon: 'fa-mobile-screen', label: 'Android apps (Kotlin)',        desc: 'Jetpack Compose, Room, Firebase — prototype to Play Store' },
+  { icon: 'fa-layer-group', label: 'AEM / CMS builds',              desc: 'Core components, OSGi services, content architecture' },
 ];
 
 const stagger = { hidden:{}, visible:{ transition:{ staggerChildren:0.06, delayChildren:0.05 } } };
 const fadeUp  = { hidden:{ opacity:0, y:16 }, visible:{ opacity:1, y:0, transition:{ duration:0.3, ease:[.25,.46,.45,.94] } } };
 
 export default function AboutTab() {
-  const title = useTypewriter(TITLES);
+  const headline = useTypewriter(HEADLINES);
+  const c = PortfolioData.contact;
+
+  // "Hire me" CTA navigates to the Contact tab
+  const handleHire = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: 'contact' }));
+  }, []);
 
   return (
     <motion.div className="bento-grid" variants={stagger} initial="hidden" animate="visible">
 
-      {/* ── Hero card — spans full width on desktop ── */}
+      {/* ── Hero card ── */}
       <motion.div className="bento-card bento-hero" variants={fadeUp} {...tilt}>
         <div className="bento-hero-text">
-          <h1 className="bento-name">
-            <ScrambleText text="Harsh Tiwari" />
-          </h1>
-          <p className="bento-title">{title}<span className="typewriter-cursor"/></p>
+          <h1 className="bento-name">Harsh Tiwari</h1>
+          <p className="bento-title">{headline}<span className="typewriter-cursor" aria-hidden="true"/></p>
           <p className="bento-bio">
-            Assistant Systems Engineer at <strong>TCS</strong> building enterprise web platforms
-            with Java &amp; AEM. Passionate about compilers, Android, and clean system design.
+            Backend &amp; mobile engineer open to freelance contracts and side projects.
+            I take features from spec to production — Java microservices, Kotlin/Compose apps,
+            or AEM content platforms. Currently at&nbsp;<strong>TCS</strong>; available for
+            contract work alongside.
           </p>
+          {/* Dual CTA — routes recruiters and clients separately */}
           <div className="bento-links">
-            <MagneticButton tag="a" href="mailto:harshtiwari493@gmail.com" className="about-link about-link--primary">
-              <ScrambleText text="Contact Me" />
-            </MagneticButton>
-            <MagneticButton tag="a" href="https://github.com/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
-              <i className="fa-brands fa-github" /> GitHub
-            </MagneticButton>
-            <MagneticButton tag="a" href="https://linkedin.com/in/harshtiwari29" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
-              <i className="fa-brands fa-linkedin" /> LinkedIn
-            </MagneticButton>
+            <button className="about-link about-link--primary" onClick={handleHire}>
+              Hire me for a project
+            </button>
+            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
+              <i className="fas fa-file-lines" aria-hidden="true" /> View resume
+            </a>
+            <a href={c.githubUrl} target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
+              <i className="fa-brands fa-github" aria-hidden="true" /> GitHub
+            </a>
           </div>
         </div>
         <div className="bento-avatar">
@@ -152,67 +163,138 @@ export default function AboutTab() {
             <div className="about-avatar-inner">HT</div>
           </div>
           <span className="bento-avail-dot-wrap">
-            <span className="bento-avail-pulse"/>
-            <span className="bento-avail-text">Available</span>
+            <span className="bento-avail-pulse" aria-hidden="true"/>
+            <span className="bento-avail-text">Available for projects</span>
           </span>
         </div>
       </motion.div>
 
       {/* ── Clock card ── */}
       <motion.div className="bento-card bento-clock" variants={fadeUp} {...tilt}>
-        <div className="bento-card-label"><i className="fas fa-location-dot"/> Indore, India</div>
+        <div className="bento-card-label"><i className="fas fa-location-dot" aria-hidden="true"/> Indore, India</div>
         <div className="bento-time"><ISTTime /></div>
-        <div className="bento-tz">Asia / Kolkata · IST</div>
+        <div className="bento-tz">IST · UTC+5:30</div>
       </motion.div>
 
       {/* ── Status card ── */}
       <motion.div className="bento-card bento-status" variants={fadeUp} {...tilt}>
         <div className="bento-card-label">Current role</div>
         <div className="bento-status-role">
-          <i className="fas fa-building" style={{color:'var(--accent)',marginRight:6}}/>
+          <i className="fas fa-building" style={{color:'var(--accent)',marginRight:6}} aria-hidden="true"/>
           TCS
         </div>
         <div className="bento-status-sub">Java · AEM · Agile</div>
         <div className="bento-status-tag">Jan 2026 – Present</div>
       </motion.div>
 
-      {/* ── Stats row — 4 small cards (hooks-safe via BentoStat component) ── */}
+      {/* ── Stats ── */}
       {STATS.map((s) => (
         <BentoStat key={s.label} {...s} fadeUp={fadeUp} />
       ))}
 
+      {/* ── Services card — client-facing ── */}
+      <motion.div className="bento-card bento-services" variants={fadeUp} {...tilt}>
+        <div className="bento-card-label"><i className="fas fa-handshake" aria-hidden="true"/> What I take on</div>
+        <ul className="bento-services-list">
+          {SERVICES.map(s => (
+            <li key={s.label} className="bento-service-item">
+              <i className={`fas ${s.icon} bento-service-icon`} aria-hidden="true"/>
+              <div>
+                <span className="bento-service-label">{s.label}</span>
+                <span className="bento-service-desc">{s.desc}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="bento-services-meta">
+          <span><i className="fas fa-reply" aria-hidden="true"/> Replies within 24 h</span>
+          <span><i className="fas fa-globe" aria-hidden="true"/> Remote-friendly · IST overlap</span>
+          <span><i className="fas fa-file-contract" aria-hidden="true"/> Freelance contracts &amp; collabs</span>
+        </div>
+      </motion.div>
+
+      {/* ── Core stack ── */}
       <motion.div className="bento-card bento-stack" variants={fadeUp} {...tilt}>
-        <div className="bento-card-label"><i className="fas fa-layer-group"/> Core Stack</div>
-        <div className="bento-stack-pills">
-          {STACK.map(s => (
-            <span key={s} className="bento-stack-pill">
-              <ScrambleText text={s}/>
-            </span>
+        <div className="bento-card-label"><i className="fas fa-layer-group" aria-hidden="true"/> Core Stack</div>
+        <div className="bento-stack-groups">
+          {STACK_GROUPS.map(g => (
+            <div key={g.category} className="bento-stack-group">
+              <span className="bento-stack-group-title">{g.category}</span>
+              <p className="bento-stack-group-desc">{g.desc}</p>
+              <div className="bento-stack-group-pills">
+                {g.items.map(s => (
+                  <span key={s} className="bento-stack-pill">{s}</span>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </motion.div>
 
-      {/* ── Currently building card ── */}
+      {/* ── Currently building ── */}
       <motion.div className="bento-card bento-building" variants={fadeUp}>
-        <div className="bento-card-label"><span className="bento-live-dot"/>Now building</div>
-        <div className="bento-building-name">Chronoscapes</div>
-        <div className="bento-building-sub">Audio-visual ambient workspace · Vanilla JS + Web Audio API</div>
-        <a href="https://chronoscapes.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-building-link">
-          <ScrambleText text="Visit →"/>
+        <div className="bento-card-label"><span className="bento-live-dot" aria-hidden="true"/>Now building</div>
+        <div className="bento-building-name">AgentVerse</div>
+        <div className="bento-building-sub">Multi-agent Indian metropolis sim · Python · FastAPI · LLM</div>
+        <ul className="bento-building-specs">
+          <li><i className="fas fa-users-viewfinder" /> 100 autonomous AI citizens</li>
+          <li><i className="fas fa-brain" /> ChromaDB vector memories</li>
+          <li><i className="fas fa-timeline" /> Event-Sourced timeline scrubber</li>
+        </ul>
+        <div className="bento-building-tech">
+          {['Python', 'FastAPI', 'Ollama', 'ChromaDB'].map(t => (
+            <span key={t} className="bento-building-tech-pill">{t}</span>
+          ))}
+        </div>
+        <a href="https://agentverse.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-building-btn">
+          <span>Launch Simulation</span> <i className="fas fa-arrow-right" />
         </a>
       </motion.div>
 
-      <hr className="bento-section-divider" aria-hidden="true" />
-
-      {/* ── Open source card ── */}
-      <motion.div className="bento-card bento-open" variants={fadeUp}>
-        <div className="bento-card-label"><i className="fab fa-github"/> Open Source</div>
-        <div className="bento-open-text">
-          Exploring contributions &amp; building side projects in public.
+      {/* ── GitHub card ── */}
+      <motion.div className="bento-card bento-github" variants={fadeUp} {...tilt}>
+        <div className="bento-card-label"><i className="fab fa-github" aria-hidden="true"/> GitHub</div>
+        <div className="bento-github-content">
+          <div className="bento-github-info">
+            <div className="bento-github-handle">darkclover29</div>
+            <div className="bento-github-sub">Side projects &amp; open source builds</div>
+            <a href={c.githubUrl} target="_blank" rel="noopener noreferrer" className="bento-building-link">
+              View profile →
+            </a>
+          </div>
+          <div className="bento-github-stats">
+            <div className="bento-git-stat">
+              <span className="bento-git-stat-val">20+</span>
+              <span className="bento-git-stat-lbl">Repos</span>
+            </div>
+            <div className="bento-git-stat">
+              <span className="bento-git-stat-val">120+</span>
+              <span className="bento-git-stat-lbl">Contr.</span>
+            </div>
+          </div>
         </div>
-        <a href="https://github.com/harshtiwari29" target="_blank" rel="noopener noreferrer" className="bento-building-link">
-          <ScrambleText text="darkclover29 →"/>
-        </a>
+      </motion.div>
+
+      {/* ── Live projects quick-access ── */}
+      <motion.div className="bento-card bento-open" variants={fadeUp}>
+        <div className="bento-card-label"><i className="fas fa-rocket" aria-hidden="true"/> Live Projects</div>
+        <div className="bento-live-projects">
+          <a href="https://agentverse.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-live-project-tile">
+            <span className="bento-live-project-dot" style={{background:'#a78bfa'}} />
+            <span className="bento-live-project-name">AgentVerse</span>
+            <span className="bento-live-project-tag">Multi-Agent · LLM</span>
+          </a>
+          <a href="https://pocketdex.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-live-project-tile">
+            <span className="bento-live-project-dot" style={{background:'#f472b6'}} />
+            <span className="bento-live-project-name">PocketDex</span>
+            <span className="bento-live-project-tag">React · TypeScript</span>
+          </a>
+          <a href="https://chronoscapes.harshtiwari.dev" target="_blank" rel="noopener noreferrer" className="bento-live-project-tile">
+            <span className="bento-live-project-dot" style={{background:'#38bdf8'}} />
+            <span className="bento-live-project-name">Chronoscapes</span>
+            <span className="bento-live-project-tag">Web Audio · Canvas</span>
+          </a>
+        </div>
       </motion.div>
 
     </motion.div>

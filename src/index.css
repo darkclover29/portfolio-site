@@ -2,7 +2,7 @@
    PORTFOLIO — Main CSS
    Imports themes, then defines all component styles.
    ============================================================ */
-@import './style.css';
+@import './style.css'; /* cache-bust 2026-07-04 */
 
 /* ── Reset & Base ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,14 +54,17 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
 }
 /* GUI lives to the left, CLI to the right */
-.app-view--gui { transform: translateX(-100%); }
-.app-view--cli { transform: translateX(100%); }
+.app-view--gui { }
+.app-view--cli { }
 .app-view.is-active {
-  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
@@ -954,7 +957,7 @@ mark { background: var(--accent); color: var(--bg-primary); padding: 0 3px; bord
 .timeline::before {
   content: '';
   position: absolute;
-  left: 15px;
+  left: 18px;
   top: 24px;
   bottom: 24px;
   width: 1px;
@@ -963,7 +966,7 @@ mark { background: var(--accent); color: var(--bg-primary); padding: 0 3px; bord
 
 .timeline-item {
   display: grid;
-  grid-template-columns: 32px 1fr;
+  grid-template-columns: 36px 1fr;
   gap: 16px;
   padding-bottom: 28px;
   position: relative;
@@ -972,18 +975,138 @@ mark { background: var(--accent); color: var(--bg-primary); padding: 0 3px; bord
 .timeline-dot-wrap {
   display: flex;
   justify-content: center;
-  padding-top: 18px;
+  padding-top: 14px;
   position: relative;
   z-index: 1;
 }
 
 .timeline-dot {
-  width: 10px;
-  height: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  transition: all 0.3s var(--ease);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+
+.timeline-dot--lit {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35);
+  background: var(--accent-dim);
+}
+
+.exp-tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.exp-tech-pill {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 5px;
+  display: inline-block;
+  transition: all 0.2s var(--ease);
+}
+.timeline-card:hover .exp-tech-pill {
+  border-color: rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.15);
+}
+
+/* --- Redesigned Experience 2-column Layout --- */
+.experience-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 30px;
+  align-items: start;
+  margin-top: 24px;
+}
+.timeline-container {
+  min-width: 0;
+}
+.experience-sidebar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 100px;
+  transition: border-color 0.25s var(--ease);
+}
+.experience-sidebar-card:hover {
+  border-color: rgba(var(--accent-rgb), 0.15);
+}
+.exp-sidebar-title {
+  font-size: 1rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.01em;
+}
+.exp-sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.exp-sidebar-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+  padding-left: 14px;
+}
+.exp-sidebar-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim);
-  flex-shrink: 0;
+}
+.exp-sidebar-list li strong {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.exp-sidebar-list li p {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .experience-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .experience-sidebar-card {
+    position: static;
+  }
 }
 
 .timeline-card {
@@ -1371,6 +1494,58 @@ mark { background: var(--accent); color: var(--bg-primary); padding: 0 3px; bord
 .sysmon-val { color: var(--accent); font-weight: 700; font-size: 20px; font-family: var(--font-mono); }
 .sysmon-info { display: flex; flex-direction: column; gap: 5px; }
 .sysmon-info-item { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); }
+
+/* --- CPU Core threads grid --- */
+.sysmon-cores-container {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+.sysmon-cores-title {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 8px;
+}
+.sysmon-cores-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sysmon-core-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.sysmon-core-label {
+  color: var(--text-secondary);
+  width: 32px;
+  flex-shrink: 0;
+}
+.sysmon-core-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.sysmon-core-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease-out;
+}
+.sysmon-core-val {
+  color: var(--text-muted);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+  font-size: 10px;
+}
 
 /* IoT (legacy) */
 .iot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
@@ -1821,20 +1996,24 @@ mark { background: var(--accent); color: var(--bg-primary); padding: 0 3px; bord
 }
 
 .sidebar-copy-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 11px;
-  line-height: 1;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  transition: all 0.2s var(--ease);
   flex-shrink: 0;
 }
 .sidebar-copy-btn:hover {
   color: var(--accent);
-  background: var(--accent-dim);
+  border-color: rgba(var(--accent-rgb), 0.3);
+  background: rgba(var(--accent-rgb), 0.08);
 }
 
 .sidebar-contact-row {
@@ -2037,6 +2216,78 @@ body { overscroll-behavior: none; }
     transition: all 0.15s var(--ease);
   }
   .mob-tab i { font-size: 18px; }
+
+  /* ── "More" bottom sheet (CLI / Education / Guestbook) ── */
+  .more-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1200;
+    animation: sheet-fade-in 0.18s ease-out;
+  }
+  .more-sheet {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    z-index: 1201;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 18px 18px 0 0;
+    padding: 10px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: sheet-up 0.22s var(--ease);
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.35);
+  }
+  .more-sheet-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: var(--border-bright);
+    margin: 2px auto 10px;
+  }
+  .more-sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+  .more-sheet-item i { width: 20px; text-align: center; font-size: 15px; color: var(--text-muted); }
+  .more-sheet-item:hover,
+  .more-sheet-item:focus-visible { background: var(--accent-dim); color: var(--text-primary); }
+  .more-sheet-item.active { color: var(--accent); }
+  .more-sheet-item.active i { color: var(--accent); }
+  .more-sheet-hint {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  @keyframes sheet-up {
+    from { transform: translateY(24px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+  @keyframes sheet-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
   .mob-tab.active { color: var(--accent); border-top-color: var(--accent); }
 
   .cmd-trigger-btn span { display: none; }
@@ -2092,8 +2343,8 @@ body { overscroll-behavior: none; }
   .projects-grid { grid-template-columns: 1fr; }
 
   /* Timeline */
-  .timeline::before { left: 12px; }
-  .timeline-item    { grid-template-columns: 28px 1fr; gap: 12px; }
+  .timeline::before { left: 18px; }
+  .timeline-item    { grid-template-columns: 36px 1fr; gap: 12px; }
   .timeline-card    { padding: 16px; }
 
   /* Education */
@@ -2153,9 +2404,9 @@ body { overscroll-behavior: none; }
   .prompt-label   { font-size: 12px; }
 
   /* Timeline */
-  .timeline::before { left: 10px; }
-  .timeline-item    { grid-template-columns: 22px 1fr; gap: 10px; }
-  .timeline-dot     { width: 8px; height: 8px; }
+  .timeline::before { left: 15px; }
+  .timeline-item    { grid-template-columns: 30px 1fr; gap: 10px; }
+  .timeline-dot     { width: 24px; height: 24px; font-size: 8px; border-radius: 6px; }
   .timeline-card    { padding: 12px; }
 
   /* Education */
@@ -2185,7 +2436,7 @@ body { overscroll-behavior: none; }
    RESPONSIVE <= 360px — Very small / budget phones
    ═══════════════════════════════════════════════════════════ */
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   .about-name    { font-size: 20px; }
   .dash-tab      { padding: 0 5px; min-width: 30px; }
   .mob-tab       { min-width: 44px; font-size: 8px; }
@@ -2799,10 +3050,7 @@ a.contact-row-value:hover { color: var(--accent); }
    IMPROVED TIMELINE — dots + connector glow
    ═══════════════════════════════════════════════════════════ */
 
-.timeline-dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim), 0 0 0 5px var(--bg-card);
-}
+/* Duplicate timeline-dot rules removed to support initials badges */
 
 .timeline-card {
   transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
@@ -2986,17 +3234,6 @@ a.contact-row-value:hover { color: var(--accent); }
   .dash { grid-template-columns: 272px 1fr; }
 }
 
-/* Hide tab labels on smaller desktop */
-@media (max-width: 920px) {
-  .dash-tab { padding: 0 10px; }
-  .dash-tab span { font-size: 12px; }
-}
-@media (max-width: 840px) {
-  .dash-tab span { display: none; }
-  .dash-tab i { font-size: 15px; opacity: 1; }
-  .dash-tab { padding: 0 11px; min-width: 38px; justify-content: center; }
-  .dash-tab--cli { margin-left: 4px; }
-}
 
 /* Tablet/mobile: show hamburger + sidebar as drawer */
 @media (max-width: 1024px) {
@@ -3906,7 +4143,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Matrix background canvas: keep subtle on matrix/cyberpunk, off elsewhere */
-body:not(.theme-matrix):not(.theme-cyberpunk) .dash-matrix-bg {
+body:not(.theme-matrix) .dash-matrix-bg {
   display: none !important;
 }
 
@@ -5022,7 +5259,7 @@ body:not(.theme-matrix):not(.theme-cyberpunk) .dash-matrix-bg {
 }
 
 /* Tablet (481–900px): moderate scale */
-@media (min-width: 481px) and (max-width: 900px) {
+@media (min-width: 481px) and (max-width: 1024px) {
   .synth-keyboard {
     transform: scale(0.88);
     transform-origin: top center;
@@ -5073,105 +5310,6 @@ body:not(.theme-matrix):not(.theme-cyberpunk) .dash-matrix-bg {
 .game-close-btn {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-}
-
-/* ================================================================
-   ASTA DESKTOP PET
-   ================================================================ */
-.asta-pet {
-  position: fixed;
-  z-index: 99998;
-  cursor: pointer;
-  user-select: none;
-  pointer-events: auto;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  will-change: left, top;
-}
-.asta-pet--in {
-  opacity: 1;
-}
-
-/* Shadow under feet */
-.asta-shadow {
-  width: 40px;
-  height: 8px;
-  background: rgba(0,0,0,0.25);
-  border-radius: 50%;
-  margin: -4px auto 0;
-  filter: blur(3px);
-}
-
-/* Walk: bob up-down */
-.asta-sprite--walk {
-  animation: asta-bob 0.44s ease-in-out infinite;
-}
-@keyframes asta-bob {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-4px); }
-}
-
-/* Idle: gentle breathe */
-.asta-sprite--idle {
-  animation: asta-breathe 2.4s ease-in-out infinite;
-}
-@keyframes asta-breathe {
-  0%,100% { transform: scaleY(1)   translateY(0); }
-  50%     { transform: scaleY(0.97) translateY(1px); }
-}
-
-/* Attack: sword slash spin */
-.asta-sprite--attack {
-  animation: asta-slash 0.45s ease-out forwards;
-}
-@keyframes asta-slash {
-  0%   { transform: rotate(0deg) scale(1); }
-  25%  { transform: rotate(-18deg) scale(1.18); filter: brightness(1.4); }
-  65%  { transform: rotate(14deg) scale(1.1); }
-  100% { transform: rotate(0deg) scale(1); filter: brightness(1); }
-}
-
-/* Speech bubble */
-.asta-bubble {
-  position: absolute;
-  bottom: calc(100% + 4px);
-  left: 50%;
-  translate: -50% 0;
-  background: #fff;
-  color: #1a1a1a;
-  font-size: 11px;
-  font-family: 'Share Tech Mono', monospace;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 10px;
-  border: 2px solid #27ae60;
-  white-space: nowrap;
-  box-shadow: 0 3px 14px rgba(0,0,0,0.35);
-  pointer-events: none;
-  animation: bubble-pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
-}
-.asta-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -9px;
-  left: 50%;
-  translate: -50% 0;
-  border: 5px solid transparent;
-  border-top-color: #27ae60;
-}
-.asta-bubble::before {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  translate: -50% 0;
-  border: 5px solid transparent;
-  border-top-color: #fff;
-  z-index: 1;
-}
-@keyframes bubble-pop {
-  0%   { transform: scale(0.4) scaleX(inherit); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
 }
 
 /* Touch ripple */
@@ -5247,9 +5385,9 @@ body:not(.theme-matrix):not(.theme-cyberpunk) .dash-matrix-bg {
   background: var(--accent-hover, var(--accent));
   transform: translateY(-2px) scale(1.06);
 }
-@media (max-width: 600px) {
+@media (max-width: 1024px) {
   .scroll-top-btn {
-    bottom: 5.5rem; /* above mobile nav */
+    bottom: 5.5rem; /* above mobile nav (mobnav shows ≤1024) */
     right: 1rem;
     width: 40px; height: 40px;
   }
@@ -5337,7 +5475,7 @@ body:not(.theme-matrix):not(.theme-cyberpunk) .dash-matrix-bg {
 }
 .project-link-btn--featured {
   background: var(--accent) !important;
-  color: #fff !important;
+  color: var(--accent-contrast, #ffffff) !important;
   border-color: var(--accent) !important;
 }
 .project-link-btn--featured:hover {
@@ -5935,8 +6073,9 @@ html { scroll-behavior: smooth; }
   box-shadow: 2px 2px 0 rgba(0,0,0,0.25);
 }
 
-/* Currently building + open — 1 col each */
-.bento-building, .bento-open { grid-column: span 1; }
+/* Currently building + open */
+.bento-building { grid-column: span 1; }
+.bento-github, .bento-open { grid-column: span 2; }
 .bento-live-dot {
   display: inline-block;
   width: 7px; height: 7px;
@@ -5976,8 +6115,207 @@ html { scroll-behavior: smooth; }
   margin-bottom: 10px;
 }
 
+/* --- Redesigned Bento Stack categories --- */
+.bento-stack-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+.bento-stack-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bento-stack-group-title {
+  font-size: 0.7rem;
+  font-family: var(--font-sans);
+  font-weight: 750;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+.bento-stack-group-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bento-stack-group-desc {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 6px;
+  opacity: 0.95;
+}
+
+/* --- Building Tech Tags & Actions --- */
+.bento-building-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 16px;
+}
+.bento-building-tech-pill {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 5px;
+  display: inline-block;
+}
+.bento-building-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-contrast, #ffffff) !important;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s var(--ease);
+  margin-top: auto;
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.15);
+}
+.bento-building-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.25);
+}
+
+/* --- Redesigned Building specs --- */
+.bento-building-specs {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bento-building-specs li {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bento-building-specs li i {
+  color: var(--accent);
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+}
+
+/* --- Redesigned GitHub Card --- */
+.bento-github-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 6px;
+}
+.bento-github-info {
+  flex: 1;
+  min-width: 0;
+}
+.bento-github-stats {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.bento-git-stat {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  transition: border-color 0.2s var(--ease);
+}
+.bento-github:hover .bento-git-stat {
+  border-color: rgba(var(--accent-rgb), 0.2);
+}
+.bento-git-stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.bento-git-stat-lbl {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Redesigned Live Projects columns --- */
+.bento-live-projects {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.bento-live-project-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  text-decoration: none;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease);
+  min-height: 74px;
+}
+.bento-live-project-tile:hover {
+  border-color: rgba(var(--accent-rgb), 0.45);
+  background: var(--accent-dim);
+  transform: translateY(-2px);
+}
+.bento-live-project-tile .bento-live-project-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.bento-live-project-tile .bento-live-project-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.bento-live-project-tile .bento-live-project-tag {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+  .bento-github-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .bento-live-projects {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Bento responsive ─────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .bento-grid { grid-template-columns: repeat(2, 1fr); }
   .bento-hero  { grid-column: span 2; flex-direction: column; text-align: center; align-items: center; }
   .bento-bio   { max-width: 100%; }
@@ -5985,10 +6323,9 @@ html { scroll-behavior: smooth; }
   .bento-clock { grid-column: span 1; }
   .bento-status { grid-column: span 1; }
   .bento-stack  { grid-column: span 2; }
-  .bento-building { grid-column: span 1; }
-  .bento-open   { grid-column: span 1; }
+  .bento-building, .bento-github, .bento-open { grid-column: span 2; }
 }
-@media (max-width: 540px) {
+@media (max-width: 480px) {
   .bento-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .bento-hero  { grid-column: span 2; padding: 20px 16px; }
   .bento-stat  { grid-column: span 1; }
@@ -6076,10 +6413,10 @@ html { scroll-behavior: smooth; }
   font-weight: 500;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .skills-pill-grid { grid-template-columns: repeat(2,1fr); }
 }
-@media (max-width: 540px) {
+@media (max-width: 480px) {
   .skills-pill-grid { grid-template-columns: 1fr; }
 }
 
@@ -6482,46 +6819,7 @@ a, label[for], select,
   animation: highlight-ping 1.2s ease-out 2;
 }
 
-/* ================================================================
-   REACT BITS — GlareHover component
-   ================================================================ */
-.glare-hover {
-  width: var(--gh-width, 100%);
-  height: var(--gh-height, 100%);
-  background: var(--gh-bg, transparent);
-  border-radius: var(--gh-br, 0);
-  border: 1px solid var(--gh-border, transparent);
-  overflow: hidden;
-  position: relative;
-}
-.glare-hover::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    var(--gh-angle, -30deg),
-    hsla(0, 0%, 0%, 0) 60%,
-    var(--gh-rgba, rgba(255,255,255,0.1)) 70%,
-    hsla(0, 0%, 0%, 0),
-    hsla(0, 0%, 0%, 0) 100%
-  );
-  transition: var(--gh-duration, 900ms) ease;
-  background-size: var(--gh-size, 240%) var(--gh-size, 240%), 100% 100%;
-  background-repeat: no-repeat;
-  background-position: -100% -100%, 0 0;
-  pointer-events: none;
-  z-index: 0;
-}
-.glare-hover:hover::before {
-  background-position: 100% 100%, 0 0;
-}
-.glare-hover--play-once::before { transition: none; }
-.glare-hover--play-once:hover::before {
-  transition: var(--gh-duration, 900ms) ease;
-  background-position: 100% 100%, 0 0;
-}
-
-/* ── GlareHover on bento cards (CSS-only, no extra wrapper needed) ── */
+/* ── Glare sweep on bento cards (CSS-only, no extra wrapper needed) ── */
 .bento-card {
   position: relative;
   overflow: hidden;
@@ -6571,7 +6869,7 @@ a, label[for], select,
   overflow: hidden;
   height: 100%;
 }
-@media (max-width: 767px) { .dash-tabs-slide { display: none; } }
+@media (max-width: 768px) { .dash-tabs-slide { display: none; } }
 
 .stnav {
   flex: 1;
@@ -6984,18 +7282,7 @@ kbd {
   border-radius: 2px;
   pointer-events: none;
 }
-.timeline-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 2px solid var(--border-bright);
-  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
-}
-.timeline-dot--lit {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.6);
-}
+/* Duplicate timeline-dot rules removed to support initials badges */
 
 /* ================================================================
    EDUCATION — 3D card flip (pure CSS, no framer-motion on flip)
@@ -7216,7 +7503,7 @@ kbd {
 /* ================================================================
    PROJECT PREVIEW — bottom sheet on mobile
    ================================================================ */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .project-preview-overlay {
     align-items: flex-end;
     padding: 0;
@@ -7674,4 +7961,192 @@ body.theme-light .contact-card:hover {
 }
 .bento-title {
   letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RECOVERED STYLES — services list, live projects, GitHub card,
+   contact quick actions (restored after CSS loss)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── "What I take on" services list ── */
+.bento-services-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bento-service-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.bento-service-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.bento-service-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.bento-service-desc {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 1px;
+}
+.bento-services-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.bento-services-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.bento-services-meta i { color: var(--accent); font-size: 11px; }
+
+/* ── GitHub card ── */
+.bento-github-handle {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+.bento-github-sub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+/* ── Live projects quick-access tiles (styled in core section) ── */
+
+/* ── Contact quick-action CTAs ── */
+.contact-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 20px;
+}
+.contact-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-bright);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  transition: transform 0.15s, border-color 0.15s, background 0.15s, color 0.15s;
+  min-height: 40px;
+}
+.contact-quick-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+.contact-quick-btn--primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border-color: var(--accent);
+}
+.contact-quick-btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.contact-quick-btn--whatsapp i { color: #25d366; }
+.contact-quick-btn--primary i  { color: inherit; }
+.contact-quick-btn--ghost { background: transparent; }
+
+@media (max-width: 480px) {
+  .contact-quick-actions { flex-direction: column; align-items: stretch; }
+  .contact-quick-btn { justify-content: center; }
+}
+
+/* ── Boot sequence: line text + skip button ── */
+.boot-line-text { display: inline-block; }
+.boot-skip-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  padding: 7px 18px;
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  min-height: 36px;
+}
+.boot-skip-btn:hover,
+.boot-skip-btn:focus-visible {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+/* ── Sidebar: avatar spin ring + contact rows ── */
+.sidebar-avatar-ring-spin {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  animation: avatar-ring-spin 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes avatar-ring-spin {
+  to { transform: rotate(360deg); }
+}
+.sidebar-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Resume modal: download button ── */
+.resume-dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s;
+  min-height: 40px;
+}
+.resume-dl-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
 }

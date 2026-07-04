@@ -23,7 +23,7 @@ export function useSecretCode() {
 
 export function useKonamiCode() {
   const [activated, setActivated] = useState(false);
-  const [buf, setBuf] = useState([]);
+  const [, setBuf] = useState([]);
 
   useEffect(() => {
     const handler = (e) => {

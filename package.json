@@ -1,7 +1,14 @@
 {
   "name": "harsh-portfolio-react",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Personal portfolio of Harsh Tiwari — Software Engineer (Java, AEM, Android). Built with React + Vite.",
+  "author": "Harsh Tiwari <harshtiwari493@gmail.com>",
+  "homepage": "https://harshtiwari29.github.io/harsh-portfolio-react/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harshtiwari29/harsh-portfolio-react"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

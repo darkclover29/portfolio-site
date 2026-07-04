@@ -53,8 +53,8 @@ function ProjectPreviewOverlay({ project, onDismiss }) {
         <div className="project-preview-tags">
           {project.tags?.map(t => <span key={t} className="tag">{t}</span>)}
         </div>
-        {project.live && (
-          <a href={project.live} target="_blank" rel="noopener noreferrer"
+        {project.liveUrl && (
+          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
              className="project-preview-link">
             <i className="fas fa-arrow-up-right-from-square" /> View Live
           </a>
@@ -63,23 +63,68 @@ function ProjectPreviewOverlay({ project, onDismiss }) {
     </div>
   );
 }
+const FILTERS = ['All', 'Java / Spring', 'Kotlin / Android', 'Python / AI', 'Frontend / JS'];
+
+const TAG_TO_FILTER = {
+  python: 'Python / AI',
+  fastapi: 'Python / AI',
+  llm: 'Python / AI',
+  ml: 'Python / AI',
+  'scikit-learn': 'Python / AI',
+  pandas: 'Python / AI',
+  'multi-agent': 'Python / AI',
+  chromadb: 'Python / AI',
+  
+  java: 'Java / Spring',
+  'spring boot': 'Java / Spring',
+  jpa: 'Java / Spring',
+  compiler: 'Java / Spring',
+  ast: 'Java / Spring',
+  
+  kotlin: 'Kotlin / Android',
+  'jetpack compose': 'Kotlin / Android',
+  compose: 'Kotlin / Android',
+  'room db': 'Kotlin / Android',
+  'flow api': 'Kotlin / Android',
+  coroutines: 'Kotlin / Android',
+  
+  react: 'Frontend / JS',
+  javascript: 'Frontend / JS',
+  typescript: 'Frontend / JS',
+  vite: 'Frontend / JS',
+  css: 'Frontend / JS',
+  'tailwind css': 'Frontend / JS',
+  'web audio api': 'Frontend / JS',
+  canvas: 'Frontend / JS',
+  'web ide': 'Frontend / JS',
+};
+
 export default function ProjectsTab({ highlightProject }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [csOpen, setCsOpen]             = useState(false);
   const [csProject, setCsProject]       = useState('');
 
-  const allTags = useMemo(() => {
-    const set = new Set();
-    PortfolioData.projects.forEach(p => p.tags?.forEach(t => set.add(t)));
-    return ['All', ...Array.from(set)];
-  }, []);
-
-  const visible = useMemo(() =>
-    activeFilter === 'All'
-      ? PortfolioData.projects
-      : PortfolioData.projects.filter(p => p.tags?.includes(activeFilter)),
-    [activeFilter]
-  );
+  const visible = useMemo(() => {
+    if (activeFilter === 'All') return PortfolioData.projects;
+    return PortfolioData.projects.filter(p => {
+      const tags = p.tags?.map(t => t.toLowerCase()) || [];
+      const tech = p.tech?.toLowerCase() || '';
+      
+      if (activeFilter === 'Java / Spring') {
+        return tags.includes('java') || tags.includes('spring boot') || tags.includes('jpa') || tech.includes('java') || tech.includes('spring');
+      }
+      if (activeFilter === 'Kotlin / Android') {
+        return tags.includes('kotlin') || tags.includes('jetpack compose') || tags.includes('compose') || tech.includes('kotlin') || tech.includes('android');
+      }
+      if (activeFilter === 'Python / AI') {
+        return tags.includes('python') || tags.includes('ml') || tags.includes('llm') || tech.includes('python') || tech.includes('learning');
+      }
+      if (activeFilter === 'Frontend / JS') {
+        return tags.includes('react') || tags.includes('javascript') || tags.includes('typescript') || tech.includes('react') || tech.includes('js') || tech.includes('tailwind') || tech.includes('canvas');
+      }
+      return false;
+    });
+  }, [activeFilter]);
 
   const openLink = (p, type) => {
     const url = type === 'github' ? p.github : p.liveUrl;
@@ -144,7 +189,7 @@ export default function ProjectsTab({ highlightProject }) {
         initial="hidden"
         animate="visible"
       >
-        {allTags.map(tag => (
+        {FILTERS.map(tag => (
           <motion.button
             key={tag}
             variants={filterItemVariants}
@@ -229,16 +274,23 @@ export default function ProjectsTab({ highlightProject }) {
                   {p.details.map((d, j) => <li key={j}>{d}</li>)}
                 </ul>
                 <div className="project-tags">
-                  {p.tags?.map(t => (
-                    <span
-                      key={t}
-                      className={`tag${t === activeFilter ? ' tag--active' : ''}`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setActiveFilter(t === activeFilter ? 'All' : t)}
-                    >
-                      {t}
-                    </span>
-                  ))}
+                  {p.tags?.map(t => {
+                    const mapped = TAG_TO_FILTER[t.toLowerCase()] ?? 'All';
+                    const isTagActive = activeFilter !== 'All' && mapped === activeFilter;
+                    return (
+                      <span
+                        key={t}
+                        className={`tag${isTagActive ? ' tag--active' : ''}`}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          const targetFilter = TAG_TO_FILTER[t.toLowerCase()] ?? 'All';
+                          setActiveFilter(targetFilter === activeFilter ? 'All' : targetFilter);
+                        }}
+                      >
+                        {t}
+                      </span>
+                    );
+                  })}
                 </div>
                 <div className="project-card-links">
                   <button

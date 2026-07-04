@@ -1,70 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { SWATCH_THEMES } from '../../hooks/useTheme.js';
 import { PortfolioData } from '../../data/portfolioData.js';
 import Modal from '../shared/Modal.jsx';
+import ISTClock from '../shared/ISTClock.jsx';
+import CopyButton from '../shared/CopyButton.jsx';
 
 const THEMES = SWATCH_THEMES;
 
 const THEME_COLORS = {
-  mono:          '#ffffff',
-  minimal:       '#d4c9b8',
-  dark:          '#6366f1',
-  matrix:        '#4ade80',
-  cyberpunk:     '#60a5fa',
-  dracula:       '#a78bfa',
-  nord:          '#7eb8c9',
-  light:         '#4f46e5',
-  solarized:     '#268bd2',
-  'tokyo-night': '#7aa2f7',
-  catppuccin:    '#cba6f7',
+  mono:   '#ffffff',
+  dark:   '#6366f1',
+  light:  '#4f46e5',
+  matrix: '#4ade80',
 };
 
 const THEME_LABELS = {
-  mono:          'Mono',
-  minimal:       'Minimal',
-  dark:          'Dark',
-  matrix:        'Matrix',
-  cyberpunk:     'Cyber',
-  dracula:       'Dracula',
-  nord:          'Nord',
-  light:         'Light',
-  solarized:     'Solar',
-  'tokyo-night': 'Tokyo',
-  catppuccin:    'Catppuccin',
+  mono:   'Mono',
+  dark:   'Dark',
+  light:  'Light',
+  matrix: 'Matrix',
 };
-
-function ISTClock() {
-  const [time, setTime] = useState('');
-  useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false,
-      }));
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
-  return <div className="sidebar-clock">{time} IST</div>;
-}
-
-function CopyBtn({ value }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard?.writeText(value).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    });
-  };
-  return (
-    <button className="sidebar-copy-btn" onClick={copy} title={"Copy " + value}>
-      <i className={"fas " + (copied ? "fa-check" : "fa-copy")} />
-    </button>
-  );
-}
 
 function fileIcon(name) {
   if (name.endsWith('.txt'))  return 'fa-file-lines';
@@ -273,12 +228,12 @@ export default function Sidebar({
             <div className="sidebar-contact-row">
               <i className="fas fa-envelope" style={{ color: 'var(--accent)', fontSize: 11 }} />
               <span className="sidebar-contact-text" title={c.email}>{c.email}</span>
-              <CopyBtn value={c.email} />
+              <CopyButton value={c.email} label="email" className="sidebar-copy-btn" hideText={true} />
             </div>
             <div className="sidebar-contact-row">
               <i className="fas fa-phone" style={{ color: 'var(--accent)', fontSize: 11 }} />
               <span className="sidebar-contact-text" title={c.phone}>{c.phone}</span>
-              <CopyBtn value={c.phone} />
+              <CopyButton value={c.phone} label="phone" className="sidebar-copy-btn" hideText={true} />
             </div>
           </div>
         </div>

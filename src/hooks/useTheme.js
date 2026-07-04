@@ -1,15 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Public swatches — shown in sidebar
-export const SWATCH_THEMES = ['mono', 'minimal', 'dark', 'matrix', 'cyberpunk', 'dracula', 'nord', 'light', 'solarized', 'tokyo-night', 'catppuccin'];
+// Public swatches — shown in sidebar. Deliberately small: mono (default,
+// pure black & white), dark/light, matrix as the signature CLI option.
+export const SWATCH_THEMES = ['mono', 'dark', 'light', 'matrix'];
 // All valid themes including secrets
 const ALL_THEMES = [...SWATCH_THEMES, 'anti-magic'];
 const STORAGE_KEY = 'harsh_portfolio_theme';
+const DEFAULT_THEME = 'mono';
 
 export function useTheme() {
   const [theme, setThemeState] = useState(() => {
-    try { return localStorage.getItem(STORAGE_KEY) || 'mono'; }
-    catch { return 'mono'; }
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      // Migrate visitors who had one of the retired themes
+      return ALL_THEMES.includes(stored) ? stored : DEFAULT_THEME;
+    } catch { return DEFAULT_THEME; }
   });
 
   useEffect(() => {
@@ -19,7 +24,7 @@ export function useTheme() {
   const setTheme = useCallback((name) => {
     if (!ALL_THEMES.includes(name)) return;
     setThemeState(name);
-    try { localStorage.setItem(STORAGE_KEY, name); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, name); } catch { /* storage unavailable */ }
   }, []);
 
   const getAccentColor = useCallback(() => {

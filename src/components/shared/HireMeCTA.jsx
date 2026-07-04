@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const IDLE_MS = 10_000;
@@ -6,8 +6,6 @@ const IDLE_MS = 10_000;
 export default function HireMeCTA({ onNavigate }) {
   const [visible, setVisible]     = useState(false);
   const [dismissed, setDismissed] = useState(false);
-
-  const reset = useCallback(() => setVisible(false), []);
 
   useEffect(() => {
     if (dismissed) return;

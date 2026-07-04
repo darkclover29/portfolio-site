@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useSysMon } from '../../../hooks/useSysMon.js';
 
 function LineChart({ data, color, max = 100, height = 80 }) {
@@ -41,6 +41,14 @@ export default function SysMonTab({ active, getAccentRgb }) {
   const { cpuData, ramData, cpuVal, ramVal } = useSysMon(active);
   const accent = `rgba(${getAccentRgb?.() || '59,241,59'}, 1)`;
 
+  // Derive 4-core loads from cpuVal with slight variance
+  const coreLoads = useMemo(() => {
+    return Array.from({ length: 4 }, (_, i) => {
+      const variance = (Math.sin(Date.now() / 1000 + i) * 12) + (Math.random() * 8 - 4);
+      return Math.max(2, Math.min(99, Math.round(cpuVal + variance)));
+    });
+  }, [cpuVal]);
+
   return (
     <div className="tab-panel" id="sysmon-panel">
       <h2 className="tab-title"><i className="fas fa-tachometer-alt" /> System Monitor</h2>
@@ -51,7 +59,31 @@ export default function SysMonTab({ active, getAccentRgb }) {
             <span className="sysmon-val">{cpuVal}%</span>
           </div>
           <LineChart data={cpuData} color={accent} />
+
+          {/* 4-Core Threads Grid */}
+          <div className="sysmon-cores-container">
+            <span className="sysmon-cores-title">Core Threads (Logical Processors)</span>
+            <div className="sysmon-cores-grid">
+              {coreLoads.map((load, idx) => (
+                <div key={idx} className="sysmon-core-row">
+                  <span className="sysmon-core-label">CPU{idx}</span>
+                  <div className="sysmon-core-bar-bg">
+                    <div 
+                      className="sysmon-core-bar-fill" 
+                      style={{ 
+                        width: `${load}%`, 
+                        background: `rgba(${getAccentRgb?.() || '59,241,59'}, 0.85)`,
+                        boxShadow: `0 0 8px rgba(${getAccentRgb?.() || '59,241,59'}, 0.4)`
+                      }} 
+                    />
+                  </div>
+                  <span className="sysmon-core-val">{load}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
         <div className="sysmon-card">
           <div className="sysmon-header">
             <span><i className="fas fa-memory" /> RAM Usage</span>

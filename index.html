@@ -2,49 +2,102 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, interactive-widget=resizes-content" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#0a0c0f" />
-    <title>Harsh Tiwari — Portfolio</title>
-    <meta name="description" content="Harsh Tiwari — Software Engineer at TCS. Java, AEM & Android dev. Clean systems, sharp code." />
-    <meta property="og:title"       content="Harsh Tiwari — Portfolio" />
-    <meta property="og:description" content="Software Engineer at TCS. Java, AEM & Android dev. Clean systems, sharp code." />
+
+    <title>Harsh Tiwari — Java · Android · AEM Engineer</title>
+    <meta name="description" content="Harsh Tiwari — backend &amp; mobile engineer open to freelance contracts. Java/Spring Boot, Kotlin/Compose, AEM. Replies within 24 h." />
+
+    <!-- Open Graph (WhatsApp, Slack, iMessage previews) -->
+    <meta property="og:title"       content="Harsh Tiwari — Java · Android · AEM Engineer" />
+    <meta property="og:description" content="Backend &amp; mobile engineer open to freelance contracts. Java/Spring Boot, Kotlin/Compose, AEM CMS. Replies within 24 h." />
     <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://darkclover29.github.io/portfolio-site/" />
-    <meta property="og:image"       content="https://darkclover29.github.io/portfolio-site/og-image.png" />
+    <meta property="og:url"         content="https://harshtiwari29.github.io/harsh-portfolio-react/" />
+    <meta property="og:image"       content="https://harshtiwari29.github.io/harsh-portfolio-react/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta name="twitter:card"       content="summary_large_image" />
-    <meta name="twitter:title"      content="Harsh Tiwari — Portfolio" />
-    <meta name="twitter:description" content="Software Engineer at TCS. Java, AEM & Android dev." />
-    <meta name="twitter:image"      content="https://darkclover29.github.io/portfolio-site/og-image.png" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+    <meta property="og:image:alt"   content="Harsh Tiwari — Java, Android, AEM engineer for hire" />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Harsh Tiwari — Java · Android · AEM Engineer" />
+    <meta name="twitter:description" content="Backend &amp; mobile engineer open to contracts. Replies within 24 h." />
+    <meta name="twitter:image"       content="https://harshtiwari29.github.io/harsh-portfolio-react/og-image.png" />
+    <meta name="twitter:image:alt"   content="Harsh Tiwari portfolio" />
+
+    <link rel="canonical" href="https://harshtiwari29.github.io/harsh-portfolio-react/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.json" />
     <meta name="apple-mobile-web-app-title" content="HT Portfolio" />
     <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-    <link rel="preconnect" href="https://api.github.com" />
-    <!-- Preload critical fonts -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap&subset=latin" />
-    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap&subset=latin" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Harsh Tiwari",
+      "jobTitle": "Assistant Systems Engineer",
+      "worksFor": { "@type": "Organization", "name": "Tata Consultancy Services" },
+      "email": "harshtiwari493@gmail.com",
+      "url": "https://harshtiwari29.github.io/harsh-portfolio-react/",
+      "sameAs": [
+        "https://github.com/harshtiwari29",
+        "https://www.linkedin.com/in/harshtiwari29/"
+      ]
+    }
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </head>
   <body>
     <div id="root"></div>
 
-  
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('%BASE_URL%sw.js', { scope: '%BASE_URL%' })
-          .catch(() => {}); // silently ignore in dev
-      });
-    }
-  </script>
-</body>
+    <noscript>
+      <p style="font-family:sans-serif;text-align:center;padding:2rem">
+        Harsh Tiwari — Software Engineer. Please enable JavaScript to view this portfolio.
+        Contact: <a href="mailto:harshtiwari493@gmail.com">harshtiwari493@gmail.com</a>
+      </p>
+    </noscript>
+
+    <script type="module">
+      // Service worker: production only. In dev it caches stale modules and
+      // breaks hot reload — actively unregister + clear caches instead.
+      if ('serviceWorker' in navigator) {
+        if (import.meta.env.PROD) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('%BASE_URL%sw.js', { scope: '%BASE_URL%' })
+              .catch(() => {});
+          });
+        } else {
+          navigator.serviceWorker.getRegistrations()
+            .then(regs => regs.forEach(r => r.unregister()))
+            .catch(() => {});
+          if (window.caches) {
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
+          }
+        }
+      }
+    </script>
+
+    <!--
+      Privacy-friendly analytics: GoatCounter (no cookies, GDPR-safe, free tier).
+      Setup: sign up at https://www.goatcounter.com, then replace YOURSITE
+      with your site code (e.g. "harshtiwari29"). Takes 2 minutes.
+    -->
+    <script
+      data-goatcounter="https://YOURSITE.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
 </html>

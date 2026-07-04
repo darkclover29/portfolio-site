@@ -1,5 +1,7 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { PortfolioData, ASCII_ART } from '../data/portfolioData.js';
+import { toggleFx } from './useFx.js';
+import { SWATCH_THEMES } from './useTheme.js';
 
 const PAGE_LOAD_TIME = Date.now();
 
@@ -17,7 +19,7 @@ const BOOT_LINES = [
 const ALL_COMMANDS = [
   'help', 'clear', 'whoami', 'date', 'uptime', 'resume', 'skills',
   'experience', 'projects', 'education', 'contact', 'ls', 'cd', 'cat',
-  'touch', 'rm', 'nano', 'grep', 'pwd', 'theme', 'gui', 'matrix',
+  'touch', 'rm', 'nano', 'grep', 'pwd', 'theme', 'gui', 'matrix', 'fx',
   'snake', 'synth', 'echo', 'guestbook', 'socials', 'download',
   'darkclover', 'clover', 'ign', 'hack', 'ping', 'sudo', 'anti-magic', 'history', 'vim', 'history', 'vim',
   'hire', 'weather', 'github', 'joke', 'quote', 'cowsay', 'neofetch', 'open',
@@ -66,7 +68,7 @@ function buildCowsay(msg) {
   ].join('\n');
 }
 
-export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
+export function useTerminal({ vfs, playEnter, playError }) {
   const [lines, setLines]     = useState(BOOT_LINES.map(l => ({ id: makeId(), ...l })));
   const [history, setHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem('term_history') || '[]'); } catch { return []; }
@@ -179,6 +181,7 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
           `  <span class="accent">gui</span>           -- Open dashboard`,
           `  <span class="accent">open [name]</span>   -- Open a project in GUI`,
           `  <span class="accent">matrix</span>        -- Toggle matrix rain`,
+          `  <span class="accent">fx</span>            -- Toggle secret effects mode ✨`,
           `  <span class="accent">snake</span>         -- Play snake`,
           `  <span class="accent">synth</span>         -- Open synthesizer`,
           `  <span class="accent">echo [msg]</span>    -- Print or append to a file (e.g. echo "hi" >> guestbook/messages.txt)`,
@@ -373,7 +376,7 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
       case 'neofetch': {
         const ms   = Date.now() - PAGE_LOAD_TIME;
         const upS  = Math.floor(ms / 1000);
-        const thm  = document.body.className.replace('theme-', '') || 'minimal';
+        const thm  = document.body.className.replace('theme-', '') || 'dark';
         push(line('output', [
           `<span style="color:#4ade80;font-weight:700">         harsh@portfolio</span>`,
           `         ─────────────────────────────`,
@@ -555,7 +558,10 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
       }
 
       case 'theme':
-        if (vfsHooks.setTheme) {
+        if (!SWATCH_THEMES.includes(arg) && arg !== 'anti-magic') {
+          push(line('error', `theme: unknown theme '${arg}'. Available: ${SWATCH_THEMES.join(', ')}`));
+          playError?.();
+        } else if (vfsHooks.setTheme) {
           vfsHooks.setTheme(arg);
           push(line('output', `Theme set to: ${arg}`));
           playEnter?.();
@@ -567,6 +573,15 @@ export function useTerminal({ vfs, playKeypress, playEnter, playError }) {
         push(line('output', 'Switching to GUI dashboard...'));
         playEnter?.();
         break;
+
+      case 'fx': {
+        const on = toggleFx();
+        push(line('output', on
+          ? '<span class="accent">✨ FX mode ON</span> — custom cursor, glow &amp; particles unlocked. Run <span class="accent">fx</span> again to disable.'
+          : 'FX mode OFF — back to the clean experience.'));
+        playEnter?.();
+        break;
+      }
 
       case 'matrix':
         push(line('output', '<span style="color:#00ff41;font-weight:700">SYSTEM BREACH DETECTED</span>'));

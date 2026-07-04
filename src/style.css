@@ -8,8 +8,34 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Mono — pure black & white, true monochrome (default) ──── */
+body, body.theme-mono {
+  --bg-primary:    #000000;
+  --bg-surface:    #0a0a0a;
+  --bg-card:       #111111;
+  --bg-card-rgb:   17,17,17;
+  --bg-elevated:   #1a1a1a;
+  --accent:        #ffffff;
+  --accent-hover:  #e8e8e8;
+  --accent-contrast:#000000;
+  --accent-dim:    rgba(255,255,255,0.06);
+  --accent-glow:   rgba(255,255,255,0.04);
+  --accent-rgb:    255,255,255;
+  --text-primary:  #f5f5f5;
+  --text-secondary:#888888;
+  --text-muted:    #444444;
+  --border:        rgba(255,255,255,0.08);
+  --border-bright: rgba(255,255,255,0.18);
+  --shadow:        0 2px 10px rgba(0,0,0,0.8);
+  --scrollbar:     rgba(255,255,255,0.1);
+  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
+  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
+  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
+  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
+}
+
 /* ── Dark — near-black + indigo ────────────────────────────── */
-body, body.theme-dark {
+body.theme-dark {
   --bg-primary:    #0c0c0e;
   --bg-surface:    #111115;
   --bg-card:       #18181c;
@@ -17,6 +43,7 @@ body, body.theme-dark {
   --bg-elevated:   #1e1e24;
   --accent:        #6366f1;
   --accent-hover:  #818cf8;
+  --accent-contrast:#ffffff;
   --accent-dim:    rgba(99,102,241,0.08);
   --accent-glow:   rgba(99,102,241,0.06);
   --accent-rgb:    99,102,241;
@@ -42,6 +69,7 @@ body.theme-matrix {
   --bg-elevated:   #182018;
   --accent:        #4ade80;
   --accent-hover:  #6ee7a0;
+  --accent-contrast:#000000;
   --accent-dim:    rgba(74,222,128,0.07);
   --accent-glow:   rgba(74,222,128,0.05);
   --accent-rgb:    74,222,128;
@@ -58,81 +86,6 @@ body.theme-matrix {
   --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
 }
 
-/* ── Cyberpunk — slate dark + steel blue ───────────────────── */
-body.theme-cyberpunk {
-  --bg-primary:    #080c10;
-  --bg-surface:    #0e1420;
-  --bg-card:       #141c2c;
-  --bg-card-rgb:   20,28,44;
-  --bg-elevated:   #1a2438;
-  --accent:        #60a5fa;
-  --accent-hover:  #7fb8fb;
-  --accent-dim:    rgba(96,165,250,0.08);
-  --accent-glow:   rgba(96,165,250,0.05);
-  --accent-rgb:    96,165,250;
-  --text-primary:  #d8e4f0;
-  --text-secondary:#6888a8;
-  --text-muted:    #3a5068;
-  --border:        rgba(255,255,255,0.055);
-  --border-bright: rgba(255,255,255,0.12);
-  --shadow:        0 2px 8px rgba(0,0,0,0.6);
-  --scrollbar:     rgba(255,255,255,0.08);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
-/* ── Dracula — dark + muted violet ────────────────────────── */
-body.theme-dracula {
-  --bg-primary:    #0d0d14;
-  --bg-surface:    #13132a;
-  --bg-card:       #1a1a2e;
-  --bg-card-rgb:   26,26,46;
-  --bg-elevated:   #21213a;
-  --accent:        #a78bfa;
-  --accent-hover:  #c4b5fd;
-  --accent-dim:    rgba(167,139,250,0.08);
-  --accent-glow:   rgba(167,139,250,0.05);
-  --accent-rgb:    167,139,250;
-  --text-primary:  #e2e0f0;
-  --text-secondary:#8080a8;
-  --text-muted:    #484868;
-  --border:        rgba(255,255,255,0.055);
-  --border-bright: rgba(255,255,255,0.12);
-  --shadow:        0 2px 8px rgba(0,0,0,0.55);
-  --scrollbar:     rgba(255,255,255,0.08);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
-/* ── Nord — dark arctic + muted sky ───────────────────────── */
-body.theme-nord {
-  --bg-primary:    #0c1018;
-  --bg-surface:    #111820;
-  --bg-card:       #17202c;
-  --bg-card-rgb:   23,32,44;
-  --bg-elevated:   #1e2a38;
-  --accent:        #7eb8c9;
-  --accent-hover:  #9acbda;
-  --accent-dim:    rgba(126,184,201,0.08);
-  --accent-glow:   rgba(126,184,201,0.05);
-  --accent-rgb:    126,184,201;
-  --text-primary:  #d8e0e8;
-  --text-secondary:#6a7e90;
-  --text-muted:    #3c5060;
-  --border:        rgba(255,255,255,0.055);
-  --border-bright: rgba(255,255,255,0.12);
-  --shadow:        0 2px 8px rgba(0,0,0,0.55);
-  --scrollbar:     rgba(255,255,255,0.08);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
 /* ── Light — clean white + deep indigo ─────────────────────── */
 body.theme-light {
   --bg-primary:    #f5f5f7;
@@ -142,6 +95,7 @@ body.theme-light {
   --bg-elevated:   #e4e4e8;
   --accent:        #4f46e5;
   --accent-hover:  #6054e8;
+  --accent-contrast:#ffffff;
   --accent-dim:    rgba(79,70,229,0.07);
   --accent-glow:   rgba(79,70,229,0.05);
   --accent-rgb:    79,70,229;
@@ -158,56 +112,6 @@ body.theme-light {
   --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
 }
 
-/* ── Mono — pure black & white, true monochrome ─────────────── */
-body.theme-mono {
-  --bg-primary:    #000000;
-  --bg-surface:    #0a0a0a;
-  --bg-card:       #111111;
-  --bg-card-rgb:   17,17,17;
-  --bg-elevated:   #1a1a1a;
-  --accent:        #ffffff;
-  --accent-hover:  #e8e8e8;
-  --accent-dim:    rgba(255,255,255,0.06);
-  --accent-glow:   rgba(255,255,255,0.04);
-  --accent-rgb:    255,255,255;
-  --text-primary:  #f5f5f5;
-  --text-secondary:#888888;
-  --text-muted:    #444444;
-  --border:        rgba(255,255,255,0.08);
-  --border-bright: rgba(255,255,255,0.18);
-  --shadow:        0 2px 10px rgba(0,0,0,0.8);
-  --scrollbar:     rgba(255,255,255,0.1);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
-
-/* ── Minimal — charcoal dark + neutral warm white ───────────── */
-body.theme-minimal {
-  --bg-primary:    #0d0d0d;
-  --bg-surface:    #141414;
-  --bg-card:       #1b1b1b;
-  --bg-card-rgb:   27,27,27;
-  --bg-elevated:   #222222;
-  --accent:        #d4c9b8;
-  --accent-hover:  #ede6d8;
-  --accent-dim:    rgba(212,201,184,0.07);
-  --accent-glow:   rgba(212,201,184,0.04);
-  --accent-rgb:    212,201,184;
-  --text-primary:  #e8e4de;
-  --text-secondary:#726d67;
-  --text-muted:    #3e3b37;
-  --border:        rgba(255,255,255,0.06);
-  --border-bright: rgba(255,255,255,0.13);
-  --shadow:        0 2px 8px rgba(0,0,0,0.65);
-  --scrollbar:     rgba(255,255,255,0.09);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
 /* ── Anti-Magic (secret — blood red + pitch black) ─────────── */
 body.theme-anti-magic {
   --bg-primary:    #000000;
@@ -217,6 +121,7 @@ body.theme-anti-magic {
   --bg-elevated:   #0f0015;
   --accent:        #dc143c;
   --accent-hover:  #ff1744;
+  --accent-contrast:#ffffff;
   --accent-dim:    rgba(220,20,60,0.10);
   --accent-glow:   rgba(220,20,60,0.05);
   --accent-rgb:    220,20,60;
@@ -233,79 +138,4 @@ body.theme-anti-magic {
   --surface-2:var(--bg-card);--surface-3:var(--bg-elevated);
   background:var(--bg-primary); color:var(--text-primary);
   font-family:var(--font-sans);
-}
-
-/* ── Solarized Dark ─────────────────────────────────────────── */
-body.theme-solarized {
-  --bg-primary:    #002b36;
-  --bg-surface:    #073642;
-  --bg-card:       #073642;
-  --bg-card-rgb:   7,54,66;
-  --bg-elevated:   #0a4a58;
-  --accent:        #268bd2;
-  --accent-hover:  #4fa8e8;
-  --accent-dim:    rgba(38,139,210,0.1);
-  --accent-glow:   rgba(38,139,210,0.06);
-  --accent-rgb:    38,139,210;
-  --text-primary:  #93a1a1;
-  --text-secondary:#586e75;
-  --text-muted:    #334a52;
-  --border:        rgba(131,148,150,0.12);
-  --border-bright: rgba(131,148,150,0.25);
-  --shadow:        0 2px 8px rgba(0,0,0,0.5);
-  --scrollbar:     rgba(131,148,150,0.18);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
-/* ── Tokyo Night ────────────────────────────────────────────── */
-body.theme-tokyo-night {
-  --bg-primary:    #1a1b26;
-  --bg-surface:    #1f2335;
-  --bg-card:       #24283b;
-  --bg-card-rgb:   36,40,59;
-  --bg-elevated:   #2a2e47;
-  --accent:        #7aa2f7;
-  --accent-hover:  #9bb5f8;
-  --accent-dim:    rgba(122,162,247,0.08);
-  --accent-glow:   rgba(122,162,247,0.05);
-  --accent-rgb:    122,162,247;
-  --text-primary:  #c0caf5;
-  --text-secondary:#565f89;
-  --text-muted:    #3b4261;
-  --border:        rgba(255,255,255,0.06);
-  --border-bright: rgba(255,255,255,0.12);
-  --shadow:        0 2px 8px rgba(0,0,0,0.5);
-  --scrollbar:     rgba(255,255,255,0.08);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
-}
-
-/* ── Catppuccin Mocha ───────────────────────────────────────── */
-body.theme-catppuccin {
-  --bg-primary:    #1e1e2e;
-  --bg-surface:    #181825;
-  --bg-card:       #1e1e2e;
-  --bg-card-rgb:   30,30,46;
-  --bg-elevated:   #313244;
-  --accent:        #cba6f7;
-  --accent-hover:  #d5b8ff;
-  --accent-dim:    rgba(203,166,247,0.08);
-  --accent-glow:   rgba(203,166,247,0.05);
-  --accent-rgb:    203,166,247;
-  --text-primary:  #cdd6f4;
-  --text-secondary:#6c7086;
-  --text-muted:    #45475a;
-  --border:        rgba(255,255,255,0.06);
-  --border-bright: rgba(255,255,255,0.12);
-  --shadow:        0 2px 8px rgba(0,0,0,0.5);
-  --scrollbar:     rgba(255,255,255,0.08);
-  --bg-color:var(--bg-primary);--window-bg:var(--bg-surface);--header-bg:var(--bg-elevated);
-  --sidebar-bg:var(--bg-card);--card-bg:var(--bg-card);--input-bg:var(--bg-elevated);
-  --window-border:var(--border);--text-color:var(--text-primary);--accent-color:var(--accent);
-  --glow-color:var(--accent-glow);--scrollbar-thumb:var(--scrollbar);
 }

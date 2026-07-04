@@ -4,11 +4,17 @@ export const PortfolioData = {
   contact: {
     email: 'harshtiwari493@gmail.com',
     phone: '+91-7805841898',
+    // Replace with your actual Calendly URL once you create a free account at calendly.com
+    calendlyUrl: 'https://calendly.com/harshtiwari493/15min',
+    // WhatsApp click-to-chat (country code + number, no + or spaces)
+    whatsappUrl: 'https://wa.me/917805841898',
     linkedin: 'linkedin.com/in/harshtiwari29',
     linkedinUrl: 'https://www.linkedin.com/in/harshtiwari29/',
     github: 'github.com/harshtiwari29',
     githubUrl: 'https://github.com/harshtiwari29',
     location: 'Indore/Dewas, India',
+    responseTime: 'within 24 hours',
+    timezone: 'IST (UTC+5:30)',
   },
 
   skills: {
@@ -67,6 +73,41 @@ export const PortfolioData = {
   ],
 
   projects: [
+    {
+      name: 'AgentVerse',
+      icon: 'fa-city',
+      tech: 'Python, FastAPI, JavaScript, ChromaDB, Ollama, Event Sourcing',
+      overview: 'A multi-agent simulation of a chaotic Indian metropolis — 100 AI citizens across 4 rival factions, driven by event sourcing, LLM cognition, emergent factional economics, and a procedural satirical newspaper. Runs fully in-browser via a pre-recorded 117,248-event replay.',
+      details: [
+        'Built an event-sourced architecture (append-only events table + state-folding projections) enabling a real-time timeline scrubber that rewinds and fast-forwards the city\'s state to any tick.',
+        '100 agents across 4 factions — Corporate (regulatory lockdowns), Hackers (data heists), Syndicate (protection shakedowns), and Unaligned (street commerce + mutual aid) — each running heuristic or LLM-driven cognition.',
+        'Tier-2 "hero" agents use ChromaDB vector memory, multi-step goal planning, and async Ollama LLM inference (non-blocking) to make autonomous decisions during the personal phase of each 24-tick day cycle.',
+        'Dual frontend: Live Mode queries a FastAPI backend in real-time; Static Replay Fallback runs the entire fold engine + procedural chatbot in-browser via staticReplay.js over a 30-day pre-recorded dataset.',
+        'Procedural satirical newspaper generated each simulated day — selects top events (heists, bankruptcies, faction wars) and formats them as headlines, editorials, and AQI/weather reports.',
+      ],
+      github: 'https://github.com/darkclover29/AgentVerse',
+      liveUrl: 'https://agentverse.harshtiwari.dev',
+      tags: ['Python', 'FastAPI', 'LLM', 'Event Sourcing', 'Multi-Agent', 'ChromaDB'],
+      featured: true,
+    },
+    {
+      name: 'PocketDex',
+      icon: 'fa-gamepad',
+      tech: 'React 19, TypeScript, Vite, Tailwind CSS, GSAP, PokeAPI',
+      overview: 'A premium, gamified Pokémon trainer dashboard that goes far beyond a static Pokédex — featuring a holographic 3D squad showroom, turn-based battle arena with type-effectiveness AI, TCG card creator with foil overlays, regional travel map, and booster pack simulator, all integrated around a single shared squad.',
+      details: [
+        'Holographic 3D Showroom renders your active squad in a floating CSS 3D rotating ring (preserve-3d, rotateY, perspective) — hardware-accelerated and silky smooth across devices.',
+        'Battle Arena simulates turn-based combat with type-effectiveness calculations, stat modifiers, retro sound FX synthesised entirely via Web Audio API oscillators (no audio assets), and GSAP timeline animations for hits and knockouts.',
+        'TCG Card Creator lets trainers design custom trading cards — switch elements, apply holographic foil overlays (Rainbow, Starfield, Gold), toggle shiny art — then export as high-quality PNG via html2canvas DOM rasterisation.',
+        'PokeAPI integration covers all 9 generations with a localStorage cache layer (24-hour TTL) to eliminate repeat network calls and stay within rate limits.',
+        'Features are fully cross-linked: the squad you build in the Pokédex appears in the 3D Showroom, Battle Arena, and Gym Counter Advisor simultaneously.',
+        'Additional tools: Interactive Kanto Regional Map with spawn encounters per location, "Who\'s That Pokémon?" silhouette minigame, retro cry Soundboard, and Voice-Activated Search via the Web Speech API.',
+      ],
+      github: 'https://github.com/darkclover29/pokedex-web',
+      liveUrl: 'https://pocketdex.harshtiwari.dev',
+      tags: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'PokeAPI'],
+      featured: true,
+    },
     {
       name: 'Chronoscapes',
       icon: 'fa-clock-rotate-left',

@@ -10,22 +10,33 @@ import AboutTab from './tabs/AboutTab.jsx';
 import SkillsTab from './tabs/SkillsTab.jsx';
 import ExperienceTab from './tabs/ExperienceTab.jsx';
 import ProjectsTab from './tabs/ProjectsTab.jsx';
+import ContactTab from './tabs/ContactTab.jsx';
 import EducationTab from './tabs/EducationTab.jsx';
 import GuestbookTab from './tabs/GuestbookTab.jsx';
-import ContactTab from './tabs/ContactTab.jsx';
+import { useFx } from '../../hooks/useFx.js';
 
 const TABS = [
-  { id: 'about',      label: 'About',       icon: 'fa-user',          key: '1' },
-  { id: 'skills',     label: 'Skills',      icon: 'fa-code',          key: '2' },
-  { id: 'experience', label: 'Experience',  icon: 'fa-briefcase',     key: '3' },
-  { id: 'projects',   label: 'Projects',    icon: 'fa-folder-open',   key: '4' },
-  { id: 'education',  label: 'Education',   icon: 'fa-graduation-cap',key: '5' },
-  { id: 'guestbook',  label: 'Guestbook',   icon: 'fa-book-open',     key: '6' },
-  { id: 'contact',    label: 'Contact',     icon: 'fa-paper-plane',   key: '7' },
-  { id: 'cli',        label: 'CLI',         icon: 'fa-terminal',      key: '8' },
+  { id: 'about',      label: 'About',      icon: 'fa-user',        key: '1' },
+  { id: 'skills',     label: 'Skills',     icon: 'fa-code',        key: '2' },
+  { id: 'experience', label: 'Experience', icon: 'fa-briefcase',   key: '3' },
+  { id: 'projects',   label: 'Projects',   icon: 'fa-folder-open', key: '4' },
+  { id: 'contact',    label: 'Contact',    icon: 'fa-paper-plane', key: '5' },
+  { id: 'cli',        label: 'CLI',        icon: 'fa-terminal',    key: '6' },
 ];
 
+// Secondary sections — mobile "More" sheet + hash routing + palette
+const MORE_TABS = [
+  { id: 'cli',        label: 'CLI',       icon: 'fa-terminal' },
+  { id: 'education',  label: 'Education', icon: 'fa-graduation-cap' },
+  { id: 'guestbook',  label: 'Guestbook', icon: 'fa-book-open' },
+];
+
+const ROUTABLE_IDS = [...TABS.map(t => t.id), 'education', 'guestbook'];
+
 const TAB_KEY_MAP = Object.fromEntries(TABS.map(t => [t.key, t.id]));
+
+// Mobile bottom nav shows the 5 content tabs + a "More" trigger (CLI lives in the sheet)
+const MOBILE_TABS = TABS.filter(t => t.id !== 'cli');
 
 // SlideTabNav items (maps 1:1 with TABS array)
 const SLIDE_ITEMS = TABS.map(t => ({ label: t.label, icon: t.icon }));
@@ -51,12 +62,18 @@ function TabContent({ activeTab, openProject, highlightProject, tabDir, vfs }) {
         {activeTab === 'skills'     && <SkillsTab />}
         {activeTab === 'experience' && <ExperienceTab />}
         {activeTab === 'projects'   && <ProjectsTab highlightProject={openProject || highlightProject} />}
+        {activeTab === 'contact'    && <ContactTab />}
         {activeTab === 'education'  && <EducationTab />}
         {activeTab === 'guestbook'  && <GuestbookTab vfs={vfs} />}
-        {activeTab === 'contact'    && <ContactTab />}
       </motion.div>
     </AnimatePresence>
   );
+}
+
+/** Read tab id from URL hash, e.g. #/projects → 'projects' */
+function tabFromHash() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  return ROUTABLE_IDS.find(id => id === hash && id !== 'cli') ?? 'about';
 }
 
 export default function Dashboard({
@@ -70,34 +87,42 @@ export default function Dashboard({
   vfs,
 }) {
   const burstRef = useRef(null);
-  const [activeTab, setActiveTab]   = useState('about');
+  const fxOn = useFx();
+  const [activeTab, setActiveTab]   = useState(tabFromHash);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [tabDir, setTabDir]         = useState('forward');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [moreOpen, setMoreOpen]     = useState(false);
   const [localHighlight, setLocalHighlight] = useState(null);
 
-  const isMatrixTheme = theme === 'matrix' || theme === 'cyberpunk';
+  const isMatrixTheme = theme === 'matrix';
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const closeMore   = useCallback(() => setMoreOpen(false), []);
+
+  // Sync hash → tab when user hits back/forward
+  useEffect(() => {
+    const onHashChange = () => {
+      const id = tabFromHash();
+      setTabDir('forward');
+      setActiveTab(id);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   const handleTab = useCallback((id) => {
-    if (id === 'cli') { playClick?.(); onFlipToCli(); return; }
-    // particle burst at active nav button
-    const btns = document.querySelectorAll('.stnav-btn');
-    const nextIdx = TABS.findIndex(t => t.id === id);
-    const btn = btns[nextIdx];
-    if (btn && burstRef.current) {
-      const r = btn.getBoundingClientRect();
-      const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#fff';
-      burstRef.current.burst(r.left + r.width / 2, r.top + r.height / 2, accent);
-    }
-    const curIdx = TABS.findIndex(t => t.id === activeTab);
-    const newIdx = TABS.findIndex(t => t.id === id);
+    if (id === 'cli') { playClick?.(); setMoreOpen(false); onFlipToCli(); return; }
+    const curIdx = ROUTABLE_IDS.indexOf(activeTab);
+    const newIdx = ROUTABLE_IDS.indexOf(id);
     setTabDir(newIdx >= curIdx ? 'forward' : 'back');
     setActiveTab(id);
+    // Update URL hash without triggering a navigation/scroll
+    history.replaceState(null, '', `#/${id}`);
     playClick?.();
     navigator.vibrate?.(8);
     closeDrawer();
-  }, [activeTab, playClick, onFlipToCli, closeDrawer]);
+    setMoreOpen(false);
+  }, [activeTab, fxOn, playClick, onFlipToCli, closeDrawer]);
 
   const handlePaletteNav = useCallback(({ type, id }) => {
     if (type === 'tab') { handleTab(id); }
@@ -128,10 +153,6 @@ export default function Dashboard({
     return () => window.removeEventListener('portfolio:navigate', handler);
   }, [handleTab]);
 
-  const handleGooeyClick = useCallback((index) => {
-    handleTab(TABS[index].id);
-  }, [handleTab]);
-
   useEffect(() => {
     const handler = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -139,7 +160,7 @@ export default function Dashboard({
         setPaletteOpen(v => !v);
         return;
       }
-      if (e.key === 'Escape') { closeDrawer(); return; }
+      if (e.key === 'Escape') { closeDrawer(); closeMore(); return; }
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
       if (!e.ctrlKey && !e.metaKey && !e.altKey && TAB_KEY_MAP[e.key]) {
         handleTab(TAB_KEY_MAP[e.key]);
@@ -147,7 +168,7 @@ export default function Dashboard({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [handleTab, closeDrawer]);
+  }, [handleTab, closeDrawer, closeMore]);
 
   return (
     <div className="dash">
@@ -201,7 +222,13 @@ export default function Dashboard({
       </header>
 
       <a href="#dash-content" className="skip-link">Skip to content</a>
-      <main className="dash-main" id="dash-content" tabIndex={-1}>
+      <main
+        className="dash-main"
+        id="dash-content"
+        role="tabpanel"
+        aria-label={TABS.find(t => t.id === activeTab)?.label ?? 'Content'}
+        tabIndex={-1}
+      >
         <div className="dash-content">
           <TabContent
             activeTab={activeTab}
@@ -214,23 +241,56 @@ export default function Dashboard({
         <ScrollToTop />
       </main>
 
-      <nav className="dash-mobnav" role="tablist">
-        {TABS.map(t => (
+      <nav className="dash-mobnav" aria-label="Portfolio sections">
+        <div role="tablist" aria-label="Portfolio sections" style={{ display: 'contents' }}>
+          {MOBILE_TABS.map(t => (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={activeTab === t.id}
+              aria-controls="dash-content"
+              aria-label={t.label}
+              className={['mob-tab', activeTab === t.id ? 'active' : ''].filter(Boolean).join(' ')}
+              onClick={() => handleTab(t.id)}
+            >
+              <i className={'fas ' + t.icon} aria-hidden="true" />
+              <span>{t.label}</span>
+            </button>
+          ))}
           <button
-            key={t.id}
-            role="tab"
-            aria-selected={activeTab === t.id}
-            aria-label={t.label}
-            className={['mob-tab', activeTab === t.id ? 'active' : '', t.id === 'cli' ? 'mob-tab--cli' : ''].filter(Boolean).join(' ')}
-            onClick={() => handleTab(t.id)}
+            className={['mob-tab', 'mob-tab--more', MORE_TABS.some(t => t.id === activeTab) ? 'active' : ''].filter(Boolean).join(' ')}
+            aria-label="More sections"
+            aria-haspopup="dialog"
+            aria-expanded={moreOpen}
+            onClick={() => { playClick?.(); setMoreOpen(v => !v); }}
           >
-            <i className={'fas ' + t.icon} />
-            <span>{t.label}</span>
+            <i className="fas fa-ellipsis" aria-hidden="true" />
+            <span>More</span>
           </button>
-        ))}
+        </div>
       </nav>
 
-      <TabBurst ref={burstRef} />
+      {moreOpen && (
+        <>
+          <div className="more-sheet-backdrop" onClick={closeMore} aria-hidden="true" />
+          <div className="more-sheet" role="dialog" aria-modal="true" aria-label="More sections">
+            <div className="more-sheet-handle" aria-hidden="true" />
+            {MORE_TABS.map(t => (
+              <button
+                key={t.id}
+                className={['more-sheet-item', activeTab === t.id ? 'active' : ''].filter(Boolean).join(' ')}
+                onClick={() => handleTab(t.id)}
+              >
+                <i className={'fas ' + t.icon} aria-hidden="true" />
+                <span>{t.label}</span>
+                {t.id === 'cli' && <kbd className="more-sheet-hint">terminal</kbd>}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {fxOn && <TabBurst ref={burstRef} />}
       {paletteOpen && (
         <CommandPalette
           onNavigate={handlePaletteNav}

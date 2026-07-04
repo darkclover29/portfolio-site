@@ -7,7 +7,7 @@ import { useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 
 const PARTICLE_COUNT = 22;
 
-function spawnParticles(ctx, x, y, color) {
+function spawnParticles(ctx, x, y) {
   const particles = [];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + (Math.random() - 0.5) * 0.4;

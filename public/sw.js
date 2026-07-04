@@ -1,17 +1,13 @@
 /**
- * Service Worker — offline support with stale-while-revalidate.
- * Caches shell (HTML, CSS, JS) and serves from cache when offline.
+ * Service Worker — offline support.
+ * - Navigations (HTML): network-first so new deploys show up immediately;
+ *   falls back to cache when offline.
+ * - Static assets (hashed JS/CSS, fonts): stale-while-revalidate.
  */
-const CACHE = 'portfolio-v1';
+const CACHE = 'portfolio-v2';
 
-const PRECACHE = [
-  '/',
-  '/index.html',
-  '/assets/',
-];
-
-// Install: open cache (lazy — don't precache chunks, browser will cache on first visit)
-self.addEventListener('install', (e) => {
+// Install: activate immediately (assets are cached lazily on first fetch)
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
@@ -34,6 +30,27 @@ self.addEventListener('fetch', (e) => {
       !url.href.startsWith('https://fonts.gstatic.com') &&
       !url.href.startsWith('https://cdnjs.cloudflare.com')) return;
 
+  // HTML navigations: network-first, so a deploy is never stuck behind cache
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then(cache => cache.put(e.request, copy));
+          }
+          return res;
+        })
+        .catch(() =>
+          caches.match(e.request).then(cached =>
+            cached || new Response('Offline', { status: 503 })
+          )
+        )
+    );
+    return;
+  }
+
+  // Everything else: stale-while-revalidate
   e.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(e.request);
@@ -42,12 +59,7 @@ self.addEventListener('fetch', (e) => {
         return res;
       }).catch(() => null);
 
-      // Stale-while-revalidate: return cached immediately, update in background
-      if (cached) {
-        networkFetch; // fire-and-forget update
-        return cached;
-      }
-      return networkFetch || new Response('Offline', { status: 503 });
+      return cached || networkFetch || new Response('Offline', { status: 503 });
     })
   );
 });

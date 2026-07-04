@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import RainLens from './RainLens.jsx';
 import TerminalOutput from './TerminalOutput.jsx';
 import TerminalInput from './TerminalInput.jsx';
@@ -10,11 +10,11 @@ import Synth from '../Games/Synth.jsx';
 import { useTerminal } from '../../hooks/useTerminal.js';
 
 export default function Terminal({
-  vfs, theme, setTheme,
+  vfs, setTheme,
   muted, toggleMute, bgmTrack, changeBgm,
   mechKeys, toggleMechKeys, analyserRef,
   getAccentRgb, onFlipToGui,
-  playKeypress, playMechKey, playEnter, playError, playClick, playSynth,
+  playKeypress, playMechKey, playEnter, playError, playSynth,
   toggleAntiMagic,
   openMatrixOverlay,
 }) {

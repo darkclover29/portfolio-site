@@ -1,13 +1,17 @@
 import { useState, useRef, useCallback } from 'react';
+import { useFx } from '../../hooks/useFx.js';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
 
 /**
  * ScrambleText — on hover, scrambles chars then resolves to real text.
+ * Renders as plain text unless FX mode (easter egg) is on, so labels
+ * stay readable by default.
  * Usage: <ScrambleText text="Contact Me" />
  * Or wrap children: <ScrambleText>Contact Me</ScrambleText>
  */
 export default function ScrambleText({ text, children, className = '', tag: Tag = 'span', ...props }) {
+  const fxOn = useFx();
   const label = text || (typeof children === 'string' ? children : '');
   const [display, setDisplay] = useState(label);
   const rafRef = useRef(null);
@@ -41,6 +45,10 @@ export default function ScrambleText({ text, children, className = '', tag: Tag 
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setDisplay(label);
   }, [label]);
+
+  if (!fxOn) {
+    return <Tag className={className} {...props}>{label}</Tag>;
+  }
 
   return (
     <Tag
