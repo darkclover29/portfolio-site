@@ -27,6 +27,7 @@ const TABS = [
 // Secondary sections — mobile "More" sheet + hash routing + palette
 const MORE_TABS = [
   { id: 'cli',        label: 'CLI',       icon: 'fa-terminal' },
+  { id: 'experience', label: 'Experience', icon: 'fa-briefcase' },
   { id: 'education',  label: 'Education', icon: 'fa-graduation-cap' },
   { id: 'guestbook',  label: 'Guestbook', icon: 'fa-book-open' },
 ];
@@ -36,7 +37,12 @@ const ROUTABLE_IDS = [...TABS.map(t => t.id), 'education', 'guestbook'];
 const TAB_KEY_MAP = Object.fromEntries(TABS.map(t => [t.key, t.id]));
 
 // Mobile bottom nav shows the 5 content tabs + a "More" trigger (CLI lives in the sheet)
-const MOBILE_TABS = TABS.filter(t => t.id !== 'cli');
+const MOBILE_TABS = [
+  { id: 'about',    label: 'Home',    icon: 'fa-house' },
+  { id: 'skills',   label: 'Skills',  icon: 'fa-code' },
+  { id: 'projects', label: 'Work',    icon: 'fa-folder-open' },
+  { id: 'contact',  label: 'Contact', icon: 'fa-paper-plane' },
+];
 
 // SlideTabNav items (maps 1:1 with TABS array)
 const SLIDE_ITEMS = TABS.map(t => ({ label: t.label, icon: t.icon }));
@@ -88,12 +94,17 @@ export default function Dashboard({
 }) {
   const burstRef = useRef(null);
   const fxOn = useFx();
-  const [activeTab, setActiveTab]   = useState(tabFromHash);
+  // Always start on the GUI home page. Do not restore a previous hash route.
+  const [activeTab, setActiveTab]   = useState('about');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [tabDir, setTabDir]         = useState('forward');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [moreOpen, setMoreOpen]     = useState(false);
   const [localHighlight, setLocalHighlight] = useState(null);
+
+  useEffect(() => {
+    history.replaceState(null, '', '#/about');
+  }, []);
 
   const isMatrixTheme = theme === 'matrix';
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
@@ -197,6 +208,11 @@ export default function Dashboard({
         >
           <i className="fas fa-bars" />
         </button>
+
+        <div className="mobile-page-title" aria-live="polite">
+          <span>HT</span>
+          {activeTab === 'about' ? 'Home' : [...TABS, ...MORE_TABS].find(t => t.id === activeTab)?.label}
+        </div>
 
         {/* SlideTabNav — clean sliding pill, replaces GooeyNav */}
         <div className="dash-tabs-slide">

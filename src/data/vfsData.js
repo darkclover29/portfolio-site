@@ -16,6 +16,7 @@ export function buildInitialVfs() {
         children: {
           'languages.txt': { type: 'file', content: `Primary programming languages:\n${PortfolioData.skills.languages.map((l, i) => `${i + 1}. ${l}`).join('\n')}` },
           'backend.txt':   { type: 'file', content: `Enterprise Backend Stacks:\n${PortfolioData.skills.backend.map((b, i) => `${i + 1}. ${b}`).join('\n')}` },
+          'ai_agents.txt': { type: 'file', content: `AI Agents & Automation:\n${PortfolioData.skills.aiAutomation.map((skill, i) => `${i + 1}. ${skill}`).join('\n')}` },
         },
       },
       projects: {

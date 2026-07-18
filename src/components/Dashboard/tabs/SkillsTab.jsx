@@ -26,6 +26,18 @@ const SKILLS = [
     ],
   },
   {
+    category: 'AI Agents & Automation',
+    icon: 'fa-robot',
+    skills: [
+      { name: 'Custom AI Agents',       level: 'Advanced'   },
+      { name: 'Agent Orchestration',    level: 'Advanced'   },
+      { name: 'GitHub Copilot Agents', level: 'Advanced'   },
+      { name: 'Agent Definition Files', level: 'Advanced'  },
+      { name: 'LLM Integration',       level: 'Advanced'   },
+      { name: 'RAG Workflows',         level: 'Proficient' },
+    ],
+  },
+  {
     category: 'Mobile & Frontend',
     icon: 'fa-mobile-screen',
     skills: [

@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import PageProgress from './components/shared/PageProgress.jsx';
-import BootSequence from './components/Boot/BootSequence.jsx';
 import ShortcutModal from './components/shared/ShortcutModal.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import { useTheme } from './hooks/useTheme.js';
@@ -24,7 +23,6 @@ const InteractiveConstellation = lazy(() => import('./components/shared/Interact
 
 export default function App() {
   const [view, setView]           = useState('gui');
-  const [bootDone, setBootDone]   = useState(false);
   const [constellationMode, setConstellationMode] = useState(false);
   const [matrixOverlay, setMatrixOverlay] = useState(false);
   const [openProject, setOpenProject]     = useState(null);
@@ -110,9 +108,6 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {!bootDone && (
-        <BootSequence onDone={() => setBootDone(true)} />
-      )}
       <PageProgress />
 
       {/* Decorative effects — easter egg only (CLI `fx` command), never with prefers-reduced-motion */}

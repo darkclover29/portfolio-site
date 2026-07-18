@@ -1,11 +1,9 @@
 export const PortfolioData = {
-  summary: `Information Technology graduate with strong skills in Java, Python, and Kotlin. Experienced in building compilers, full-stack systems, and Android applications. Passionate about systems programming, scalable backend design, and real-world problem-solving. Currently working as an Assistant Systems Engineer at Tata Consultancy Services (TCS).`,
+  summary: `Assistant Systems Engineer at Tata Consultancy Services (TCS) creating custom AI agents, agentic workflows, and GitHub Copilot agent definition files for project-specific development workflows. Information Technology graduate with strong skills in Java, Python, and Kotlin, experienced in building full-stack systems, Android applications, compilers, backend services, LLM-powered features, and workflow automation. Passionate about systems programming, scalable backend design, applied AI, and real-world problem-solving.`,
 
   contact: {
     email: 'harshtiwari493@gmail.com',
     phone: '+91-7805841898',
-    // Replace with your actual Calendly URL once you create a free account at calendly.com
-    calendlyUrl: 'https://calendly.com/harshtiwari493/15min',
     // WhatsApp click-to-chat (country code + number, no + or spaces)
     whatsappUrl: 'https://wa.me/917805841898',
     linkedin: 'linkedin.com/in/harshtiwari29',
@@ -20,10 +18,11 @@ export const PortfolioData = {
   skills: {
     languages:     ['Java', 'Python', 'SQL', 'Kotlin', 'JavaScript'],
     backend:       ['Spring Boot', 'Spring MVC', 'REST APIs', 'Hibernate/JPA', 'Adobe Experience Manager (AEM)'],
+    aiAutomation:  ['Custom AI Agents', 'Agent Orchestration', 'GitHub Copilot Agents', 'Agent Definition Files', 'LLM Integration', 'RAG Workflows', 'AI Workflow Automation', 'ChromaDB', 'Ollama'],
     frontendMobile:['Jetpack Compose', 'HTML', 'CSS', 'Android SDK'],
     databases:     ['PostgreSQL', 'MySQL', 'Room Database', 'Firebase'],
-    tools:         ['Git', 'GitHub', 'Docker', 'Postman', 'Android Studio'],
-    concepts:      ['Compiler Design', 'DSA', 'OOP', 'DBMS', 'Operating Systems', 'Computer Networks'],
+    tools:         ['Git', 'GitHub', 'GitHub Copilot', 'Docker', 'Postman', 'Android Studio'],
+    concepts:      ['Custom AI Agents', 'Agentic Workflows', 'Prompt Engineering', 'Compiler Design', 'DSA', 'OOP', 'DBMS', 'Operating Systems', 'Computer Networks'],
   },
 
   skillBars: [
@@ -50,8 +49,10 @@ export const PortfolioData = {
       role: 'Assistant Systems Engineer',
       company: 'Tata Consultancy Services (TCS)',
       duration: 'Jan 2026 - Present',
-      tech: 'AEM, Java, Agile',
+      tech: 'GitHub Copilot Agents, Agent Definition Files, AEM, Java, Agile',
       details: [
+        'Creating custom GitHub Copilot (GHCP) agents tailored to project-specific engineering workflows.',
+        'Authoring and maintaining agent definition files to automate development tasks and improve team productivity.',
         'Developing web architecture using Adobe Experience Manager (AEM), creating modular core components and stable OSGi services.',
         'Writing robust backend integrations and business logic in Java.',
         'Collaborating with cross-functional agile teams to deliver clean, scalable enterprise-level features.',

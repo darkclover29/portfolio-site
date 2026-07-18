@@ -24,18 +24,19 @@ export default function TerminalInput({ pwd, history, histIdx, setHistIdx, onSub
     playMechKey?.();
   };
 
+  const submitCommand = useCallback(() => {
+    onSubmit(value);
+    setValue('');
+    setGhost('');
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      inputRef.current?.blur();
+      document.activeElement?.blur();
+    }
+  }, [onSubmit, value]);
+
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
-      onSubmit(value);
-      setValue('');
-      setGhost('');
-      // Blur immediately on mobile — dismisses keyboard before game overlay renders
-      // Re-focus happens automatically if no game opens (user taps terminal again)
-      const isMobile = window.matchMedia('(pointer: coarse)').matches;
-      if (isMobile) {
-        inputRef.current?.blur();
-        document.activeElement?.blur();
-      }
+      submitCommand();
     } else if (e.key === 'Tab') {
       e.preventDefault();
       if (ghost) { setValue(value + ghost); setGhost(''); }
@@ -56,7 +57,7 @@ export default function TerminalInput({ pwd, history, histIdx, setHistIdx, onSub
       e.preventDefault();
       onSubmit('clear');
     }
-  }, [value, ghost, history, histIdx, setHistIdx, onSubmit]);
+  }, [value, ghost, history, histIdx, setHistIdx, onSubmit, submitCommand]);
 
   // Also blur when game becomes active (belt-and-suspenders)
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function TerminalInput({ pwd, history, histIdx, setHistIdx, onSub
     const focus = (e) => {
       if (gameActive) return;
       if (e.target.closest('.game-overlay')) return;
+      if (e.target.closest('button, select, a')) return;
       inputRef.current?.focus();
     };
     el.addEventListener('click', focus);
@@ -112,9 +114,21 @@ export default function TerminalInput({ pwd, history, histIdx, setHistIdx, onSub
           spellCheck={false}
           aria-label="Terminal input"
           inputMode="text"
+          enterKeyHint="send"
           tabIndex={gameActive ? -1 : 0}
           readOnly={gameActive}
         />
+        <button
+          type="button"
+          className="terminal-run-btn"
+          onClick={submitCommand}
+          onPointerDown={e => e.preventDefault()}
+          disabled={gameActive || !value.trim()}
+          aria-label="Run terminal command"
+        >
+          <i className="fas fa-arrow-up" aria-hidden="true" />
+          <span>Run</span>
+        </button>
       </div>
       {ghost && !gameActive && (
         <div className="terminal-suggestion" role="tooltip" aria-live="polite">

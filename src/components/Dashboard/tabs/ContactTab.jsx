@@ -88,7 +88,7 @@ function ContactForm() {
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.3, delay:0.35 }}
     >
-      <h3 className="contact-form-title"><i className="fas fa-paper-plane" aria-hidden="true" /> Send a message</h3>
+      <h3 className="contact-form-title"><i className="fas fa-paper-plane" aria-hidden="true" /> Tell me about your project</h3>
       <div className="contact-form-row">
         <div className="contact-form-field">
           <label htmlFor="cf-name">Name</label>
@@ -103,7 +103,7 @@ function ContactForm() {
       </div>
       <div className="contact-form-field">
         <label htmlFor="cf-msg">Message</label>
-        <textarea id="cf-msg" name="message" required rows={4} placeholder="What's on your mind?"
+        <textarea id="cf-msg" name="message" required rows={4} placeholder="What are you building? Share the scope, timeline, and any key requirements."
           value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} />
       </div>
       <button type="submit" className="contact-form-send" disabled={status === 'sending'}>
@@ -131,19 +131,17 @@ export default function ContactTab() {
       </motion.div>
 
       <motion.p className="contact-intro" initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3, delay:0.08 }}>
-        Open to freelance contracts, collaborations, and side projects. Reach out — I respond fastest on email and LinkedIn.
+        Need a website, app, custom AI agent, agentic workflow, backend system, or CMS feature? I can build platform-agnostic agents as well as GitHub Copilot agents. Send the scope and timeline — I reply within 24 hours.
       </motion.p>
 
       {/* ── Low-friction CTAs ── */}
       <motion.div className="contact-quick-actions" initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3, delay:0.14 }}>
         <a
-          href={c.calendlyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`mailto:${c.email}?subject=Freelance project inquiry&body=Hi Harsh,%0D%0A%0D%0AI'd like to discuss a project.%0D%0A%0D%0AScope:%0D%0ATimeline:%0D%0ABudget range:%0D%0A%0D%0AThanks!`}
           className="contact-quick-btn contact-quick-btn--primary"
         >
-          <i className="fas fa-calendar-check" aria-hidden="true" />
-          Book a 15-min call
+          <i className="fas fa-envelope" aria-hidden="true" />
+          Email project brief
         </a>
         <a
           href={c.whatsappUrl}
@@ -155,11 +153,13 @@ export default function ContactTab() {
           WhatsApp
         </a>
         <a
-          href={`mailto:${c.email}`}
+          href={c.linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="contact-quick-btn contact-quick-btn--ghost"
         >
-          <i className="fas fa-envelope" aria-hidden="true" />
-          Email directly
+          <i className="fab fa-linkedin" aria-hidden="true" />
+          Connect on LinkedIn
         </a>
       </motion.div>
 

@@ -43,8 +43,8 @@ export default function HireMeCTA({ onNavigate }) {
           transition={{ type: 'spring', stiffness: 340, damping: 26 }}
         >
           <span className="hire-cta-dot" />
-          <span className="hire-cta-text">Available for work</span>
-          <button className="hire-cta-btn" onClick={hire}>Hire me</button>
+          <span className="hire-cta-text">Available for freelance work</span>
+          <button className="hire-cta-btn" onClick={hire}>Start a project</button>
           <button className="hire-cta-close" onClick={dismiss} aria-label="Dismiss">
             <i className="fas fa-xmark" />
           </button>

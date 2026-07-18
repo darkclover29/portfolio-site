@@ -1,37 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PortfolioData } from '../../../data/portfolioData.js';
-
-// Outcome-focused rotating headlines — answers "what can he do for me?"
-const HEADLINES = [
-  'I build Java backends that scale.',
-  'I ship Android apps to Play Store.',
-  'I architect AEM content platforms.',
-  'I turn specs into production code.',
-];
-
-function useTypewriter(strings, { typingSpeed = 65, deletingSpeed = 35, pauseMs = 1800 } = {}) {
-  const [text, setText]       = useState('');
-  const [phase, setPhase]     = useState('typing');
-  const [idx, setIdx]         = useState(0);
-  const [charIdx, setCharIdx] = useState(0);
-  useEffect(() => {
-    const current = strings[idx % strings.length];
-    let timer;
-    if (phase === 'typing') {
-      if (charIdx < current.length) {
-        timer = setTimeout(() => { setText(current.slice(0, charIdx + 1)); setCharIdx(c => c + 1); }, typingSpeed);
-      } else { timer = setTimeout(() => setPhase('pausing'), pauseMs); }
-    } else if (phase === 'pausing') { setPhase('deleting'); }
-    else {
-      if (charIdx > 0) {
-        timer = setTimeout(() => { setText(current.slice(0, charIdx - 1)); setCharIdx(c => c - 1); }, deletingSpeed);
-      } else { setIdx(i => (i + 1) % strings.length); setPhase('typing'); }
-    }
-    return () => clearTimeout(timer);
-  }, [phase, charIdx, idx, strings, typingSpeed, deletingSpeed, pauseMs]);
-  return text;
-}
+import ResumeModal from '../../shared/ResumeModal.jsx';
 
 function useCountUp(target, duration = 1000) {
   const [value, setValue] = useState(0);
@@ -109,26 +79,34 @@ const STATS = [
 const STACK_GROUPS = [
   { category: 'Languages', desc: 'Strong foundation in Java, Kotlin, Python, and SQL.', items: ['Java', 'Kotlin', 'Python', 'SQL', 'JavaScript'] },
   { category: 'Backend & CMS', desc: 'Enterprise engineering in Spring Boot and AEM platforms.', items: ['Spring Boot', 'REST APIs', 'AEM', 'Docker', 'PostgreSQL'] },
+  { category: 'AI & Automation', desc: 'Platform-agnostic agents, orchestration, and LLM-powered engineering workflows.', items: ['Custom AI Agents', 'Agent Orchestration', 'Copilot Agents', 'LLM Integration', 'RAG', 'ChromaDB'] },
   { category: 'Mobile & Frontend', desc: 'Native Android SDK and modern declarative layouts.', items: ['Android SDK', 'Jetpack Compose', 'HTML & CSS', 'Git'] }
 ];
 
 // Services offered to freelance clients / collaborators
 const SERVICES = [
-  { icon: 'fa-server',      label: 'Java / Spring Boot backends',   desc: 'REST APIs, microservices, Spring Data JPA, PostgreSQL' },
-  { icon: 'fa-mobile-screen', label: 'Android apps (Kotlin)',        desc: 'Jetpack Compose, Room, Firebase — prototype to Play Store' },
-  { icon: 'fa-layer-group', label: 'AEM / CMS builds',              desc: 'Core components, OSGi services, content architecture' },
+  { icon: 'fa-laptop-code',   label: 'Websites & web apps',       desc: 'Responsive landing pages, dashboards, portals, and interactive product experiences.' },
+  { icon: 'fa-mobile-screen', label: 'Mobile apps',               desc: 'Native Android products with Kotlin and Jetpack Compose — from MVP to release.' },
+  { icon: 'fa-brain',         label: 'LLM & AI features',         desc: 'RAG search, intelligent chat, AI agents, and model-powered product features.' },
+  { icon: 'fa-diagram-project', label: 'Custom agents & AI workflows', desc: 'Platform-agnostic AI agents, including Copilot agents, plus automations connecting models, APIs, documents, and business processes.' },
+  { icon: 'fa-server',        label: 'Backend & API systems',     desc: 'Secure Spring Boot or FastAPI services, databases, authentication, and integrations.' },
+  { icon: 'fa-layer-group',   label: 'CMS & content platforms',   desc: 'AEM components, OSGi services, and scalable content publishing workflows.' },
 ];
 
 const stagger = { hidden:{}, visible:{ transition:{ staggerChildren:0.06, delayChildren:0.05 } } };
 const fadeUp  = { hidden:{ opacity:0, y:16 }, visible:{ opacity:1, y:0, transition:{ duration:0.3, ease:[.25,.46,.45,.94] } } };
 
 export default function AboutTab() {
-  const headline = useTypewriter(HEADLINES);
   const c = PortfolioData.contact;
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   // "Hire me" CTA navigates to the Contact tab
   const handleHire = useCallback(() => {
     window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: 'contact' }));
+  }, []);
+
+  const handleProjects = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: 'projects' }));
   }, []);
 
   return (
@@ -137,35 +115,72 @@ export default function AboutTab() {
       {/* ── Hero card ── */}
       <motion.div className="bento-card bento-hero" variants={fadeUp} {...tilt}>
         <div className="bento-hero-text">
+          <div className="hero-kicker-row">
+            <div className="bento-kicker">
+              <span className="bento-avail-pulse" aria-hidden="true" />
+              Available for freelance projects · Replies within 24 h
+            </div>
+            <span className="hero-role-pill">
+              <i className="fas fa-briefcase" aria-hidden="true" /> Assistant Systems Engineer · TCS
+            </span>
+          </div>
           <h1 className="bento-name">Harsh Tiwari</h1>
-          <p className="bento-title">{headline}<span className="typewriter-cursor" aria-hidden="true"/></p>
+          <p className="bento-value-prop">I build websites, apps, and AI workflows that are ready to ship.</p>
           <p className="bento-bio">
-            Backend &amp; mobile engineer open to freelance contracts and side projects.
-            I take features from spec to production — Java microservices, Kotlin/Compose apps,
-            or AEM content platforms. Currently at&nbsp;<strong>TCS</strong>; available for
-            contract work alongside.
+            Product-focused development across web, mobile, backend, and applied AI, including custom AI agents, agentic workflows, and GitHub Copilot agent definitions — from scope through deployment.
           </p>
-          {/* Dual CTA — routes recruiters and clients separately */}
-          <div className="bento-links">
-            <button className="about-link about-link--primary" onClick={handleHire}>
-              Hire me for a project
-            </button>
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
-              <i className="fas fa-file-lines" aria-hidden="true" /> View resume
-            </a>
-            <a href={c.githubUrl} target="_blank" rel="noopener noreferrer" className="about-link about-link--ghost">
-              <i className="fa-brands fa-github" aria-hidden="true" /> GitHub
-            </a>
+          <div className="bento-service-chips" aria-label="Freelance services">
+            <span><i className="fas fa-laptop-code" aria-hidden="true" /> Web &amp; apps</span>
+            <span><i className="fas fa-brain" aria-hidden="true" /> AI systems</span>
+            <span><i className="fas fa-robot" aria-hidden="true" /> Custom AI agents</span>
+          </div>
+          <div className="hero-footer-row">
+            <div className="bento-proof-row" aria-label="Professional highlights">
+              <span><strong>2+</strong> years</span>
+              <span><strong>9</strong> projects</span>
+              <span><strong>India</strong> · Remote</span>
+            </div>
+            <div className="bento-links">
+              <button className="about-link about-link--primary" onClick={handleHire}>
+                <i className="fas fa-paper-plane" aria-hidden="true" /> Start a project
+              </button>
+              <button className="about-link about-link--ghost" onClick={handleProjects}>
+                <i className="fas fa-folder-open" aria-hidden="true" /> See my work
+              </button>
+              <button type="button" onClick={() => setResumeOpen(true)} className="about-link about-link--ghost about-link--resume">
+                <i className="fas fa-file-lines" aria-hidden="true" /> View résumé
+              </button>
+            </div>
           </div>
         </div>
-        <div className="bento-avatar">
-          <div className="about-avatar-ring">
-            <div className="about-avatar-inner">HT</div>
+      </motion.div>
+
+      {/* ── Primary client services ── */}
+      <motion.div className="bento-card bento-services" variants={fadeUp} {...tilt}>
+        <div className="bento-services-heading">
+          <div>
+            <div className="bento-card-label"><i className="fas fa-wand-magic-sparkles" aria-hidden="true" /> Services</div>
+            <h2>What I can build for you</h2>
           </div>
-          <span className="bento-avail-dot-wrap">
-            <span className="bento-avail-pulse" aria-hidden="true"/>
-            <span className="bento-avail-text">Available for projects</span>
-          </span>
+          <button className="bento-services-cta" onClick={handleHire}>
+            Discuss your project <i className="fas fa-arrow-right" aria-hidden="true" />
+          </button>
+        </div>
+        <ul className="bento-services-list">
+          {SERVICES.map(s => (
+            <li key={s.label} className="bento-service-item">
+              <i className={`fas ${s.icon} bento-service-icon`} aria-hidden="true" />
+              <div>
+                <span className="bento-service-label">{s.label}</span>
+                <span className="bento-service-desc">{s.desc}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="bento-services-meta">
+          <span><i className="fas fa-reply" aria-hidden="true" /> Replies within 24 h</span>
+          <span><i className="fas fa-globe" aria-hidden="true" /> Remote-friendly · IST overlap</span>
+          <span><i className="fas fa-file-contract" aria-hidden="true" /> Freelance contracts &amp; collaborations</span>
         </div>
       </motion.div>
 
@@ -191,27 +206,6 @@ export default function AboutTab() {
       {STATS.map((s) => (
         <BentoStat key={s.label} {...s} fadeUp={fadeUp} />
       ))}
-
-      {/* ── Services card — client-facing ── */}
-      <motion.div className="bento-card bento-services" variants={fadeUp} {...tilt}>
-        <div className="bento-card-label"><i className="fas fa-handshake" aria-hidden="true"/> What I take on</div>
-        <ul className="bento-services-list">
-          {SERVICES.map(s => (
-            <li key={s.label} className="bento-service-item">
-              <i className={`fas ${s.icon} bento-service-icon`} aria-hidden="true"/>
-              <div>
-                <span className="bento-service-label">{s.label}</span>
-                <span className="bento-service-desc">{s.desc}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="bento-services-meta">
-          <span><i className="fas fa-reply" aria-hidden="true"/> Replies within 24 h</span>
-          <span><i className="fas fa-globe" aria-hidden="true"/> Remote-friendly · IST overlap</span>
-          <span><i className="fas fa-file-contract" aria-hidden="true"/> Freelance contracts &amp; collabs</span>
-        </div>
-      </motion.div>
 
       {/* ── Core stack ── */}
       <motion.div className="bento-card bento-stack" variants={fadeUp} {...tilt}>
@@ -297,6 +291,7 @@ export default function AboutTab() {
         </div>
       </motion.div>
 
+      <ResumeModal open={resumeOpen} onClose={() => setResumeOpen(false)} />
     </motion.div>
   );
 }

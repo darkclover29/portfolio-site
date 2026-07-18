@@ -102,6 +102,10 @@ export default function ExperienceTab() {
           </h3>
           <ul className="exp-sidebar-list">
             <li>
+              <strong>AI Agent Engineering</strong>
+              <p>Designing custom AI agents and reusable agent workflows across platforms, with current hands-on work creating GitHub Copilot agent definition files.</p>
+            </li>
+            <li>
               <strong>Enterprise AEM Solutions</strong>
               <p>Designing modular OSGi services, servlet integrations, and customized core components in Java.</p>
             </li>

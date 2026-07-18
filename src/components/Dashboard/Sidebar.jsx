@@ -4,6 +4,7 @@ import { PortfolioData } from '../../data/portfolioData.js';
 import Modal from '../shared/Modal.jsx';
 import ISTClock from '../shared/ISTClock.jsx';
 import CopyButton from '../shared/CopyButton.jsx';
+import ResumeModal from '../shared/ResumeModal.jsx';
 
 const THEMES = SWATCH_THEMES;
 
@@ -149,54 +150,8 @@ export default function Sidebar({
   drawerOpen,
   onCloseDrawer,
 }) {
-  const [resumeOpen, setResumeOpen] = useState(false);
   const c = PortfolioData.contact;
-
-  const resumeLines = [
-    'HARSH TIWARI — SOFTWARE ENGINEER',
-    c.email + '  |  ' + c.phone + '  |  ' + c.location,
-    'LinkedIn: ' + c.linkedin + '  |  GitHub: ' + c.github,
-    '',
-    'EXPERIENCE',
-    '─────────────────────────────────────────────────────',
-    'Assistant Systems Engineer @ Tata Consultancy Services (TCS)',
-    'Jan 2026 - Present | Java, AEM, Agile',
-    '',
-    'Associate Software Engineer Intern @ Ignitive Software Labs',
-    'Jan 2025 - April 2025 | Kotlin, Jetpack Compose, Room, REST APIs',
-    '',
-    'PROJECTS',
-    '─────────────────────────────────────────────────────',
-    'Mini Compiler & Web-Based IDE',
-    '  Java, JavaScript, HTTP API',
-    '',
-    'Versatile Appointment Scheduling System',
-    '  Spring Boot, PostgreSQL, Docker, Spring Data JPA',
-    '',
-    'StudyHub Android App',
-    '  Kotlin, Firebase, Jetpack Compose, Room Database',
-    '',
-    'Student Performance Prediction System',
-    '  Python, Machine Learning, Scikit-Learn, Pandas',
-    '',
-    'PlayLog Game Session Tracker',
-    '  Kotlin, Jetpack Compose, Coroutines, Flow API',
-    '',
-    'SKILLS',
-    '─────────────────────────────────────────────────────',
-    'Languages  : ' + PortfolioData.skills.languages.join(', '),
-    'Backend    : ' + PortfolioData.skills.backend.join(', '),
-    'Mobile/FE  : ' + PortfolioData.skills.frontendMobile.join(', '),
-    'Databases  : ' + PortfolioData.skills.databases.join(', '),
-    'Tools      : ' + PortfolioData.skills.tools.join(', '),
-    '',
-    'EDUCATION',
-    '─────────────────────────────────────────────────────',
-    'B.Tech Information Technology (2021-2025)',
-    '  SVVV, Indore | CGPA: 8.33 / 10',
-    'Class XII (2021) | 83.60%',
-    'Class X  (2019) | 82.20%',
-  ];
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   return (
     <aside className={"dash-sidebar" + (drawerOpen ? " drawer-open" : "")}>
@@ -279,21 +234,7 @@ export default function Sidebar({
 
       </div>
 
-      <Modal open={resumeOpen} title="Resume — Harsh Tiwari" onClose={() => setResumeOpen(false)}>
-        <pre className="resume-pre">{resumeLines.join('\n')}</pre>
-        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <a
-            href="/resume.pdf"
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            className="resume-dl-btn"
-            onClick={() => playClick?.()}
-          >
-            <i className="fas fa-download" /> Download PDF
-          </a>
-        </div>
-      </Modal>
+      <ResumeModal open={resumeOpen} onClose={() => setResumeOpen(false)} />
     </aside>
   );
 }

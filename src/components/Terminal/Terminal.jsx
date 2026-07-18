@@ -82,6 +82,7 @@ export default function Terminal({
             <button
               className={`icon-btn ${mechKeys ? 'icon-btn--active' : ''}`}
               title={mechKeys ? 'Mech keys ON' : 'Mech keys OFF'}
+              aria-label={mechKeys ? 'Turn mechanical key sounds off' : 'Turn mechanical key sounds on'}
               onClick={toggleMechKeys}
               onPointerDown={e => e.preventDefault()}
             >
@@ -91,6 +92,7 @@ export default function Terminal({
             <button
               className="icon-btn"
               title={muted ? 'Unmute' : 'Mute'}
+              aria-label={muted ? 'Unmute audio' : 'Mute audio'}
               onClick={toggleMute}
               onPointerDown={e => e.preventDefault()}
             >
@@ -102,6 +104,7 @@ export default function Terminal({
               value={bgmTrack}
               onChange={e => changeBgm(e.target.value)}
               title="BGM Track"
+              aria-label="Background music track"
             >
               <option value="classic">Classic</option>
               <option value="synthwave">Synth</option>
@@ -112,6 +115,7 @@ export default function Terminal({
             <button
               className="icon-btn"
               title="Toggle Matrix Rain"
+              aria-label={matrixOn ? 'Turn matrix rain off' : 'Turn matrix rain on'}
               onClick={() => setMatrixOn(v => !v)}
               onPointerDown={e => e.preventDefault()}
             >
@@ -122,6 +126,7 @@ export default function Terminal({
               className="flip-btn"
               onClick={onFlipToGui}
               title="Open Dashboard"
+              aria-label="Open GUI dashboard"
               onPointerDown={e => e.preventDefault()}
             >
               <i className="fas fa-th-large" /><span className="flip-btn-label"> GUI</span>
