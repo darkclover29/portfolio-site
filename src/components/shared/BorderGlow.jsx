@@ -58,6 +58,7 @@ const BorderGlow = ({
   glowIntensity = 1.0,
   coneSpread = 25,
   animated = false,
+  interactive = true,
   colors = ['#c084fc', '#f472b6', '#38bdf8'],
   fillOpacity = 0.5,
   style = {},
@@ -88,6 +89,7 @@ const BorderGlow = ({
   }, [getCenterOfElement]);
 
   const handlePointerMove = useCallback((e) => {
+    if (!interactive || e.pointerType !== 'mouse') return;
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
@@ -95,7 +97,7 @@ const BorderGlow = ({
     const y = e.clientY - rect.top;
     card.style.setProperty('--edge-proximity', `${(getEdgeProximity(card, x, y) * 100).toFixed(3)}`);
     card.style.setProperty('--cursor-angle', `${getCursorAngle(card, x, y).toFixed(3)}deg`);
-  }, [getEdgeProximity, getCursorAngle]);
+  }, [interactive, getEdgeProximity, getCursorAngle]);
 
   useEffect(() => {
     if (!animated || !cardRef.current) return;
@@ -119,7 +121,7 @@ const BorderGlow = ({
   return (
     <div
       ref={cardRef}
-      onPointerMove={handlePointerMove}
+      onPointerMove={interactive ? handlePointerMove : undefined}
       className={`border-glow-card ${className}`}
       style={{
         '--card-bg': backgroundColor,

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { PortfolioData } from '../../../data/portfolioData.js';
 import ComingSoon from '../../shared/ComingSoon.jsx';
 import BorderGlow from '../../shared/BorderGlow.jsx';
@@ -103,6 +104,17 @@ export default function ProjectsTab({ highlightProject }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [csOpen, setCsOpen]             = useState(false);
   const [csProject, setCsProject]       = useState('');
+  const [isTouchUi, setIsTouchUi]       = useState(() =>
+    window.matchMedia('(hover: none), (pointer: coarse), (max-width: 768px)').matches
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 768px)');
+    const sync = () => setIsTouchUi(query.matches);
+    sync();
+    query.addEventListener?.('change', sync);
+    return () => query.removeEventListener?.('change', sync);
+  }, []);
 
   const visible = useMemo(() => {
     if (activeFilter === 'All') return PortfolioData.projects;
@@ -135,46 +147,65 @@ export default function ProjectsTab({ highlightProject }) {
   const cardRefs = useRef({});
   useEffect(() => {
     if (!highlightProject) return;
-    setActiveFilter('All');
-    const timer = setTimeout(() => {
+    const filterTimer = setTimeout(() => setActiveFilter('All'), 0);
+    const scrollTimer = setTimeout(() => {
       const el = cardRefs.current[highlightProject];
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 250);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(filterTimer);
+      clearTimeout(scrollTimer);
+    };
   }, [highlightProject]);
 
   const scrollRef  = useRef(null);
-  const [prog, setProg] = useState(0);
+  const progressFillRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const holdTimer = useRef(null);
-  const startHold = useCallback((p) => {
+  const startHold = useCallback((p, pointerType) => {
+    // Long-press competes with native scrolling on phones. Keep this optional
+    // preview as a mouse-only desktop interaction.
+    if (pointerType !== 'mouse') return;
+    clearTimeout(holdTimer.current);
     holdTimer.current = setTimeout(() => setPreview(p), 500);
   }, []);
   const cancelHold = useCallback(() => {
     clearTimeout(holdTimer.current);
   }, []);
+  useEffect(() => () => clearTimeout(holdTimer.current), []);
+
   useEffect(() => {
     const el = scrollRef.current?.closest('.dash-content, .tab-scroll, [class*="content"]')
       || document.querySelector('.dash-content');
     if (!el) return;
+    let frame = 0;
     const onScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = el;
-      const max = scrollHeight - clientHeight;
-      setProg(max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const { scrollTop, scrollHeight, clientHeight } = el;
+        const max = scrollHeight - clientHeight;
+        const progress = max > 0 ? Math.min(1, scrollTop / max) : 0;
+        progressFillRef.current?.style.setProperty('transform', `scaleX(${progress})`);
+      });
     };
     el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
+    onScroll();
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
     <div ref={scrollRef} className="projects-scroll-wrap">
       <div className="projects-scroll-progress">
-        <div className="projects-scroll-fill" style={{ width: `${prog}%` }} />
+        <div ref={progressFillRef} className="projects-scroll-fill" />
       </div>
     <div>
       <motion.div
         className="section-header"
-        initial={{ opacity: 0, y: -10 }}
+        initial={isTouchUi ? false : { opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
       >
@@ -186,7 +217,7 @@ export default function ProjectsTab({ highlightProject }) {
       <motion.div
         className="project-filters"
         variants={filterBtnVariants}
-        initial="hidden"
+        initial={isTouchUi ? false : 'hidden'}
         animate="visible"
       >
         {FILTERS.map(tag => (
@@ -195,7 +226,7 @@ export default function ProjectsTab({ highlightProject }) {
             variants={filterItemVariants}
             className={`filter-btn${activeFilter === tag ? ' active' : ''}`}
             onClick={() => setActiveFilter(tag)}
-            whileHover={{ scale: 1.05 }}
+            whileHover={isTouchUi ? undefined : { scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             {tag}
@@ -207,7 +238,7 @@ export default function ProjectsTab({ highlightProject }) {
         className="projects-grid"
         key={activeFilter}
         variants={listVariants}
-        initial="hidden"
+        initial={isTouchUi ? false : 'hidden'}
         animate="visible"
       >
         {visible.map((p, i) => {
@@ -218,13 +249,11 @@ export default function ProjectsTab({ highlightProject }) {
               ref={el => { cardRefs.current[p.name] = el; }}
               variants={cardVariants}
               className={`project-card-anim${highlightProject === p.name ? ' project-card--highlight' : ''}`}
-              whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
-              onMouseDown={() => startHold(p)}
-              onMouseUp={cancelHold}
-              onMouseLeave={cancelHold}
-              onTouchStart={() => startHold(p)}
-              onTouchEnd={cancelHold}
-              onTouchCancel={cancelHold}
+              whileHover={isTouchUi ? undefined : { y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+              onPointerDown={e => startHold(p, e.pointerType)}
+              onPointerUp={cancelHold}
+              onPointerLeave={cancelHold}
+              onPointerCancel={cancelHold}
             >
               <BorderGlow
                 backgroundColor="var(--surface)"
@@ -236,7 +265,8 @@ export default function ProjectsTab({ highlightProject }) {
                 coneSpread={22}
                 edgeSensitivity={28}
                 fillOpacity={0.4}
-                animated={p.featured}
+                animated={p.featured && !isTouchUi}
+                interactive={!isTouchUi}
                 className={`project-card${p.featured ? ' project-card--featured' : ''}`}
               >
                 {p.featured && (
@@ -325,7 +355,10 @@ export default function ProjectsTab({ highlightProject }) {
       )}
 
       <ComingSoon open={csOpen} onClose={() => setCsOpen(false)} projectName={csProject} />
-      {preview && <ProjectPreviewOverlay project={preview} onDismiss={() => setPreview(null)} />}
+      {preview && createPortal(
+        <ProjectPreviewOverlay project={preview} onDismiss={() => setPreview(null)} />,
+        document.body
+      )}
     </div>
     </div>
   );
